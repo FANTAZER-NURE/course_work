@@ -10,10 +10,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//User with id as int autoincrement, name as string, email as string
-model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String
+model Order {
+  id         Int       @id @default(autoincrement())
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId Int
+  status     String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // # Foreign key to Order_Products table
+  orderProducts OrderProduct[]
+
+  // # Optional additional fields for orders...
 }
 
+model Product {
+  id           Int            @id @default(autoincrement())
+  name         String
+  // # Other product fields...
+  OrderProduct OrderProduct[]
+}
+
+model Customer {
+  id   Int    @id @default(autoincrement())
+  name String
+  // # Other customer fields...
+
+  // # Added relation field to match Order model
+  orders Order[] @relation()
+}
+
+model OrderProduct {
+  id           Int     @id @default(autoincrement())
+  orderId      Int
+  order        Order   @relation(fields: [orderId], references: [id])
+  productId    Int
+  product      Product @relation(fields: [productId], references: [id])
+  quantity     Int
+  pricePerItem Decimal
+}
