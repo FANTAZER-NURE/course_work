@@ -11,41 +11,50 @@ datasource db {
 }
 
 model Order {
-  id         Int       @id @default(autoincrement())
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId Int
-  status     String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id             Int      @id @default(autoincrement())
+  customerId     Int
+  managerId      Int
+  status         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  shippingAdress String
+  orderPrice     Decimal
+  customer      Customer?      @relation(fields: [customerId], references: [id])
+  manager       Manager?       @relation(fields: [managerId], references: [id])
+  // orderProducts OrderProduct[]
+  productDetails Json?
 
-  // # Foreign key to Order_Products table
-  orderProducts OrderProduct[]
+  // @@index(fields: [productDetails.id])
+}
 
-  // # Optional additional fields for orders...
+model Manager {
+  id    Int     @id @default(autoincrement())
+  name  String
+  Order Order[]
 }
 
 model Product {
   id           Int            @id @default(autoincrement())
   name         String
-  // # Other product fields...
-  OrderProduct OrderProduct[]
+  // OrderProduct OrderProduct[]
 }
 
 model Customer {
-  id   Int    @id @default(autoincrement())
-  name String
-  // # Other customer fields...
+  id             Int    @id @default(autoincrement())
+  name           String
+  legalNumber    String
+  legalAdress    String
+  shippindAdress String
 
-  // # Added relation field to match Order model
   orders Order[] @relation()
 }
 
-model OrderProduct {
-  id           Int     @id @default(autoincrement())
-  orderId      Int
-  order        Order   @relation(fields: [orderId], references: [id])
-  productId    Int
-  product      Product @relation(fields: [productId], references: [id])
-  quantity     Int
-  pricePerItem Decimal
-}
+// model OrderProduct {
+//   id           Int     @id @default(autoincrement())
+//   orderId      Int
+//   order        Order   @relation(fields: [orderId], references: [id])
+//   productId    Int?
+//   product      Product? @relation(fields: [productId], references: [id])
+//   quantity     Int
+//   pricePerItem Decimal
+// }
