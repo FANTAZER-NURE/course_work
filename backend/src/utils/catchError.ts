@@ -1,21 +1,11 @@
-// export function catchError(action: (req: any, res: any, next?: any) => Promise<void>) {
-//   return async (req: any, res: any, next: any) => {
-//     try {
-//       await action(req, res, next)
-//     } catch (error) {
-//       next(error)
-//     }
-//   }
-// }
+import {NextFunction, Request, Response} from 'express'
 
-export function catchError<T>(
-  action: (req: Request, res: Response, next?: Function) => Promise<T>
-): (req: Request, res: Response, next: Function) => Promise<void> {
-  return async (req: Request, res: Response, next: Function) => {
+export const catchError =
+  <T>(handler: (req: Request, res: Response) => Promise<T>) =>
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await action(req, res, next)
+      await handler(req, res)
     } catch (error) {
       next(error)
     }
   }
-}
