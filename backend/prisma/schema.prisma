@@ -36,7 +36,6 @@ model Manager {
 model Product {
   id           Int            @id @default(autoincrement())
   name         String
-  // OrderProduct OrderProduct[]
 }
 
 model Customer {
