@@ -1,6 +1,7 @@
 'use strict'
-import {PrismaClient} from '@prisma/client'
 import express, {Application} from 'express'
+import {PrismaClient} from '@prisma/client'
+import orderRouter from './routes/ordersRoute'
 
 const prisma = new PrismaClient()
 const app: Application = express()
@@ -24,6 +25,17 @@ app.get('/test', (req, res, next) => {
     next(err)
   }
 })
+
+// app.get('/orders', async (req, res, next) => {
+//   try {
+//     const users = await prisma.order.findMany()
+//     res.status(200).json(users)
+//   } catch (err) {
+//     next(err)
+//   }
+// })
+
+app.use(orderRouter)
 
 //get all users
 // app.get('/users', async (req, res, next) => {
