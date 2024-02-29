@@ -3,6 +3,7 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient()
 
 const getOrders = async () => {
+  console.log('hello')
   const orders = await prisma.order.findMany()
 
   return orders
