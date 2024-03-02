@@ -58,12 +58,7 @@ interface SCTableProps<T> {
   theme: 'dark' | 'light'
 }
 
-export function Table<T>({
-  data,
-  columns,
-  isLoading,
-  theme,
-}: SCTableProps<T>) {
+export function Table<T>({ data, columns, isLoading, theme }: SCTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'position', desc: false }])
   const [expanded, setExpanded] = useState<ExpandedState>(true)
 
@@ -95,13 +90,8 @@ export function Table<T>({
   })
 
   return (
-    <div className={styles.wrapper}>
-      <table
-        className={classNames({
-          [styles.tableDark]: theme === 'dark',
-          [styles.tableLight]: theme === 'light',
-        })}
-      >
+    <div>
+      <table className={styles.table}>
         <thead className={styles.thead}>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -187,7 +177,6 @@ export function Table<T>({
           })}
         </tbody>
       </table>
-
       {isLoading ? (
         <div
           className={classNames({

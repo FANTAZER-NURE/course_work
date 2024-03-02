@@ -2,15 +2,101 @@
 
 $cell-padding-y: 3px;
 $cell-padding-x: 5px;
-$table-bg: $dark-gray3;
-$table-header-bg: $dark-gray4;
-$table-border-color: $dark-gray1;
-$table-border-color-light: #e7e7e7;
+$table-bg: white;
+$table-header-bg: white;
+$table-border-color: #e7e7e7;
 $table-hover-bg: #38465f;
 
-// .wrapper {
-//   @apply overflow-hidden relative h-full;
-// }
+.wrapper {
+  overflow: auto;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: calc(100% - 10vh);
+}
+
+.table {
+  border-width: 1px;
+  border-collapse: collapse;
+  border-spacing: 0px 0px;
+  height: 100%;
+  font-family: 'Open Sans', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue',
+    'blueprint-icons-16', sans-serif;
+  background-color: $table-bg;
+  color: #000;
+  width: max-content;
+  font-size: 14px;
+
+  .thead {
+    text-align: center; // Equivalent of Tailwind's text-center
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    &::-webkit-scrollbar {
+      display: none; // Equivalent of Tailwind's hidden
+    }
+  }
+
+  .tableHeaderCell {
+    text-align: left; // text-left
+    white-space: nowrap; // whitespace-nowrap
+    background-color: $table-header-bg;
+
+    > div {
+      padding: $cell-padding-y $cell-padding-x;
+      width: 100%; // w-full
+      display: flex; // flex
+      align-items: center; // align-middle
+      justify-content: space-between; // gap-1
+      cursor: pointer; // cursor-pointer
+      border: 1px solid $table-border-color;
+      border-right-color: $table-header-bg;
+      border-bottom-color: $table-header-bg;
+    }
+
+    &:last-child > div {
+      border-right-color: $table-border-color;
+    }
+  }
+
+  .tbody {
+    &:last-child {
+      border-right: 1px solid $table-border-color;
+      border-bottom: 1px solid $table-border-color;
+    }
+  }
+
+  .tr {
+    &:hover {
+      background-color: #dfe8fa;
+
+      & > .tableCell {
+        background-color: #dfe8fa;
+        > div {
+          border-right-color: $table-border-color;
+          border-bottom-color: $table-border-color;
+        }
+      }
+    }
+  }
+
+  .tableCell {
+    text-align: right;
+    white-space: nowrap;
+
+    > div {
+      padding: $cell-padding-y $cell-padding-x;
+      border: 1px solid $table-border-color;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+    }
+  }
+}
 
 // .tableContainerDark {
 //   @apply flex w-full flex-col relative h-fit;
