@@ -1,9 +1,10 @@
-import * as Params from './params'
+// import { Order } from '@backend/types/order.ts'
+import { Order } from '../../../backend/src/types/order'
 
 export interface GET {
   '/orders': {
     params: never
-    result: any
+    result: Order[]
   }
 }
 
