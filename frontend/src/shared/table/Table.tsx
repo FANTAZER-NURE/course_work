@@ -17,6 +17,7 @@ import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa'
 import classNames from 'classnames'
 import { Spinner, Tooltip } from '@blueprintjs/core'
 import { FlexContainer } from 'shared/ui/FlexContainer'
+import { useNavigate } from 'react-router-dom'
 
 export interface BaseTableRow {
   _id: string
@@ -58,7 +59,12 @@ interface SCTableProps<T> {
   theme: 'dark' | 'light'
 }
 
-export function Table<T>({ data, columns, isLoading, theme }: SCTableProps<T>) {
+export function Table<T extends { id: string }>({
+  data,
+  columns,
+  isLoading,
+  theme,
+}: SCTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'position', desc: false }])
   const [expanded, setExpanded] = useState<ExpandedState>(true)
 
@@ -88,6 +94,14 @@ export function Table<T>({ data, columns, isLoading, theme }: SCTableProps<T>) {
     getSubRows: (row) => (row as any).subRows,
     getExpandedRowModel: getExpandedRowModel(),
   })
+
+  const navigate = useNavigate()
+  const redirectToNewPage = useCallback(
+    (value: string) => {
+      navigate(`/${value}`)
+    },
+    [navigate]
+  )
 
   return (
     <div>
@@ -156,7 +170,13 @@ export function Table<T>({ data, columns, isLoading, theme }: SCTableProps<T>) {
         <tbody className={styles.tbody}>
           {table.getRowModel().rows.map((row) => {
             return (
-              <tr key={row.id} className={styles.tr}>
+              <tr
+                key={row.id}
+                className={styles.tr}
+                onClick={() => {
+                  redirectToNewPage(row.original.id)
+                }}
+              >
                 {row.getVisibleCells().map((cell, i) => {
                   return (
                     <td
