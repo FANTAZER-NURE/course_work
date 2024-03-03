@@ -11,16 +11,16 @@ datasource db {
 }
 
 model Order {
-  id             Int      @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   customerId     Int
   managerId      Int
   status         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   shippingAdress String
   orderPrice     Decimal
-  customer      Customer?      @relation(fields: [customerId], references: [id])
-  manager       Manager?       @relation(fields: [managerId], references: [id])
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  manager        Manager?  @relation(fields: [managerId], references: [id])
   // orderProducts OrderProduct[]
   productDetails Json?
 
@@ -34,8 +34,8 @@ model Manager {
 }
 
 model Product {
-  id           Int            @id @default(autoincrement())
-  name         String
+  id   Int    @id @default(autoincrement())
+  name String
 }
 
 model Customer {
@@ -46,6 +46,15 @@ model Customer {
   shippindAdress String
 
   orders Order[] @relation()
+}
+
+model User {
+  id        Int    @id @default(autoincrement())
+  name      String
+  password  String
+  email     String @unique
+  role      String
+  avatarUrl String
 }
 
 // model OrderProduct {

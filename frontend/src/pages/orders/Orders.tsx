@@ -3,11 +3,12 @@ import { useQuery } from 'react-query'
 import styles from './Orders.module.scss'
 import { H2 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { OrderRowType, useColumnDefs } from './use-column-defs'
 import { Order } from '../../../../backend/src/types/order'
 import { makeOrderRow } from './utils/makeOrderRow'
 import { FlexContainer } from 'shared/ui/FlexContainer'
+import { useNavigate } from 'react-router'
 
 const MOCK_ORDERS = [
   {
@@ -1393,7 +1394,10 @@ export const Orders = () => {
     return await ordersGetApi(`/orders` as '/orders')
   })
 
+  console.log('orders')
+
   const { columns } = useColumnDefs()
+  const navigate = useNavigate()
 
   const accessorColumns = useMemo(() => {
     return columns.filter(isAccessorColumn)
@@ -1413,6 +1417,13 @@ export const Orders = () => {
     return data
   }, [orders])
 
+  const redirectToNewPage = useCallback(
+    (value: string) => {
+      navigate(`/orders/${value}`)
+    },
+    [navigate]
+  )
+
   if (orders) {
     console.log(orders[0].productDetails)
   }
@@ -1427,7 +1438,13 @@ export const Orders = () => {
         <H2>Orders</H2>
       </FlexContainer>
       <FlexContainer centeredX className={styles.tableWrapper}>
-        <Table data={rows} columns={accessorColumns} theme="light" isLoading={isFetching} />
+        <Table
+          data={rows}
+          columns={accessorColumns}
+          theme="light"
+          isLoading={isFetching}
+          redirectToNewPage={redirectToNewPage}
+        />
       </FlexContainer>
     </FlexContainer>
   )

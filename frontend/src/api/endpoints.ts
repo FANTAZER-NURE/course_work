@@ -6,15 +6,32 @@ export interface GET {
     params: never
     result: Order[]
   }
+  '/orders/:id': {
+    params: never
+    result: Order
+  }
+  '/activation/:activationToken': {
+    params: never
+    result: { accessToken: string; user: any }
+  }
+  '/refresh': {
+    params: never
+    result: { accessToken: string; user: any }
+  }
 }
 
 export interface POST {
-  '/api/users/login': {
-    params: {
-      login: string
-      password: string
-    }
-    result: { token: string }
+  '/registration': {
+    params: { email: string; password: string }
+    result: any
+  }
+  '/login': {
+    params: { email: string; password: string }
+    result: { accessToken: string; user: any }
+  }
+  '/logout': {
+    params: never
+    result: any
   }
 }
 

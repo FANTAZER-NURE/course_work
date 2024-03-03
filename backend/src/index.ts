@@ -2,6 +2,7 @@
 import express, {Application} from 'express'
 import {PrismaClient} from '@prisma/client'
 import orderRouter from './routes/ordersRoute'
+import registerRouter from './routes/registerRoute'
 
 const prisma = new PrismaClient()
 const app: Application = express()
@@ -27,6 +28,7 @@ app.get('/test', (req, res, next) => {
 })
 
 app.use(orderRouter)
+app.use(registerRouter)
 
 //Start server
 const PORT = process.env.PORT || 4000

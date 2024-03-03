@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es5", // Replace with your target ES version
+    "allowJs": true, // Allow importing JavaScript files
+    "skipLibCheck": true, // Skip type checking for built-in lib.d.ts
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "jsx": "react",
+    "lib": ["dom", "dom.iterable", "es5", "es2015.collection", "es2015.iterable"],
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "pretty": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "strict": true,
+    "stripInternal": true,
+    "typeRoots": ["../node_modules/@types"],
+    "paths": {
+      "@frontend/*": ["frontend/*"], // Map "@frontend" to "src/frontend"
+      "@backend/*": ["backend/*"] // Map "@backend" to "src/backend"
+    }
+  }
+}

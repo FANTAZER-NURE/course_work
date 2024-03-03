@@ -17,7 +17,6 @@ import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa'
 import classNames from 'classnames'
 import { Spinner, Tooltip } from '@blueprintjs/core'
 import { FlexContainer } from 'shared/ui/FlexContainer'
-import { useNavigate } from 'react-router-dom'
 
 export interface BaseTableRow {
   _id: string
@@ -57,6 +56,7 @@ interface SCTableProps<T> {
   columns: AccessorKeyColumnDef<T, any>[]
   isLoading: boolean
   theme: 'dark' | 'light'
+  redirectToNewPage: (value: string) => void
 }
 
 export function Table<T extends { id: string }>({
@@ -64,6 +64,7 @@ export function Table<T extends { id: string }>({
   columns,
   isLoading,
   theme,
+  redirectToNewPage,
 }: SCTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'position', desc: false }])
   const [expanded, setExpanded] = useState<ExpandedState>(true)
@@ -94,14 +95,6 @@ export function Table<T extends { id: string }>({
     getSubRows: (row) => (row as any).subRows,
     getExpandedRowModel: getExpandedRowModel(),
   })
-
-  const navigate = useNavigate()
-  const redirectToNewPage = useCallback(
-    (value: string) => {
-      navigate(`/${value}`)
-    },
-    [navigate]
-  )
 
   return (
     <div>

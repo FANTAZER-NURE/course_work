@@ -7,4 +7,4 @@
 
 ## After schema changes
 
-1. `prisma migrate dev`
+1. `npx prisma migrate dev`
