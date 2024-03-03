@@ -1,0 +1,113 @@
+/**
+ * The scale based on `$g-font-size` being 16.
+ *
+ * Decrease: 12, 8, 4
+ * Increase: 24, 32, 40, 48, 56, 72, 96
+ */
+$g-spacing: 16px !default;
+
+// Decrease
+$g-spacing-small: floor($g-spacing - 4) !default;
+$g-spacing-x-small: floor($g-spacing * 0.5) !default;
+$g-spacing-2x-small: floor($g-spacing * 0.25) !default;
+// Increase
+$g-spacing-large: ceil($g-spacing * 0.5 * 3) !default;
+$g-spacing-x-large: ceil($g-spacing * 0.5 * 4) !default;
+$g-spacing-2x-large: ceil($g-spacing * 0.5 * 5) !default;
+$g-spacing-3x-large: ceil($g-spacing * 0.5 * 6) !default;
+$g-spacing-4x-large: ceil($g-spacing * 0.5 * 7) !default;
+$g-spacing-5x-large: ceil($g-spacing * 0.5 * 9) !default;
+$g-spacing-6x-large: ceil($g-spacing * 0.5 * 12) !default;
+
+$rem-baseline: 16px !default;
+$rem-fallback: false !default;
+$rem-px-only: false !default;
+
+@function rem-separator($list, $separator: false) {
+  @if $separator == 'comma' or $separator == 'space' {
+    @return append($list, null, $separator);
+  }
+
+  @if function-exists('list-separator') == true {
+    @return list-separator($list);
+  }
+
+  // list-separator polyfill by Hugo Giraudel (https://sass-compatibility.github.io/#list_separator_function)
+  $test-list: ();
+  @each $item in $list {
+    $test-list: append($test-list, $item, space);
+  }
+
+  @return if($test-list == $list, space, comma);
+}
+
+@mixin rem-baseline($zoom: 100%) {
+  font-size: $zoom / 16px * $rem-baseline;
+}
+
+@function rem-convert($to, $values...) {
+  $result: ();
+  $separator: rem-separator($values);
+
+  @each $value in $values {
+    @if type-of($value) == 'number' and unit($value) == 'rem' and $to == 'px' {
+      $result: append($result, calc($value / 1rem * $rem-baseline), $separator);
+    } @else if type-of($value) == 'number' and unit($value) == 'px' and $to == 'rem' {
+      $result: append($result, calc($value / $rem-baseline * 1rem), $separator);
+    } @else if type-of($value) == 'list' {
+      $value-separator: rem-separator($value);
+      $value: rem-convert($to, $value...);
+      $value: rem-separator($value, $value-separator);
+      $result: append($result, $value, $separator);
+    } @else {
+      $result: append($result, $value, $separator);
+    }
+  }
+
+  @return if(length($result) == 1, nth($result, 1), $result);
+}
+
+@function rem($values...) {
+  @if $rem-px-only {
+    @return rem-convert(px, $values...);
+  } @else {
+    @return rem-convert(rem, $values...);
+  }
+}
+
+@mixin rem($properties, $values...) {
+  @if type-of($properties) == 'map' {
+    @each $property in map-keys($properties) {
+      @include rem($property, map-get($properties, $property));
+    }
+  } @else {
+    @each $property in $properties {
+      @if $rem-fallback or $rem-px-only {
+        #{$property}: rem-convert(px, $values...);
+      }
+      @if not $rem-px-only {
+        #{$property}: rem-convert(rem, $values...);
+      }
+    }
+  }
+}
+
+.base {
+  margin-bottom: rem($g-spacing);
+}
+
+.large {
+  margin-bottom: rem($g-spacing-large);
+}
+
+.xlarge {
+  margin-bottom: rem($g-spacing-x-large);
+}
+
+.small {
+  margin-bottom: rem($g-spacing-small);
+}
+
+.xsmall {
+  margin-bottom: rem($g-spacing-x-small);
+}
