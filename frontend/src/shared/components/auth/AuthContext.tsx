@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { accessTokenService } from 'services/accessTokenService'
 import { authService } from 'services/authService'
 
@@ -22,14 +22,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState(null)
   const [isChecked, setChecked] = useState(true)
 
-  async function activate(activationToken: string) {
+  const activate = useCallback(async (activationToken: string) => {
     const { accessToken, user } = await authService.activate(activationToken)
 
     accessTokenService.save(accessToken)
     setUser(user)
-  }
+  }, [])
 
-  async function checkAuth() {
+  const checkAuth = useCallback(async () => {
     try {
       const { accessToken, user } = await authService.refresh()
 
@@ -40,21 +40,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       setChecked(true)
     }
-  }
+  }, [])
 
-  async function login({ email, password }: { email: string; password: string }) {
+  const login = useCallback(async ({ email, password }: { email: string; password: string }) => {
     const { accessToken, user } = await authService.login({ email, password })
 
     accessTokenService.save(accessToken)
     setUser(user)
-  }
+  }, [])
 
-  async function logout() {
+  const logout = useCallback(async () => {
     await authService.logout()
 
     accessTokenService.remove()
     setUser(null)
-  }
+  }, [])
 
   const value = useMemo(
     () => ({
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       login,
       logout,
     }),
-    [user, isChecked]
+    [isChecked, user, checkAuth, activate, login, logout]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

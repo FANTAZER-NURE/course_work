@@ -26,12 +26,4 @@ export const RequireAuth = () => {
   }
 
   return <Outlet />
-
-  // return !isChecked ? (
-  //   <Spinner />
-  // ) : user ? (
-  //   children || <Outlet />
-  // ) : (
-  //   <Navigate to="/login" state={{ from: location }} replace />
-  // )
 }
