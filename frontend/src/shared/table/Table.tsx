@@ -17,6 +17,7 @@ import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa'
 import classNames from 'classnames'
 import { Spinner, Tooltip } from '@blueprintjs/core'
 import { FlexContainer } from 'shared/ui/FlexContainer'
+import { Loader } from '../../app/App'
 
 export interface BaseTableRow {
   _id: string
@@ -197,7 +198,7 @@ export function Table<T extends { id: string }>({
             [styles.loaderLight]: theme === 'light',
           })}
         >
-          <Spinner size={40} />
+          <Loader />
         </div>
       ) : null}
     </div>

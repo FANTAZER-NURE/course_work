@@ -10,7 +10,7 @@ export interface GET {
     params: never
     result: Order
   }
-  '/activation/:activationToken': {
+  '/activate/:activationToken': {
     params: never
     result: { accessToken: string; user: any }
   }
@@ -21,8 +21,8 @@ export interface GET {
 }
 
 export interface POST {
-  '/registration': {
-    params: { email: string; password: string }
+  '/register': {
+    params: { email: string; password: string; name: string; role: string }
     result: any
   }
   '/login': {

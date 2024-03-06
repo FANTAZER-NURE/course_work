@@ -49,12 +49,13 @@ model Customer {
 }
 
 model User {
-  id        Int    @id @default(autoincrement())
-  name      String
-  password  String
-  email     String @unique
-  role      String
-  avatarUrl String
+  id              Int    @id @default(autoincrement())
+  name            String
+  password        String
+  email           String @unique
+  role            String
+  avatarUrl       String
+  activationToken String? @unique
 }
 
 // model OrderProduct {

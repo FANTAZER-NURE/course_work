@@ -1,7 +1,17 @@
-import { authGetApi, authHttp, authPostApi } from 'api/auth'
+import { authGetApi, authPostApi } from 'api/auth'
 
-function register({ email, password }: { email: string; password: string }) {
-  return authPostApi('/registration' as '/registration', { email, password })
+function register({
+  email,
+  password,
+  name,
+  role,
+}: {
+  email: string
+  password: string
+  name: string
+  role: string
+}) {
+  return authPostApi('/register' as '/register', { email, password, name, role })
 }
 
 function login({ email, password }: { email: string; password: string }) {
@@ -13,7 +23,7 @@ function logout() {
 }
 
 function activate(activationToken: string) {
-  return authGetApi(`/activation/${activationToken}` as '/activation/:activationToken')
+  return authGetApi(`/activate/${activationToken}` as '/activate/:activationToken')
 }
 
 function refresh() {

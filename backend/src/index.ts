@@ -2,7 +2,9 @@
 import express, {Application} from 'express'
 import {PrismaClient} from '@prisma/client'
 import orderRouter from './routes/ordersRoute'
-import registerRouter from './routes/registerRoute'
+import authRouter from './routes/authRouter'
+import 'dotenv/config'
+import cors from 'cors'
 
 const prisma = new PrismaClient()
 const app: Application = express()
@@ -15,8 +17,16 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
   next()
 })
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+)
 
 //test api with error handling
 app.get('/test', (req, res, next) => {
@@ -28,7 +38,7 @@ app.get('/test', (req, res, next) => {
 })
 
 app.use(orderRouter)
-app.use(registerRouter)
+app.use(authRouter)
 
 //Start server
 const PORT = process.env.PORT || 4000

@@ -1,5 +1,6 @@
 import { Spinner } from '@blueprintjs/core'
 import { ordersGetApi } from 'api/orders'
+import { Loader } from 'app/App'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router'
 
@@ -15,7 +16,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
   console.log(order)
 
   if (isFetching) {
-    return <Spinner />
+    return <Loader />
   }
 
   return <>ORDER {order?.id}</>

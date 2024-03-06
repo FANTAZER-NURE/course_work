@@ -8,12 +8,16 @@ export const AuthContext = React.createContext<{
   checkAuth: () => void
   logout: () => void
   login: ({ email, password }: { email: string; password: string }) => Promise<void>
+  activate: (activationToken: string) => Promise<void>
 }>({
   isChecked: false,
   user: null,
   checkAuth: () => {},
   logout: () => {},
   login: ({ email, password }) => {
+    return new Promise(() => {})
+  },
+  activate(activationToken){
     return new Promise(() => {})
   },
 })

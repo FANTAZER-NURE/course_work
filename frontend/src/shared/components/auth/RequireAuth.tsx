@@ -2,6 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import React, { useContext } from 'react'
 import { Spinner } from '@blueprintjs/core'
 import { AuthContext } from './AuthContext'
+import { Loader } from '../../../app/App'
 
 type Props = { children?: React.ReactChild }
 
@@ -12,7 +13,7 @@ export const RequireAuth = () => {
   if (!isChecked) {
     return (
       <>
-        <Spinner />
+        <Loader />
       </>
     )
   }
