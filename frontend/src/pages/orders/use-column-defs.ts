@@ -1,8 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { Order } from '../../../../backend/src/types/order'
+import { TOrder } from '../../../../backend/src/types/order'
 import { useMemo } from 'react'
 
-export type OrderRowType = Order & {
+export type OrderRowType = TOrder & {
   orderPrice: number
 }
 
@@ -49,7 +49,7 @@ const BASIC_COLUMNS: ColumnDef<OrderRowType, any>[] = [
       let price = 0
 
       Object.keys(items).forEach((key) => {
-        price += items[key].quantity * items[key].pricePerUnit
+        price += items[key].quantity * items[key].pricePerItem
       })
 
       return price.toFixed(3)

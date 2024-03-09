@@ -6,12 +6,15 @@ import authRouter from './routes/authRouter'
 import 'dotenv/config'
 import cors from 'cors'
 import usersRouter from './routes/usersRoute'
+import { errorMiddleware } from './middlewares/errorMiddleware'
+import cookieParser from 'cookie-parser'
 
 const prisma = new PrismaClient()
 const app: Application = express()
 
 //use json
 app.use(express.json())
+app.use(cookieParser())
 
 //cors
 app.use((req, res, next) => {
@@ -29,18 +32,10 @@ app.use(
   })
 )
 
-// //test api with error handling
-// app.get('/test', (req, res, next) => {
-//   try {
-//     res.status(200).json({message: 'Success!'})
-//   } catch (err) {
-//     next(err)
-//   }
-// })
-
 app.use(orderRouter)
 app.use(authRouter)
 app.use(usersRouter)
+app.use(errorMiddleware)
 
 //Start server
 const PORT = process.env.PORT || 4000

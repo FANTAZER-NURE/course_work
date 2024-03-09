@@ -106,7 +106,10 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./"
+  },
+  "paths": {
+    "@backend/*": ["src/*"]
   },
   "extends": "../tsconfig.base.json"
 }

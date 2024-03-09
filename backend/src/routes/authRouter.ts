@@ -15,5 +15,6 @@ authRouter.post(
 authRouter.post('/login', catchError(authController.login))
 authRouter.get('/activate/:activationToken', catchError(authController.activation))
 authRouter.get('/login', catchError(authController.activation))
+authRouter.get('/refresh', catchError(authController.refresh))
 
 export default authRouter

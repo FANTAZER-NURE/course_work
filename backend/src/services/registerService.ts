@@ -14,13 +14,13 @@ const createUser = async (
   activationToken?: string
 ) => {
   if (!name || !email || !password || !role || !avatarUrl) {
-    throw ApiError.BadReguest('missing some args', {
+    throw ApiError.BadRequest('missing some args', {
       message: 'missing some args',
     })
   }
 
   if (!activationToken) {
-    throw ApiError.BadReguest('no activation token', {
+    throw ApiError.BadRequest('no activation token', {
       message: 'no activation token',
     })
   }

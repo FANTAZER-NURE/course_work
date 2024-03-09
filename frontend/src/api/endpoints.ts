@@ -1,14 +1,15 @@
 // import { Order } from '@backend/types/order.ts'
-import { Order } from '../../../backend/src/types/order'
+import { TOrder } from '../../../backend/src/types/order'
+import { TUser } from '../../../backend/src/types/user'
 
 export interface GET {
   '/orders': {
     params: never
-    result: Order[]
+    result: TOrder[]
   }
   '/orders/:id': {
     params: never
-    result: Order
+    result: TOrder
   }
   '/activate/:activationToken': {
     params: never
@@ -20,7 +21,7 @@ export interface GET {
   }
   '/users': {
     params: never
-    result: any[]
+    result: TUser[]
   }
 }
 

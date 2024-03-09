@@ -1,17 +1,20 @@
-import { ApiError } from '../exceptions/ApiError.js';
+import {ApiError} from '../exceptions/ApiError.js'
 
 export function errorMiddleware(error, req, res, next) {
   if (error instanceof ApiError) {
-    const { status, massage, errors } = error;
+    const {status, massage, errors} = error
 
     res.status(status).send({
-      massage, errors,
-    });
+      massage,
+      errors,
+    })
 
-    return;
+    return
   }
+
+  console.log('here2')
 
   res.status(500).send({
     massage: 'Error',
-  });
+  })
 }

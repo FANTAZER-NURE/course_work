@@ -1,5 +1,5 @@
 import { Spinner } from '@blueprintjs/core'
-import { ordersGetApi } from 'api/orders'
+import { ordersGetApi } from 'api/httpClient'
 import { Loader } from 'app/App'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router'

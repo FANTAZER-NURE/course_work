@@ -1,11 +1,11 @@
-import { ordersGetApi } from 'api/orders'
+import { ordersGetApi } from 'api/httpClient'
 import { useQuery } from 'react-query'
 import styles from './Orders.module.scss'
 import { H2 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
 import { useCallback, useMemo } from 'react'
 import { OrderRowType, useColumnDefs } from './use-column-defs'
-import { Order } from '../../../../backend/src/types/order'
+import { TOrder } from '../../../../backend/src/types/order'
 import { makeOrderRow } from './utils/makeOrderRow'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useNavigate } from 'react-router'
@@ -1387,7 +1387,7 @@ const MOCK_ORDERS = [
     },
   },
   // Add more orders here...
-] as Order[]
+] as unknown as TOrder[]
 
 export const Orders = () => {
   const { data: orders, isFetching } = useQuery(['orders'], async () => {
