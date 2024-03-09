@@ -2,7 +2,7 @@ import { Spinner } from '@blueprintjs/core'
 import { Loader } from '../../app/App'
 
 import { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { AuthContext } from 'shared/components/auth/AuthContext'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 
@@ -40,7 +40,10 @@ export const AccountActivationPage = () => {
       {error ? (
         <p className="notification is-danger is-light">{error}</p>
       ) : (
-        <p className="notification is-success is-light">Your account is now active</p>
+        <>
+          <p className="notification is-success is-light">Your account is now active</p>
+          <Link to="orders/">Go back to the platform</Link>
+        </>
       )}
     </FlexContainer>
   )

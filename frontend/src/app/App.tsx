@@ -10,6 +10,7 @@ import { LoginPage } from 'pages/login/Login'
 import { Register } from 'pages/register/Register'
 import { AccountActivationPage } from 'pages/register/AccountActivationPage'
 import { Spinner } from '@blueprintjs/core/lib/esm/components/spinner/spinner'
+import { UsersPage } from 'pages/users/UsersPage'
 
 export const Loader = () => (
   <div className="loader-wrapper">
@@ -32,7 +33,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="*" element={<div>Page not found</div>} />
-        {/* <Route path="/login" element={<LoginPage />} /> */}
+        <Route path="/login" element={<LoginPage />} />
         {/* <Route path="/" element={<RequireAuth />}>
           <Route path="orders/" element={<Orders />} />
           <Route path="orders/:id" element={<OrderPage />} />
@@ -43,6 +44,9 @@ const App = () => {
         <Route path="orders/:id" element={<OrderPage />} />
         <Route path="register" element={<Register />} />
         <Route path="activate/:activationToken" element={<AccountActivationPage />} />
+        <Route path="/" element={<RequireAuth />}>
+          <Route path="users" element={<UsersPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

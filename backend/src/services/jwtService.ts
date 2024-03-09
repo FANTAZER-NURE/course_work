@@ -1,6 +1,20 @@
+import { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 
-function generateAccessToken(user: any) {
+function sign(user: Partial<User>) {
+  return jwt.sign(user, process.env.JWT_KEY || '')
+}
+
+function verify(token: string) {
+  try {
+    return jwt.verify(token, process.env.JWT_KEY || '')
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+
+function generateAccessToken(user: User) {
   console.log('here', process.env.JWT_ACCESS_SECRET)
   return jwt.sign(user, process.env.JWT_ACCESS_SECRET || '', {expiresIn: '1d'})
 }
@@ -31,4 +45,6 @@ export const jwtService = {
   generateAccessToken,
   generateRefreshToken,
   validateRefreshToken,
+  sign,
+  verify,
 }

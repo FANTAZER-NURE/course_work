@@ -18,6 +18,10 @@ export interface GET {
     params: never
     result: { accessToken: string; user: any }
   }
+  '/users': {
+    params: never
+    result: any[]
+  }
 }
 
 export interface POST {

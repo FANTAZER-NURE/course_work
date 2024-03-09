@@ -7,12 +7,13 @@ const authRouter = Router()
 
 authRouter.post(
   '/register',
-  // body('email').isEmail(),
-  // body('password').isLength({min: 6}),
+  body('email').isEmail(),
+  body('password').isLength({min: 6}),
   catchError(authController.registration)
 )
 
 authRouter.post('/login', catchError(authController.login))
 authRouter.get('/activate/:activationToken', catchError(authController.activation))
+authRouter.get('/login', catchError(authController.activation))
 
 export default authRouter

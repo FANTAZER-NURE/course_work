@@ -5,6 +5,7 @@ import orderRouter from './routes/ordersRoute'
 import authRouter from './routes/authRouter'
 import 'dotenv/config'
 import cors from 'cors'
+import usersRouter from './routes/usersRoute'
 
 const prisma = new PrismaClient()
 const app: Application = express()
@@ -28,17 +29,18 @@ app.use(
   })
 )
 
-//test api with error handling
-app.get('/test', (req, res, next) => {
-  try {
-    res.status(200).json({message: 'Success!'})
-  } catch (err) {
-    next(err)
-  }
-})
+// //test api with error handling
+// app.get('/test', (req, res, next) => {
+//   try {
+//     res.status(200).json({message: 'Success!'})
+//   } catch (err) {
+//     next(err)
+//   }
+// })
 
 app.use(orderRouter)
 app.use(authRouter)
+app.use(usersRouter)
 
 //Start server
 const PORT = process.env.PORT || 4000

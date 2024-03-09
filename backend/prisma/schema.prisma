@@ -20,18 +20,17 @@ model Order {
   shippingAdress String
   orderPrice     Decimal
   customer       Customer? @relation(fields: [customerId], references: [id])
-  manager        Manager?  @relation(fields: [managerId], references: [id])
-  // orderProducts OrderProduct[]
+  user        User?  @relation(fields: [managerId], references: [id])
   productDetails Json?
 
   // @@index(fields: [productDetails.id])
 }
 
-model Manager {
-  id    Int     @id @default(autoincrement())
-  name  String
-  Order Order[]
-}
+// model Manager {
+//   id    Int     @id @default(autoincrement())
+//   name  String
+//   Order Order[]
+// }
 
 model Product {
   id   Int    @id @default(autoincrement())
@@ -56,6 +55,7 @@ model User {
   role            String
   avatarUrl       String
   activationToken String? @unique
+  Order Order[]
 }
 
 // model OrderProduct {

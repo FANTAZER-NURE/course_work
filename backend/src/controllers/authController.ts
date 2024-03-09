@@ -7,6 +7,7 @@ import {jwtService} from '../services/jwtService'
 // import { emailService } from 'src/services/emailService'
 import {v4 as uuid} from 'uuid'
 import {emailService} from '../services/emailService'
+import {usersService} from '../services/usersService'
 
 const prisma = new PrismaClient()
 
@@ -37,13 +38,11 @@ const registration = async (req: any, res: any) => {
 const login = async (req: any, res: any) => {
   const {email, password} = req.body
 
-  const user = await prisma.user.findUnique({
-    where: {email},
-  })
+  const user = await usersService.findByEmail(email)
 
   console.log('login', user)
   if (!user) {
-    throw ApiError.BadReguest('User with email does not exist')
+    throw ApiError.BadReguest('User with email does not exist, or wrong password')
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password)
@@ -53,42 +52,16 @@ const login = async (req: any, res: any) => {
     throw ApiError.BadReguest('Password is wrong')
   }
 
-  const jwtToken = await jwtService.generateAccessToken(user.id)
-  console.log('1111111', jwtToken)
+  const normalizedUser = usersService.normalize(user)
 
-  res.json({message: 'Login successful', token: jwtToken})
+  const accessToken = jwtService.sign(normalizedUser)
 
-  // const {email, password, token} = req.body
+  res.send({
+    user: normalizedUser,
+    accessToken,
+  })
 
-  // if (!token) {
-  //   const user = await userService.getUserByEmail(email)
-
-  //   if (!user) {
-  //     throw ApiError.BadReguest('User with email does not exist')
-  //   }
-
-  //   const isPasswordValid = await bcrypt.compare(password, user.password)
-
-  //   if (!isPasswordValid) {
-  //     throw ApiError.BadReguest('Password is wrong')
-  //   }
-
-  //   if (user.activationToken) {
-  //     res.statusCode = 401
-  //     res.send('User no active')
-
-  //     return
-  //   }
-
-  //   await sendAuthentication(res, user)
-  // } else {
-  //   const user = jwtService.validateAccessToken(token.slice(1, -1))
-
-  //   if (!user) {
-  //     throw ApiError.BadReguest('Token no valid')
-  //   }
-  //   res.send(user)
-  // }
+  // res.json({message: 'Login successful', token: jwtToken})
 }
 
 const activation = async (req: any, res: any) => {
