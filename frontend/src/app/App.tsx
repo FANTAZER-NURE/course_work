@@ -40,12 +40,12 @@ const App = () => {
         </Route> */}
 
         <Route path="/" element={<Navigate to="orders/" />} />
-        <Route path="orders/" element={<Orders />} />
         <Route path="orders/:id" element={<OrderPage />} />
         <Route path="register" element={<Register />} />
         <Route path="activate/:activationToken" element={<AccountActivationPage />} />
         <Route path="/" element={<RequireAuth />}>
           <Route path="users" element={<UsersPage />} />
+          <Route path="orders/" element={<Orders />} />
         </Route>
       </Routes>
     </BrowserRouter>

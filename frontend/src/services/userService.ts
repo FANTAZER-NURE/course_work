@@ -1,8 +1,8 @@
-import { httpClient } from 'api/httpClient'
+import { getApi, httpClient } from 'api/httpClient'
 import { TUser } from '../../../backend/src/types/user'
 
 function getAll() {
-  return httpClient('/users' as '/users')
+  return getApi('/users' as '/users')
 }
 
 export const userService = { getAll }

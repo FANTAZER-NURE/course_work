@@ -17,14 +17,14 @@ export const AuthContext = React.createContext<{
   login: ({ email, password }) => {
     return new Promise(() => {})
   },
-  activate(activationToken){
+  activate(activationToken) {
     return new Promise(() => {})
   },
 })
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState(null)
-  const [isChecked, setChecked] = useState(true)
+  const [isChecked, setChecked] = useState(false)
 
   const activate = useCallback(async (activationToken: string) => {
     const { accessToken, user } = await authService.activate(activationToken)
@@ -35,9 +35,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkAuth = useCallback(async () => {
     try {
-      const { accessToken, user } = await authService.refresh()
+      const { token, user } = await authService.refresh()
 
-      accessTokenService.save(accessToken)
+      console.log('check auth', token, user)
+
+      accessTokenService.save(token)
       setUser(user)
     } catch (error) {
       console.log('User is not authentincated')

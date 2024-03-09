@@ -1,5 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from 'axios'
 import { makeApi } from './makeApi'
+import { accessTokenService } from 'services/accessTokenService'
+import { authService } from 'services/authService'
 
 export const apiEndpoint = process.env.API_URL || 'http://localhost:4000'
 // export const ordersApiEndpoint = 'http://localhost:4000'
@@ -25,31 +27,34 @@ function onResponseSuccess(res: any) {
   return res.data
 }
 
-// async function onResponseError(error) {
-//   const originalRequest = error.config
+async function onResponseError(error: { config: any; response: { status: number } }) {
+  const originalRequest = error.config
 
-//   if (error.response.status !== 401) {
-//     throw error
-//   }
+  if (error.response.status !== 401) {
+    throw error
+  }
 
-//   try {
-//     const { accessToken } = await authService.refresh()
+  try {
+    const { token } = await authService.refresh()
 
-//     accessTokenService.save(accessToken)
+    console.log('ERROR', token)
 
-//     return httpClient.request(originalRequest)
-//   } catch (error) {
-//     throw error
-//   }
-// }
+    accessTokenService.save(token)
+
+    return httpClient.request(originalRequest)
+  } catch (error) {
+    throw error
+  }
+}
 
 httpClient.interceptors.request.use(onRequest)
+httpClient.interceptors.response.use(onResponseSuccess, onResponseError)
 
 const {
-  getApi: ordersGetApi,
-  postApi: ordersPostApi,
-  putApi: ordersPutApi,
-  deleteApi: ordersDeleteApi,
+  getApi,
+  postApi,
+  putApi,
+  deleteApi,
 } = makeApi(httpClient)
 
-export { ordersGetApi, ordersPostApi, ordersPutApi, ordersDeleteApi }
+export { getApi, postApi, putApi, deleteApi }

@@ -17,7 +17,7 @@ export interface GET {
   }
   '/refresh': {
     params: never
-    result: { accessToken: string; user: any }
+    result: { token: string; user: any }
   }
   '/users': {
     params: never

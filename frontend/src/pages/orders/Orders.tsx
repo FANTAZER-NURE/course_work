@@ -1,4 +1,3 @@
-import { ordersGetApi } from 'api/httpClient'
 import { useQuery } from 'react-query'
 import styles from './Orders.module.scss'
 import { H2 } from '@blueprintjs/core'
@@ -9,6 +8,7 @@ import { TOrder } from '../../../../backend/src/types/order'
 import { makeOrderRow } from './utils/makeOrderRow'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useNavigate } from 'react-router'
+import { getApi } from 'api/httpClient'
 
 const MOCK_ORDERS = [
   {
@@ -1391,7 +1391,7 @@ const MOCK_ORDERS = [
 
 export const Orders = () => {
   const { data: orders, isFetching } = useQuery(['orders'], async () => {
-    return await ordersGetApi(`/orders` as '/orders')
+    return await getApi(`/orders` as '/orders')
   })
 
   console.log('orders')
@@ -1410,7 +1410,6 @@ export const Orders = () => {
 
     const data: OrderRowType[] = []
     const rows = MOCK_ORDERS?.map((order) => makeOrderRow(order))
-    // const filteredRows = filterPlayer(selectedFilterText, rows)
 
     data.push(...rows)
 
@@ -1424,13 +1423,15 @@ export const Orders = () => {
     [navigate]
   )
 
+  console.log(orders)
+
   if (orders) {
     console.log(orders[0].productDetails)
   }
 
-  if (!orders) {
-    return null
-  }
+  // if (!orders) {
+  //   return null
+  // }
 
   return (
     <FlexContainer column centered className={styles.wrapper}>

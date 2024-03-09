@@ -4,10 +4,10 @@ import { Spinner } from '@blueprintjs/core'
 import { AuthContext } from './AuthContext'
 import { Loader } from '../../../app/App'
 
-type Props = { children?: React.ReactChild }
-
 export const RequireAuth = () => {
   const { isChecked, user } = useContext(AuthContext)
+
+  console.log('user', user, isChecked)
   const location = useLocation()
 
   if (!isChecked) {

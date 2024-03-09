@@ -5,8 +5,6 @@ const prisma = new PrismaClient()
 const getUsers = async () => {
   const users = await prisma.user.findMany({where: {activationToken: null}})
 
-  console.log(users)
-
   return users as User[]
 }
 
