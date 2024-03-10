@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { userService } from 'services/userService'
 import { useQuery } from 'react-query'
 import { Loader } from 'app/App'
 import { getApi } from 'api/httpClient'
 import { ErrorState, usePageError } from 'hooks/use-page-error'
 import { TUser } from '../../../../backend/src/types/user'
+import { Spinner } from '@blueprintjs/core'
 
 export const UsersPage = () => {
   const { data: users, isFetching } = useQuery(
@@ -20,16 +20,9 @@ export const UsersPage = () => {
   )
 
   const [error, setError] = usePageError('')
-  // const [users, setUsers] = useState<TUser[]>([])
-  // const [isFetching, setIsFetching] = useState(false)
-
-  // console.log(
-  //   'PROMISE',
-  //   userService.getAll().then((res) => console.log('PROMISE2', res))
-  // )
 
   if (isFetching) {
-    return <Loader />
+    return <Spinner />
   }
 
   return (

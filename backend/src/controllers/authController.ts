@@ -89,8 +89,8 @@ async function refresh(req: any, res: any) {
 }
 
 const logout = (req: any, res: any) => {
-  localStorage.removeItem('accessToken')
   res.clearCookie('refreshToken')
+  res.sendStatus(204)
 }
 
 export const authController = {

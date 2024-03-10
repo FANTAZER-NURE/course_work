@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { accessTokenService } from 'services/accessTokenService'
 import { authService } from 'services/authService'
+import { TUser } from '../../../../../backend/src/types/user'
 
 export const AuthContext = React.createContext<{
   isChecked: boolean
-  user: any
+  user: TUser | null
   checkAuth: () => void
   logout: () => void
   login: ({ email, password }: { email: string; password: string }) => Promise<void>
@@ -23,7 +24,7 @@ export const AuthContext = React.createContext<{
 })
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<TUser | null>(null)
   const [isChecked, setChecked] = useState(false)
 
   const activate = useCallback(async (activationToken: string) => {
@@ -36,8 +37,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const checkAuth = useCallback(async () => {
     try {
       const { token, user } = await authService.refresh()
-
-      console.log('check auth', token, user)
 
       accessTokenService.save(token)
       setUser(user)

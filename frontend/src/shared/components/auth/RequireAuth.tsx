@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import { Spinner } from '@blueprintjs/core'
 import { AuthContext } from './AuthContext'
 import { Loader } from '../../../app/App'
+import { Header } from 'shared/ui/Header'
 
 export const RequireAuth = () => {
   const { isChecked, user } = useContext(AuthContext)
@@ -26,5 +27,10 @@ export const RequireAuth = () => {
     )
   }
 
-  return <Outlet />
+  return (
+    <div>
+      <Header />
+      <Outlet />
+    </div>
+  )
 }

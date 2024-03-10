@@ -1,0 +1,15 @@
+.wrapper {
+  position: relative;
+  display: inline-block;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  > img {
+    width: 100%;
+  }
+}
+
+.hidden {
+  display: none;
+}

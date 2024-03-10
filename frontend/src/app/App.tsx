@@ -35,7 +35,6 @@ const App = () => {
         <Route path="*" element={<div>Page not found</div>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<LoginPage />} />
-        {/* <Route path="/" element={<Navigate to="orders/" />} /> */}
         <Route path="orders/:id" element={<OrderPage />} />
         <Route path="register" element={<Register />} />
         <Route path="activate/:activationToken" element={<AccountActivationPage />} />
