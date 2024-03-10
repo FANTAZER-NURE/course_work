@@ -6,6 +6,6 @@ import { authMiddleware } from '../middlewares/authMiddlewares'
 
 const usersRouter = Router()
 
-usersRouter.get('/users', authMiddleware, catchError(usersController.getAll))
+usersRouter.get('/users', catchError(usersController.getAll))
 
 export default usersRouter

@@ -12,11 +12,13 @@ export const httpClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+httpClient.interceptors.request.use(onRequest)
+httpClient.interceptors.response.use(onResponseSuccess, onResponseError)
+
 function onRequest(request: InternalAxiosRequestConfig) {
   const accessToken = localStorage.getItem('accessToken')
 
   if (accessToken) {
-    // request.headers['Authorization'] = `Bearer ${accessToken}`
     request.headers.set('Authorization', `Bearer ${accessToken}`)
   }
 
@@ -24,7 +26,7 @@ function onRequest(request: InternalAxiosRequestConfig) {
 }
 
 function onResponseSuccess(res: any) {
-  return res.data
+  return res
 }
 
 async function onResponseError(error: { config: any; response: { status: number } }) {
@@ -47,14 +49,6 @@ async function onResponseError(error: { config: any; response: { status: number 
   }
 }
 
-httpClient.interceptors.request.use(onRequest)
-httpClient.interceptors.response.use(onResponseSuccess, onResponseError)
-
-const {
-  getApi,
-  postApi,
-  putApi,
-  deleteApi,
-} = makeApi(httpClient)
+const { getApi, postApi, putApi, deleteApi } = makeApi(httpClient)
 
 export { getApi, postApi, putApi, deleteApi }

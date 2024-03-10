@@ -1,4 +1,4 @@
-import {validationResult} from 'express-validator'
+import {cookie, validationResult} from 'express-validator'
 import {ApiError} from '../exceptions/ApiError'
 import {registerService} from '../services/registerService'
 import bcrypt from 'bcrypt'
@@ -50,15 +50,6 @@ const login = async (req: any, res: any) => {
   if (!isPasswordValid) {
     throw ApiError.BadRequest('Password is wrong')
   }
-
-  // const normalizedUser = usersService.normalize(user)
-
-  // const accessToken = jwtService.sign(normalizedUser)
-
-  // res.send({
-  //   user: normalizedUser,
-  //   accessToken,
-  // })
   generateTokens(res, user)
 }
 
@@ -95,16 +86,11 @@ async function refresh(req: any, res: any) {
   }
 
   generateTokens(res, userData)
+}
 
-  // const token = await tokenService.getByToken(refreshToken)
-
-  // if (!token) {
-  //   throw ApiError.Unauthorized()
-  // }
-
-  // const user = await usersService.getByEmail(userData.email)
-
-  // await sendAuthentication(res, user)
+const logout = (req: any, res: any) => {
+  localStorage.removeItem('accessToken')
+  res.clearCookie('refreshToken')
 }
 
 export const authController = {
@@ -112,6 +98,7 @@ export const authController = {
   login,
   activation,
   refresh,
+  logout,
 }
 
 function generateTokens(res: any, user: string | JwtPayload | null) {

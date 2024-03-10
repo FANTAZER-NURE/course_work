@@ -25,6 +25,8 @@ const makeGetApi = (axiosInstance: AxiosInstance) => {
       params,
       headers: config?.headers,
     })
+    console.log('url', url)
+    console.log('response', response)
     return response.data
   }
 }

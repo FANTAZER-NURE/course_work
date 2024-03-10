@@ -34,12 +34,8 @@ const App = () => {
       <Routes>
         <Route path="*" element={<div>Page not found</div>} />
         <Route path="/login" element={<LoginPage />} />
-        {/* <Route path="/" element={<RequireAuth />}>
-          <Route path="orders/" element={<Orders />} />
-          <Route path="orders/:id" element={<OrderPage />} />
-        </Route> */}
-
-        <Route path="/" element={<Navigate to="orders/" />} />
+        <Route path="/logout" element={<LoginPage />} />
+        {/* <Route path="/" element={<Navigate to="orders/" />} /> */}
         <Route path="orders/:id" element={<OrderPage />} />
         <Route path="register" element={<Register />} />
         <Route path="activate/:activationToken" element={<AccountActivationPage />} />

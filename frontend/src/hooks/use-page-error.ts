@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-type ErrorState = string | null
+export type ErrorState = string | null
 
 export const usePageError = (initialError: ErrorState) => {
   const [error, setError] = useState<ErrorState>(initialError)
