@@ -29,7 +29,6 @@
     "keyword-spacing": ["error", {"before": true, "after": true}],
     "linebreak-style": ["error", "unix"],
     "new-cap": ["error", {"capIsNew": false, "newIsCap": true}],
-    "no-console": ["warn", {"allow": ["warn", "error"]}],
     "no-empty": ["error", "always"],
     "no-extra-parens": ["error", "functions"],
     "no-floating-decimal": ["error"],
@@ -58,6 +57,7 @@
     "space-unary-ops": ["error", {"words": true, "nonWords": false}],
     "strict": ["error", "global"],
     "no-var": ["error"],
-    "prefer-template": ["error"]
+    "prefer-template": ["error"],
+    "no-console": "warn"
   }
 }

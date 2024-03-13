@@ -8,9 +8,8 @@ const getUsers = async () => {
   return users as User[]
 }
 
-function normalize({id, email, name}: Partial<User>) {
-  console.log('NORMALIZE', name)
-  return {id, email, name}
+function normalize({id, email, name, role}: Partial<User>) {
+  return {id, email, name, role}
 }
 
 const findByEmail = async (email: string) => {

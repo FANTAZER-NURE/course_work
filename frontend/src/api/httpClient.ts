@@ -39,8 +39,6 @@ async function onResponseError(error: { config: any; response: { status: number 
   try {
     const { token } = await authService.refresh()
 
-    console.log('ERROR', token)
-
     accessTokenService.save(token)
 
     return httpClient.request(originalRequest)

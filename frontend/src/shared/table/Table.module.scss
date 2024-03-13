@@ -4,7 +4,8 @@ $cell-padding-y: 3px;
 $cell-padding-x: 5px;
 $table-bg: white;
 $table-header-bg: white;
-$table-border-color: #e7e7e7;
+// $table-border-color: #e7e7e7;
+$table-border-color: $gray3;
 $table-hover-bg: #38465f;
 
 .wrapper {
@@ -47,6 +48,11 @@ $table-hover-bg: #38465f;
     white-space: nowrap; // whitespace-nowrap
     background-color: $table-header-bg;
 
+    padding: $cell-padding-y $cell-padding-x;
+    border: 1px solid $table-border-color;
+    // border-right-color: $table-header-bg;
+    // border-bottom-color: $table-header-bg;
+
     > div {
       padding: $cell-padding-y $cell-padding-x;
       width: 100%; // w-full
@@ -54,12 +60,12 @@ $table-hover-bg: #38465f;
       align-items: center; // align-middle
       justify-content: space-between; // gap-1
       cursor: pointer; // cursor-pointer
-      border: 1px solid $table-border-color;
-      border-right-color: $table-header-bg;
-      border-bottom-color: $table-header-bg;
+      // border: 1px solid $table-border-color;
+      // border-right-color: $table-header-bg;
+      // border-bottom-color: $table-header-bg;
     }
 
-    &:last-child > div {
+    &:last-child {
       border-right-color: $table-border-color;
     }
   }
@@ -89,12 +95,16 @@ $table-hover-bg: #38465f;
   .tableCell {
     text-align: right;
     white-space: nowrap;
+    padding: $cell-padding-y $cell-padding-x;
+    border: 1px solid $table-border-color;
+    // border-right-color: #fff;
+    // border-bottom-color: #fff;
 
-    > div {
-      padding: $cell-padding-y $cell-padding-x;
-      border: 1px solid $table-border-color;
-      border-right-color: #fff;
-      border-bottom-color: #fff;
-    }
+    // > div {
+    //   padding: $cell-padding-y $cell-padding-x;
+    //   border: 1px solid $table-border-color;
+    //   border-right-color: #fff;
+    //   border-bottom-color: #fff;
+    // }
   }
 }

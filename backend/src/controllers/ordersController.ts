@@ -9,9 +9,6 @@ const getAll = async (req: any, res: any) => {
 const getOne = async (req: any, res: any) => {
   const {id} = req.params
 
-  console.log(id)
-  console.log(req)
-
   const orders = await orderService.getOrder(+id)
 
   res.send(orders)

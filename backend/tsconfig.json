@@ -108,8 +108,5 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "paths": {
-    "@backend/*": ["src/*"]
-  },
   "extends": "../tsconfig.base.json"
 }

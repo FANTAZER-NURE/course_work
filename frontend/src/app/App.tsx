@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import './App.scss'
 import '@fortawesome/fontawesome-free/css/all.min.css'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Orders } from 'pages/orders/Orders'
 import { OrderPage } from 'pages/order-page/OrderPage'
 import { AuthContext } from 'shared/components/auth/AuthContext'
@@ -19,7 +19,7 @@ export const Loader = () => (
 )
 
 const App = () => {
-  const { isChecked, user, logout, checkAuth } = useContext(AuthContext)
+  const { isChecked, checkAuth } = useContext(AuthContext)
 
   useEffect(() => {
     checkAuth()

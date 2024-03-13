@@ -13,13 +13,10 @@ export const AccountActivationPage = () => {
   const { activate } = useContext(AuthContext)
   const { activationToken } = useParams()
 
-  console.log('------activationToken------', activationToken)
-
   useEffect(() => {
     if (!activationToken) {
       return
     }
-    console.log('enter use useEffect')
     activate(activationToken)
       .catch((error) => {
         setError(error.response?.data?.message || `Wrong activation link`)

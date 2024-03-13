@@ -19,5 +19,7 @@ type ProductDetails = {
   orderId: string
   productId: string
   quantity: number
-  pricePerItem: number
+  pricePerUnit: number
+  name: string
+  units: string
 }

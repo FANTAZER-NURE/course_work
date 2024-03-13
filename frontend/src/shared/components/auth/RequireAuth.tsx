@@ -8,7 +8,6 @@ import { Header } from 'shared/ui/Header'
 export const RequireAuth = () => {
   const { isChecked, user } = useContext(AuthContext)
 
-  console.log('user', user, isChecked)
   const location = useLocation()
 
   if (!isChecked) {

@@ -18,19 +18,12 @@ model Order {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   shippingAdress String
-  orderPrice     Decimal
   customer       Customer? @relation(fields: [customerId], references: [id])
   user        User?  @relation(fields: [managerId], references: [id])
   productDetails Json?
 
   // @@index(fields: [productDetails.id])
 }
-
-// model Manager {
-//   id    Int     @id @default(autoincrement())
-//   name  String
-//   Order Order[]
-// }
 
 model Product {
   id   Int    @id @default(autoincrement())
@@ -57,13 +50,3 @@ model User {
   activationToken String? @unique
   Order Order[]
 }
-
-// model OrderProduct {
-//   id           Int     @id @default(autoincrement())
-//   orderId      Int
-//   order        Order   @relation(fields: [orderId], references: [id])
-//   productId    Int?
-//   product      Product? @relation(fields: [productId], references: [id])
-//   quantity     Int
-//   pricePerItem Decimal
-// }

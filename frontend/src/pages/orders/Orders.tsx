@@ -2,13 +2,15 @@ import { useQuery } from 'react-query'
 import styles from './Orders.module.scss'
 import { H2 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { OrderRowType, useColumnDefs } from './use-column-defs'
 import { TOrder } from '../../../../backend/src/types/order'
 import { makeOrderRow } from './utils/makeOrderRow'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useNavigate } from 'react-router'
 import { getApi } from 'api/httpClient'
+import { TUser } from '../../../../backend/src/types/user'
+import { AuthContext } from 'shared/components/auth/AuthContext'
 
 const MOCK_ORDERS = [
   {
@@ -22,17 +24,17 @@ const MOCK_ORDERS = [
     productDetails: {
       '1': {
         id: '1',
-        name: 'Apple',
-        quantity: 2,
+        name: 'A95',
+        quantity: 100,
         units: 't',
         pricePerUnit: 1.99,
       },
       '2': {
-        id: '2',
-        name: 'Banana',
-        quantity: 3,
-        units: 'l',
-        pricePerUnit: 0.99,
+        id: '1',
+        name: 'A92',
+        quantity: 150,
+        units: 't',
+        pricePerUnit: 1.5,
       },
     },
   },
@@ -1389,14 +1391,31 @@ const MOCK_ORDERS = [
   // Add more orders here...
 ] as unknown as TOrder[]
 
-export const Orders = () => {
-  const { data: orders, isFetching } = useQuery(['orders'], async () => {
-    return await getApi(`/orders` as '/orders')
-  })
+type Props = {}
 
-  console.log('orders')
+export const Orders: React.FC<Props> = () => {
+  const { users } = useContext(AuthContext)
 
-  const { columns } = useColumnDefs()
+  const { data: orders, isFetching: isFetchingOrders } = useQuery(
+    ['orders', users],
+    async () => {
+      return await getApi(`/orders`)
+    },
+    {
+      staleTime: 60_000,
+      keepPreviousData: true,
+    }
+  )
+
+  console.log('orders', orders)
+  console.log('users', users)
+
+  const managers = useMemo(() => {
+    return users?.filter((user) => user.role === 'manager')
+  }, [users])
+
+  const { columns } = useColumnDefs(managers || [])
+
   const navigate = useNavigate()
 
   const accessorColumns = useMemo(() => {
@@ -1408,12 +1427,9 @@ export const Orders = () => {
       return []
     }
 
-    const data: OrderRowType[] = []
-    const rows = MOCK_ORDERS?.map((order) => makeOrderRow(order))
+    const rows = orders.map((order) => makeOrderRow(order))
 
-    data.push(...rows)
-
-    return data
+    return rows
   }, [orders])
 
   const redirectToNewPage = useCallback(
@@ -1422,16 +1438,6 @@ export const Orders = () => {
     },
     [navigate]
   )
-
-  console.log(orders)
-
-  if (orders) {
-    console.log(orders[0].productDetails)
-  }
-
-  // if (!orders) {
-  //   return null
-  // }
 
   return (
     <FlexContainer column centered className={styles.wrapper}>
@@ -1443,7 +1449,7 @@ export const Orders = () => {
           data={rows}
           columns={accessorColumns}
           theme="light"
-          isLoading={isFetching}
+          isLoading={isFetchingOrders}
           redirectToNewPage={redirectToNewPage}
         />
       </FlexContainer>

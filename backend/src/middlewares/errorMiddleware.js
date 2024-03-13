@@ -12,8 +12,6 @@ export function errorMiddleware(error, req, res, next) {
     return
   }
 
-  console.log('here2')
-
   res.status(500).send({
     massage: 'Error',
   })

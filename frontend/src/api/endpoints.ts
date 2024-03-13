@@ -1,6 +1,7 @@
 // import { Order } from '@backend/types/order.ts'
 import { TOrder } from '../../../backend/src/types/order'
 import { TUser } from '../../../backend/src/types/user'
+import { TCustomer } from '../../../backend/src/types/customer'
 
 export interface GET {
   '/orders': {
@@ -22,6 +23,10 @@ export interface GET {
   '/users': {
     params: never
     result: TUser[]
+  }
+  '/customers': {
+    params: never
+    result: TCustomer[]
   }
 }
 

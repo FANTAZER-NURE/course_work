@@ -1,6 +1,7 @@
 .wrapper {
   // @apply bg-red-400;
   padding: 0.5rem;
+  height: calc(100vh - 50px);
 }
 
 .tableWrapper {
@@ -11,6 +12,6 @@
   overflow: auto;
 }
 
-.wrapper {
-  @apply overflow-hidden relative h-full;
-}
+// .wrapper {
+//   @apply overflow-hidden relative h-full;
+// }

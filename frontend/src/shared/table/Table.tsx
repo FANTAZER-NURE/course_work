@@ -180,7 +180,7 @@ export function Table<T extends { id: string }>({
                         width: getMetaFromColumn(cell.column).width,
                       }}
                     >
-                      <div style={{ width: getMetaFromColumn(cell.column).width, height: '2em' }}>
+                      <div style={{ width: getMetaFromColumn(cell.column).width}}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </div>
                     </td>

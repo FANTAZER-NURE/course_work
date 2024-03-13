@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { Button, Navbar, Alignment, H3 } from '@blueprintjs/core'
+import { Button, Navbar, Alignment, H3, Tag, Intent } from '@blueprintjs/core'
 import { AuthContext } from 'shared/components/auth/AuthContext'
 import { Avatar } from './Avatar'
 import { FlexContainer } from './FlexContainer'
@@ -9,8 +9,6 @@ import styles from './Header.module.scss'
 
 export const Header = () => {
   const { user, logout } = useContext(AuthContext)
-
-  console.log(user)
 
   return (
     <Navbar>
@@ -21,13 +19,13 @@ export const Header = () => {
               <Avatar url="" rounded width={30} height={30} />
             </Link>
             <H3 style={{ marginBottom: 0 }}>{user?.name}</H3>
+            <Tag minimal intent={Intent.PRIMARY}>
+              {user?.role}
+            </Tag>
           </FlexContainer>
         </Navbar.Heading>
         <Navbar.Divider />
         <FlexContainer between centeredY style={{ width: '100%' }} gap={10}>
-          {/* <Link to="/orders" className="bp3-button bp3-minimal">
-            Orders
-          </Link> */}
           <NavLink
             className={({ isActive }) =>
               classNames('header__link uppercase', { [styles.active]: isActive })
