@@ -69,20 +69,20 @@ export function Table<T extends { id: string }>({
   redirectToNewPage,
   redirectColumns,
 }: SCTableProps<T>) {
-  const [sorting, setSorting] = useState<SortingState>([{ id: 'position', desc: false }])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [expanded, setExpanded] = useState<ExpandedState>(true)
 
-  const handleSortingChange: OnChangeFn<SortingState> = useCallback(
-    (updater) => {
-      const state = typeof updater === 'function' ? updater(sorting) : updater
-      if (state.length) {
-        setSorting(state)
-      } else {
-        setSorting([{ id: 'position', desc: false }])
-      }
-    },
-    [sorting]
-  )
+  // const handleSortingChange: OnChangeFn<SortingState> = useCallback(
+  //   (updater) => {
+  //     const state = typeof updater === 'function' ? updater(sorting) : updater
+  //     if (state.length) {
+  //       setSorting(state)
+  //     } else {
+  //       setSorting([{ id: 'position', desc: false }])
+  //     }
+  //   },
+  //   [sorting]
+  // )
 
   const table = useReactTable<T>({
     data,
@@ -94,7 +94,7 @@ export function Table<T extends { id: string }>({
       expanded,
     },
     onExpandedChange: setExpanded,
-    onSortingChange: handleSortingChange,
+    onSortingChange: setSorting,
     getSubRows: (row) => (row as any).subRows,
     getExpandedRowModel: getExpandedRowModel(),
   })

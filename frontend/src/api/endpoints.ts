@@ -2,6 +2,7 @@
 import { TOrder } from '../../../backend/src/types/order'
 import { TUser } from '../../../backend/src/types/user'
 import { TCustomer } from '../../../backend/src/types/customer'
+import { TProduct } from '../../../backend/src/types/product'
 
 export interface GET {
   '/orders': {
@@ -27,6 +28,10 @@ export interface GET {
   '/customers': {
     params: never
     result: TCustomer[]
+  }
+  '/products': {
+    params: never
+    result: TProduct[]
   }
 }
 

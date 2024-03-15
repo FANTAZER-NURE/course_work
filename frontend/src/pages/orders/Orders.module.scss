@@ -12,6 +12,8 @@
   overflow: auto;
 }
 
-// .wrapper {
-//   @apply overflow-hidden relative h-full;
-// }
+.select {
+  & > div {
+    height: 30px;
+  }
+}

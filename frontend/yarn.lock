@@ -1161,35 +1161,47 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@blueprintjs/colors@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.npmjs.org/@blueprintjs/colors/-/colors-5.0.1.tgz"
-  integrity sha512-Lz3TSHJBL7+Ar/pQS15ewbNMMZc9p0CyBTPvICx4sWVH2STIJrvh05f+rdOBsKyx+FdTGTBoISyw67ZOSXvWVA==
-  dependencies:
-    tslib "~2.5.0"
-
-"@blueprintjs/core@^5.1.1":
+"@blueprintjs/colors@^5.1.1":
   version "5.1.1"
-  resolved "https://registry.npmjs.org/@blueprintjs/core/-/core-5.1.1.tgz"
-  integrity sha512-h2KHD6wRJejJSB6TtxH32r32HEm3Cnk+7sPxbqdvEERaMcftDezmTAuH7l8T07R9AUHuyHtBz+JUGvbv+HawIA==
+  resolved "https://registry.npmjs.org/@blueprintjs/colors/-/colors-5.1.1.tgz"
+  integrity sha512-Mni/GgCYLaMf5U5zsCN42skOG49w3U0QmUFuJgFZ/1pv+3cHF/9xR4L4dXcj5DtgJoHkmUbK36PR5mdFB65WEA==
   dependencies:
-    "@blueprintjs/colors" "^5.0.1"
-    "@blueprintjs/icons" "^5.1.0"
-    "@popperjs/core" "^2.11.7"
+    tslib "~2.6.2"
+
+"@blueprintjs/core@^5.1.1", "@blueprintjs/core@^5.10.0":
+  version "5.10.0"
+  resolved "https://registry.npmjs.org/@blueprintjs/core/-/core-5.10.0.tgz"
+  integrity sha512-jJNRw61ITWDJlrqSM+vx8kG6nBrFO55SmIQU2TepQ6iPIv3PQtv1gmLWc0TmUdtiROMy0ehhddMqEulOmOXGsQ==
+  dependencies:
+    "@blueprintjs/colors" "^5.1.1"
+    "@blueprintjs/icons" "^5.8.0"
+    "@popperjs/core" "^2.11.8"
     classnames "^2.3.1"
     normalize.css "^8.0.1"
     react-popper "^2.3.0"
     react-transition-group "^4.4.5"
-    tslib "~2.5.0"
+    react-uid "^2.3.3"
+    tslib "~2.6.2"
+    use-sync-external-store "^1.2.0"
 
-"@blueprintjs/icons@^5.1.0":
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/@blueprintjs/icons/-/icons-5.1.0.tgz"
-  integrity sha512-KzOrOUbP3VegJUG49epgkv0khGB82mNOEWWG1ZFJ4Cjnt1fYXmz0Cfy3GTZ+GKUd34a3cLH3oCeWRSyC4giHeA==
+"@blueprintjs/icons@^5.8.0":
+  version "5.8.0"
+  resolved "https://registry.npmjs.org/@blueprintjs/icons/-/icons-5.8.0.tgz"
+  integrity sha512-QAl0eh1lzYR7CDkT6Uerci5x7jy0vtOj6+B+5cg0noEdjguHoRmhx7b3dDcj+Nmlz6rAvRZoU3cgzfk0NiD1zg==
   dependencies:
     change-case "^4.1.2"
     classnames "^2.3.1"
-    tslib "~2.5.0"
+    tslib "~2.6.2"
+
+"@blueprintjs/select@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.npmjs.org/@blueprintjs/select/-/select-5.1.2.tgz"
+  integrity sha512-9LgAzOXL/WKdh2o63dzE6oT8gPNgOzR5PWJcVZu4fHFPz4CZ/hD3scsMIhACE+K0DfHWNCPtPjWqZX6U24q/fQ==
+  dependencies:
+    "@blueprintjs/core" "^5.10.0"
+    "@blueprintjs/icons" "^5.8.0"
+    classnames "^2.3.1"
+    tslib "~2.6.2"
 
 "@csstools/normalize.css@*":
   version "12.0.0"
@@ -1802,7 +1814,7 @@
     schema-utils "^3.0.0"
     source-map "^0.7.3"
 
-"@popperjs/core@^2.0.0", "@popperjs/core@^2.11.7":
+"@popperjs/core@^2.0.0", "@popperjs/core@^2.11.8":
   version "2.11.8"
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
@@ -2357,7 +2369,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.14.32 || 17 || 18", "@types/react@^16.8 || ^17.0 || ^18.0", "@types/react@^18.2.65":
+"@types/react@*", "@types/react@^16.14.41 || 17 || 18", "@types/react@^16.8 || ^17.0 || ^18.0", "@types/react@^16.8.0 || ^17.0.0 || ^18.0.0", "@types/react@^18.2.65":
   version "18.2.65"
   resolved "https://registry.npmjs.org/@types/react/-/react-18.2.65.tgz"
   integrity sha512-98TsY0aW4jqx/3RqsUXwMDZSWR1Z4CUlJNue8ueS2/wcxZOsz4xmW1X8ieaWVRHcmmQM3R8xVA4XWB3dJnWwDQ==
@@ -8359,6 +8371,13 @@ react-transition-group@^4.3.0, react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-uid@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/react-uid/-/react-uid-2.3.3.tgz"
+  integrity sha512-iNpDovcb9qBpBTo8iUgqRSQOS8GV3bWoNaTaUptHkXtAooXSo0OWe7vN6TqqB8x3x0bNBbQx96kkmSltQ5h9kQ==
+  dependencies:
+    tslib "^2.0.0"
+
 react@*, "react@^16.8 || ^17.0 || ^18.0", "react@^16.8 || 17 || 18", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.3 || ^17.0.0-0 || ^18.0.0", "react@^16.9.0 || ^17.0.0 || ^18", react@^18.0.0, react@^18.2.0, "react@>= 16", react@>=16, react@>=16.6.0, react@>=16.8, react@>=16.8.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
@@ -9512,15 +9531,10 @@ tslib@^1.8.1:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.0.3, tslib@^2.5.0, tslib@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.0.tgz"
-  integrity sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==
-
-tslib@~2.5.0:
-  version "2.5.3"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-2.5.3.tgz"
-  integrity sha512-mSxlJJwl3BMEQCUNnxXBU9jP4JBktcEGhURcPR6VQVlnP0FdDEsIaz0C35dXNGLyRfrATNofF0F5p2KPxQgB+w==
+tslib@^2.0.0, tslib@^2.0.3, tslib@^2.5.0, tslib@^2.6.0, tslib@~2.6.2:
+  version "2.6.2"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.2.tgz"
+  integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
 
 tsutils@^3.21.0:
   version "3.21.0"
@@ -9716,7 +9730,7 @@ use-isomorphic-layout-effect@^1.1.2:
   resolved "https://registry.npmjs.org/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.2.tgz"
   integrity sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==
 
-use-sync-external-store@^1.0.0:
+use-sync-external-store@^1.0.0, use-sync-external-store@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz"
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==

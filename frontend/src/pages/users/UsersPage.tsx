@@ -87,7 +87,11 @@ export const UsersPage = () => {
     <FlexContainer column centered className={classNames(styles.wrapper)}>
       <h1 className="title">Users</h1>
 
-      {user!.role === 'admin' ? <Button intent={Intent.PRIMARY}>Create User</Button> : null}
+      {user!.role === 'admin' ? (
+        <Button intent={Intent.PRIMARY} icon="new-person">
+          Create User
+        </Button>
+      ) : null}
 
       <VerticalSpacing />
 

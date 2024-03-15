@@ -69,7 +69,7 @@ export function useOrdersColumnDefs(managers: TUser[]) {
               {Object.keys(items).map((key) => {
                 const item = items[key]
                 return (
-                  <div>
+                  <div key={key}>
                     {item.name}: {item.pricePerUnit * item.quantity}UAH ({item.quantity}
                     {item.units})
                   </div>

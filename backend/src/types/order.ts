@@ -16,10 +16,9 @@ export type TOrder = {
 
 type ProductDetails = {
   id: string
-  orderId: string
   productId: string
   quantity: number
   pricePerUnit: number
   name: string
-  units: string
+  units: "T" | 'L'
 }

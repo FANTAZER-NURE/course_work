@@ -1,1400 +1,50 @@
 import { useQuery } from 'react-query'
 import styles from './Orders.module.scss'
-import { H2 } from '@blueprintjs/core'
+import {
+  Button,
+  Colors,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  Divider,
+  FormGroup,
+  H2,
+  H5,
+  InputGroup,
+  Intent,
+  Spinner,
+} from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
-import { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { OrderRowType, useOrdersColumnDefs } from './use-orders-column-defs'
 import { TOrder } from '../../../../backend/src/types/order'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useNavigate } from 'react-router'
 import { getApi } from 'api/httpClient'
-import { TUser } from '../../../../backend/src/types/user'
+import { TProduct } from '../../../../backend/src/types/product'
 import { AuthContext } from 'shared/components/auth/AuthContext'
 import { makeOrderRow } from 'utils/makeOrderRow'
-
-const MOCK_ORDERS = [
-  {
-    id: '1',
-    customerId: '123',
-    managerId: '456',
-    status: 'pending',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '123 Main St, Springfield, IL 62704',
-    productDetails: {
-      '1': {
-        id: '1',
-        name: 'A95',
-        quantity: 100,
-        units: 't',
-        pricePerUnit: 1.99,
-      },
-      '2': {
-        id: '1',
-        name: 'A92',
-        quantity: 150,
-        units: 't',
-        pricePerUnit: 1.5,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  {
-    id: '2',
-    customerId: '789',
-    managerId: '456',
-    status: 'completed',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    shippingAddress: '456 Elm St, Chicago, IL 60604',
-    productDetails: {
-      '1': {
-        id: '3',
-        name: 'Orange',
-        quantity: 4,
-        units: 't',
-        pricePerUnit: 2.99,
-      },
-      '2': {
-        id: '4',
-        name: 'Grapes',
-        quantity: 5,
-        units: 'l',
-        pricePerUnit: 1.49,
-      },
-    },
-  },
-  // Add more orders here...
-] as unknown as TOrder[]
+import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
+import { MenuItem } from '@blueprintjs/core'
+import { TCustomer } from '../../../../backend/src/types/customer'
+import { ItemPredicate, ItemRenderer, Select } from '@blueprintjs/select'
 
 type Props = {}
 
 export const Orders: React.FC<Props> = () => {
-  const { users } = useContext(AuthContext)
+  const [isDialogOpened, setIsDialogOpened] = useState(false)
+  const [selectedCustomer, setSelectedCustomer] = useState<TCustomer | null>(null)
+  const [shippingAddress, setShippingAddress] = useState('')
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([])
+  console.log('🚀 ~ orderItems:', orderItems)
+
+  useEffect(() => {
+    if (selectedCustomer && selectedCustomer.shippindAdress) {
+      setShippingAddress(selectedCustomer.shippindAdress)
+    }
+  }, [selectedCustomer])
+
+  const { users, user } = useContext(AuthContext)
 
   const { data: orders, isFetching: isFetchingOrders } = useQuery(
     ['orders', users],
@@ -1407,8 +57,27 @@ export const Orders: React.FC<Props> = () => {
     }
   )
 
-  console.log('orders', orders)
-  console.log('users', users)
+  const { data: customers, isFetching: isFetchingCustomers } = useQuery(
+    ['customers', users],
+    async () => {
+      return await getApi(`/customers`)
+    },
+    {
+      staleTime: 60_000,
+      keepPreviousData: true,
+    }
+  )
+
+  const { data: products, isFetching: isFetchingProducts } = useQuery(
+    ['products', users],
+    async () => {
+      return await getApi(`/products`)
+    },
+    {
+      staleTime: 60_000,
+      keepPreviousData: true,
+    }
+  )
 
   const managers = useMemo(() => {
     return users?.filter((user) => user.role === 'manager')
@@ -1439,11 +108,61 @@ export const Orders: React.FC<Props> = () => {
     [navigate]
   )
 
+  const handleCreateOrder = useCallback(() => {
+    setIsDialogOpened(true)
+  }, [])
+
+  const handleRemoveOrderItem = useCallback((index: number) => {
+    setOrderItems((prev) => prev.filter((_, i) => i !== index))
+  }, [])
+
+  const filterСustomer: ItemPredicate<TCustomer> = (query, customer, _index, exactMatch) => {
+    const normalizedTitle = customer.name.toLowerCase()
+    const normalizedQuery = query.toLowerCase()
+
+    if (exactMatch) {
+      return normalizedTitle === normalizedQuery
+    } else {
+      return `${normalizedTitle} ${customer.shippindAdress}`.indexOf(normalizedQuery) >= 0
+    }
+  }
+
+  const renderCustomer: ItemRenderer<TCustomer> = (
+    customer,
+    { handleClick, handleFocus, modifiers, query }
+  ) => {
+    if (!modifiers.matchesPredicate) {
+      return null
+    }
+    return (
+      <MenuItem
+        active={modifiers.active}
+        disabled={modifiers.disabled}
+        key={customer.id}
+        label={customer.shippindAdress}
+        onClick={handleClick}
+        onFocus={handleFocus}
+        roleStructure="listoption"
+        text={`${customer.name}`}
+      />
+    )
+  }
+
+  if (isFetchingCustomers || isFetchingOrders || isFetchingProducts) {
+    return <Spinner />
+  }
+
   return (
     <FlexContainer column centered className={styles.wrapper}>
       <FlexContainer centered>
         <H2>Orders</H2>
       </FlexContainer>
+      {user?.role === 'director' ? null : (
+        <Button intent={Intent.PRIMARY} icon="plus" onClick={handleCreateOrder}>
+          Create order
+        </Button>
+      )}
+      <VerticalSpacing />
       <FlexContainer centeredX className={styles.tableWrapper}>
         <Table
           data={rows}
@@ -1454,6 +173,239 @@ export const Orders: React.FC<Props> = () => {
           redirectColumns={['id']}
         />
       </FlexContainer>
+
+      <Dialog
+        title="Create order"
+        icon="plus"
+        isOpen={isDialogOpened}
+        canEscapeKeyClose
+        canOutsideClickClose
+        onClose={() => {
+          setIsDialogOpened(false)
+        }}
+        style={{ width: '900px' }}
+      >
+        <DialogBody>
+          <FormGroup
+            helperText="You must fill all the fields"
+            label="Order Details"
+            labelFor="text-input"
+            // labelInfo="(required)"
+          >
+            <Select<TCustomer>
+              items={customers || []}
+              itemRenderer={renderCustomer}
+              noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+              onItemSelect={setSelectedCustomer}
+              itemPredicate={filterСustomer}
+            >
+              <Button
+                alignText="left"
+                fill
+                icon="film"
+                rightIcon="caret-down"
+                text={maybeRenderSelectedCustomer(selectedCustomer) ?? '(No selection)'}
+              />
+            </Select>
+            <VerticalSpacing />
+
+            <InputGroup
+              id="address"
+              placeholder="Placeholder text"
+              value={shippingAddress}
+              onChange={(e) => {
+                setShippingAddress(e.currentTarget.value)
+              }}
+            />
+
+            <VerticalSpacing />
+            <Divider />
+            <VerticalSpacing />
+            <OrderItemRenderer
+              products={products || []}
+              orderItems={orderItems as any}
+              setOrderItems={setOrderItems}
+              onRemoveOrderItem={handleRemoveOrderItem}
+            />
+
+            <VerticalSpacing />
+
+            <Button
+              icon="plus"
+              onClick={() => {
+                setOrderItems([...orderItems, {} as any])
+              }}
+            >
+              Add item
+            </Button>
+          </FormGroup>
+        </DialogBody>
+        <DialogFooter>
+          <FlexContainer gap={5}>
+            <Button
+              onClick={() => {
+                setIsDialogOpened(false)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button intent={Intent.SUCCESS}>Create</Button>
+          </FlexContainer>
+        </DialogFooter>
+      </Dialog>
     </FlexContainer>
   )
+}
+
+type OrderItem = {
+  quantity: string
+  pricePerUnit: string
+  product: TProduct | null
+  unit: 'L' | 'T'
+}
+
+type OrderItemProps = {
+  products: TProduct[]
+  orderItems: OrderItem[]
+  setOrderItems: React.Dispatch<React.SetStateAction<OrderItem[]>>
+  onRemoveOrderItem: (value: number) => void
+}
+
+const OrderItemRenderer = ({
+  products,
+  orderItems,
+  setOrderItems,
+  onRemoveOrderItem,
+}: OrderItemProps) => {
+  const updateOrderItem = useCallback(
+    (index: number, update: Partial<OrderItem>) => {
+      setOrderItems((prev) => prev.map((item, i) => (i === index ? { ...item, ...update } : item)))
+    },
+    [setOrderItems]
+  )
+
+  return (
+    <div>
+      {orderItems.map((item, idx) => (
+        <>
+          <FlexContainer between centeredY gap={5}>
+            <InputGroup
+              id="quantity"
+              placeholder="Quantity"
+              leftIcon="truck"
+              value={item.quantity}
+              type="number"
+              onChange={(e) => {
+                updateOrderItem(idx, { quantity: e.currentTarget.value })
+              }}
+              style={{ width: '150px' }}
+              intent={item.quantity ? Intent.SUCCESS : Intent.DANGER}
+            />
+            <InputGroup
+              id="price"
+              leftIcon="dollar"
+              placeholder="Price per unit"
+              value={item.pricePerUnit}
+              type="number"
+              onChange={(e) => {
+                updateOrderItem(idx, { pricePerUnit: e.currentTarget.value })
+              }}
+              style={{ width: '150px' }}
+              intent={item.pricePerUnit ? Intent.SUCCESS : Intent.DANGER}
+            />
+            <Select<TProduct>
+              items={products || []}
+              itemRenderer={(product, { handleClick, handleFocus, modifiers, query }) => {
+                if (!modifiers.matchesPredicate) {
+                  return null
+                }
+                return (
+                  <MenuItem
+                    active={modifiers.active}
+                    disabled={modifiers.disabled}
+                    key={product.id}
+                    onClick={handleClick}
+                    onFocus={handleFocus}
+                    roleStructure="listoption"
+                    text={`${product.name}`}
+                  />
+                )
+              }}
+              onItemSelect={(item) => {
+                updateOrderItem(idx, { product: item })
+              }}
+              filterable={false}
+            >
+              <Button
+                alignText="left"
+                fill
+                icon="fuel"
+                rightIcon="caret-down"
+                text={maybeRenderSelectedProduct(item.product) ?? 'Product'}
+                style={{ width: '120px' }}
+                intent={item.product ? Intent.SUCCESS : Intent.DANGER}
+                minimal
+              />
+            </Select>
+            <Select
+              items={['L', 'T']}
+              itemRenderer={(unit, { handleClick, handleFocus, modifiers, query }) => {
+                if (!modifiers.matchesPredicate) {
+                  return null
+                }
+                return (
+                  <MenuItem
+                    active={item.unit === unit}
+                    disabled={modifiers.disabled}
+                    key={unit}
+                    onClick={handleClick}
+                    onFocus={handleFocus}
+                    roleStructure="listoption"
+                    text={unit}
+                  />
+                )
+              }}
+              onItemSelect={(item) => {
+                updateOrderItem(idx, { unit: item as 'T' | 'L' })
+              }}
+              filterable={false}
+            >
+              <Button
+                alignText="left"
+                fill
+                icon="box"
+                rightIcon="caret-down"
+                text={item.unit ?? 'Units'}
+                style={{ width: '90px' }}
+                intent={item.unit ? Intent.SUCCESS : Intent.DANGER}
+                minimal
+              />
+            </Select>
+            <H5 style={{ color: Colors.GRAY3, marginBottom: 0, width: '200px' }}>
+              {item.quantity && item.pricePerUnit
+                ? `${(+item.quantity * +item.pricePerUnit).toFixed(3)} UAH`
+                : '0 UAH'}
+              {/* {(+item.quantity * +item.pricePerUnit).toFixed(3)}UAH */}
+            </H5>
+            <Button
+              minimal
+              icon="cross"
+              intent={Intent.DANGER}
+              onClick={() => onRemoveOrderItem(idx)}
+              style={{ width: '20px' }}
+            />
+          </FlexContainer>
+          <VerticalSpacing size="xsmall" />
+        </>
+      ))}
+    </div>
+  )
+}
+
+function maybeRenderSelectedCustomer(selectedCustomer: TCustomer | null) {
+  return selectedCustomer ? `${selectedCustomer.name}` : undefined
+}
+
+function maybeRenderSelectedProduct(selectedProduct: TProduct | null) {
+  return selectedProduct ? `${selectedProduct.name}` : undefined
 }

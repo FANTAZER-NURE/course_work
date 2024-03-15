@@ -9,6 +9,7 @@ import usersRouter from './routes/usersRoute'
 import {errorMiddleware} from './middlewares/errorMiddleware'
 import cookieParser from 'cookie-parser'
 import customersRouter from './routes/customersRoute'
+import productsRouter from './routes/productsRoute'
 
 const prisma = new PrismaClient()
 const app: Application = express()
@@ -37,6 +38,7 @@ app.use(orderRouter)
 app.use(authRouter)
 app.use(usersRouter)
 app.use(customersRouter)
+app.use(productsRouter)
 app.use(errorMiddleware)
 
 //Start server
