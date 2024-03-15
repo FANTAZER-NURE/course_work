@@ -19,7 +19,7 @@ export interface GET {
   '/refresh': {
     params: never
     result: { token: string; user: any }
-  }
+  },
   '/users': {
     params: never
     result: TUser[]

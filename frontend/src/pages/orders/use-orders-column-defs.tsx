@@ -10,7 +10,7 @@ export type OrderRowType = TOrder & {
 
 export const COLUMN_KEYS: Array<keyof OrderRowType> = ['id', 'createdAt']
 
-export function useColumnDefs(managers: TUser[]) {
+export function useOrdersColumnDefs(managers: TUser[]) {
   const columns = useMemo<AccessorKeyColumnDef<OrderRowType, any>[]>(() => {
     return [
       {

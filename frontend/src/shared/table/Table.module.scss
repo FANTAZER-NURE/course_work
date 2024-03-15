@@ -78,12 +78,14 @@ $table-hover-bg: #38465f;
   }
 
   .tr {
-    cursor: pointer;
+    // cursor: pointer;
     &:hover {
-      background-color: #dfe8fa;
+      // background-color: #dfe8fa;
+      background-color: rgba($gold4, 0.2);
 
       & > .tableCell {
-        background-color: #dfe8fa;
+        // background-color: #dfe8fa;
+        background-color: rgba($gold4, 0.2);
         > div {
           border-right-color: $table-border-color;
           border-bottom-color: $table-border-color;
@@ -93,18 +95,19 @@ $table-hover-bg: #38465f;
   }
 
   .tableCell {
-    text-align: right;
+    text-align: center;
     white-space: nowrap;
     padding: $cell-padding-y $cell-padding-x;
     border: 1px solid $table-border-color;
-    // border-right-color: #fff;
-    // border-bottom-color: #fff;
+    transition: all 0.1s linear;
+  }
 
-    // > div {
-    //   padding: $cell-padding-y $cell-padding-x;
-    //   border: 1px solid $table-border-color;
-    //   border-right-color: #fff;
-    //   border-bottom-color: #fff;
-    // }
+  .redirectCell {
+    cursor: pointer;
+
+    &:hover {
+      color: $cerulean1;
+      text-decoration: underline;
+    }
   }
 }

@@ -10,3 +10,12 @@ a {
     outline: none;
   }
 }
+
+button {
+  &:focus {
+    outline: none !important;
+  }
+  &:active {
+    outline: none !important;
+  }
+}

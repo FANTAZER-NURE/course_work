@@ -1,28 +1,29 @@
 import React, { useContext } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { Button, Navbar, Alignment, H3, Tag, Intent } from '@blueprintjs/core'
+import { Button, Navbar, Alignment, H3, Tag, Intent, H5 } from '@blueprintjs/core'
 import { AuthContext } from 'shared/components/auth/AuthContext'
 import { Avatar } from './Avatar'
 import { FlexContainer } from './FlexContainer'
 import classNames from 'classnames'
 import styles from './Header.module.scss'
+import { ROLE_INTENTS_MAP } from 'constants/role-intent'
 
 export const Header = () => {
   const { user, logout } = useContext(AuthContext)
 
   return (
     <Navbar>
-      <Navbar.Group align={Alignment.LEFT}>
-        <Navbar.Heading>
-          <FlexContainer centered gap={5}>
-            <Link to={`../user/${user?.id}`}>
+      <Navbar.Group align={Alignment.LEFT} style={{ width: '80%' }}>
+        <Navbar.Heading style={{ width: '30%' }}>
+          <Link to={`../user/${user?.id}`}>
+            <FlexContainer centered gap={5}>
               <Avatar url="" rounded width={30} height={30} />
-            </Link>
-            <H3 style={{ marginBottom: 0 }}>{user?.name}</H3>
-            <Tag minimal intent={Intent.PRIMARY}>
-              {user?.role}
-            </Tag>
-          </FlexContainer>
+              <H5 style={{ marginBottom: 0 }}>{user?.name}</H5>
+              <Tag minimal intent={ROLE_INTENTS_MAP[user!.role]}>
+                {user?.role}
+              </Tag>
+            </FlexContainer>
+          </Link>
         </Navbar.Heading>
         <Navbar.Divider />
         <FlexContainer between centeredY style={{ width: '100%' }} gap={10}>
@@ -32,14 +33,29 @@ export const Header = () => {
             }
             to="/orders"
           >
-            Orders
+            <Button className={styles.button} minimal icon="numbered-list" text="Orders" />
           </NavLink>
-          <Link to="/users" className="bp3-button bp3-minimal">
-            Users
-          </Link>
-          <Link to="/analytics" className="bp3-button bp3-minimal">
-            Analytics
-          </Link>
+          <NavLink
+            className={({ isActive }) =>
+              classNames('header__link uppercase', { [styles.active]: isActive })
+            }
+            to="/users"
+          >
+            <Button
+              className={styles.button}
+              minimal
+              icon="user"
+              text={user?.role !== 'admin' ? 'Managers' : 'Users'}
+            />
+          </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              classNames('header__link uppercase', { [styles.active]: isActive })
+            }
+            to="/analytics"
+          >
+            <Button className={styles.button} minimal icon="series-search" text="Analytics" />
+          </NavLink>
         </FlexContainer>
       </Navbar.Group>
 

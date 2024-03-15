@@ -1,0 +1,13 @@
+.wrapper {
+  // @apply bg-red-400;
+  padding: 0.5rem;
+  height: calc(100vh - 50px);
+}
+
+.tableWrapper {
+  width: fit-content;
+  max-height: 90vh;
+  position: relative;
+  height: 100%;
+  overflow: auto;
+}

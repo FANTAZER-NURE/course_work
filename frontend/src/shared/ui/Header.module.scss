@@ -1,3 +1,16 @@
 .active {
-  color: red
+  & > button {
+    background: rgba(143, 153, 168, 0.3) !important;
+    box-shadow: none !important;
+    color: #1c2127 !important;
+  }
+}
+
+.button {
+  &:focus {
+    outline: none;
+  }
+  &:active {
+    outline: none;
+  }
 }

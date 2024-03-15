@@ -1,0 +1,11 @@
+@import '~@blueprintjs/colors/src/colors';
+
+.orderLink {
+  cursor: pointer;
+  color: #000;
+
+  &:hover {
+    color: $cerulean1;
+    transform: scale(1.1);
+  }
+}

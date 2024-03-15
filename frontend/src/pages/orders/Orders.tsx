@@ -3,14 +3,14 @@ import styles from './Orders.module.scss'
 import { H2 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
 import { useCallback, useContext, useMemo } from 'react'
-import { OrderRowType, useColumnDefs } from './use-column-defs'
+import { OrderRowType, useOrdersColumnDefs } from './use-orders-column-defs'
 import { TOrder } from '../../../../backend/src/types/order'
-import { makeOrderRow } from './utils/makeOrderRow'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useNavigate } from 'react-router'
 import { getApi } from 'api/httpClient'
 import { TUser } from '../../../../backend/src/types/user'
 import { AuthContext } from 'shared/components/auth/AuthContext'
+import { makeOrderRow } from 'utils/makeOrderRow'
 
 const MOCK_ORDERS = [
   {
@@ -1414,7 +1414,7 @@ export const Orders: React.FC<Props> = () => {
     return users?.filter((user) => user.role === 'manager')
   }, [users])
 
-  const { columns } = useColumnDefs(managers || [])
+  const { columns } = useOrdersColumnDefs(managers || [])
 
   const navigate = useNavigate()
 
@@ -1451,6 +1451,7 @@ export const Orders: React.FC<Props> = () => {
           theme="light"
           isLoading={isFetchingOrders}
           redirectToNewPage={redirectToNewPage}
+          redirectColumns={['id']}
         />
       </FlexContainer>
     </FlexContainer>

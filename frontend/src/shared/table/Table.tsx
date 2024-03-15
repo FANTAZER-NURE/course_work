@@ -58,6 +58,7 @@ interface SCTableProps<T> {
   isLoading: boolean
   theme: 'dark' | 'light'
   redirectToNewPage: (value: string) => void
+  redirectColumns: string[]
 }
 
 export function Table<T extends { id: string }>({
@@ -66,6 +67,7 @@ export function Table<T extends { id: string }>({
   isLoading,
   theme,
   redirectToNewPage,
+  redirectColumns,
 }: SCTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'position', desc: false }])
   const [expanded, setExpanded] = useState<ExpandedState>(true)
@@ -164,23 +166,24 @@ export function Table<T extends { id: string }>({
         <tbody className={styles.tbody}>
           {table.getRowModel().rows.map((row) => {
             return (
-              <tr
-                key={row.id}
-                className={styles.tr}
-                onClick={() => {
-                  redirectToNewPage(row.original.id)
-                }}
-              >
+              <tr key={row.id} className={styles.tr}>
                 {row.getVisibleCells().map((cell, i) => {
                   return (
                     <td
-                      className={classNames(styles.tableCell, {})}
+                      className={classNames(styles.tableCell, {
+                        [styles.redirectCell]: redirectColumns.includes(cell.column.id),
+                      })}
                       key={cell.id}
                       style={{
                         width: getMetaFromColumn(cell.column).width,
                       }}
+                      onClick={() => {
+                        if (redirectColumns.includes(cell.column.id)) {
+                          redirectToNewPage(row.original.id)
+                        }
+                      }}
                     >
-                      <div style={{ width: getMetaFromColumn(cell.column).width}}>
+                      <div style={{ width: getMetaFromColumn(cell.column).width }}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </div>
                     </td>
