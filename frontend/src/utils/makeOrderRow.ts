@@ -4,8 +4,8 @@ import { TOrder } from '../../../backend/src/types/order'
 export function makeOrderRow(order: TOrder): OrderRowType {
   let orderPrice = 0
 
-  Object.keys(order.productDetails).forEach((key) => {
-    orderPrice += order.productDetails[key].quantity * order.productDetails[key].pricePerUnit
+  order.productDetails.forEach((item) => {
+    orderPrice += item.quantity * item.pricePerUnit
   })
 
   const row = { ...order, orderPrice }

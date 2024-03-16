@@ -77,10 +77,9 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
           const items = row.original.productDetails
           return (
             <div style={{ height: 'fit-content' }}>
-              {Object.keys(items).map((key) => {
-                const item = items[key]
+              {items.map((item) => {
                 return (
-                  <div key={key}>
+                  <div key={item.id}>
                     {item.product.name}: {item.pricePerUnit * item.quantity}UAH ({item.quantity}
                     {item.unit})
                   </div>
@@ -99,8 +98,8 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
 
           let price = 0
 
-          Object.keys(items).forEach((key) => {
-            price += items[key].quantity * items[key].pricePerUnit
+          items.forEach((item) => {
+            price += item.quantity * item.pricePerUnit
           })
 
           return price.toFixed(3)
@@ -112,12 +111,12 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
           let priceA = 0
           let priceB = 0
 
-          Object.keys(itemsA).forEach((key) => {
-            priceA += itemsA[key].quantity * itemsA[key].pricePerUnit
+          itemsA.forEach((item) => {
+            priceA += item.quantity * item.pricePerUnit
           })
 
-          Object.keys(itemsB).forEach((key) => {
-            priceB += itemsB[key].quantity * itemsB[key].pricePerUnit
+          itemsB.forEach((item) => {
+            priceB += item.quantity * item.pricePerUnit
           })
 
           return priceB < priceA ? 1 : priceA > priceB ? -1 : 0

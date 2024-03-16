@@ -10,17 +10,13 @@ export type TOrder = {
   updatedAt: Date
   shippingAddress: string
   orderPrice: number
-  productDetails: {
-    [key: string]: ProductDetails
-  }
+  productDetails: ProductDetails[]
 }
 
-type ProductDetails = {
+export type ProductDetails = {
   id: string
-  productId: string
   quantity: number
   pricePerUnit: number
-  name: string
   unit: 'T' | 'L'
   product: TProduct
 }

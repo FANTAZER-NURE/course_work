@@ -1,9 +1,8 @@
 // import { Order } from '@backend/types/order.ts'
-import { TOrder } from '../../../backend/src/types/order'
+import { ProductDetails, TOrder } from '../../../backend/src/types/order'
 import { TUser } from '../../../backend/src/types/user'
 import { TCustomer } from '../../../backend/src/types/customer'
 import { TProduct } from '../../../backend/src/types/product'
-import { OrderItem } from 'pages/orders/Orders'
 
 export interface GET {
   '/orders': {
@@ -58,17 +57,22 @@ export interface POST {
     result: any
   }
   '/orders': {
-    params: { customerId: string; shippingAddress: string; items: OrderItem[]; managerId: number }
+    params: {
+      customerId: string
+      shippingAddress: string
+      items: ProductDetails[]
+      managerId: number
+    }
     result: any
   }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PUT {
-  '/api/contactgroups/:id': {
+  '/orders/:id': {
     // params: Models.ContactGroup
     // result: Models.ContactGroup
-    params: any
+    params: Partial<Omit<TOrder, 'id'>>
     result: any
   }
 }

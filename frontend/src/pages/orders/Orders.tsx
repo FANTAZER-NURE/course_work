@@ -30,6 +30,7 @@ import { MenuItem } from '@blueprintjs/core'
 import { TCustomer } from '../../../../backend/src/types/customer'
 import { ItemPredicate, ItemRenderer, Select } from '@blueprintjs/select'
 import { usePageError } from 'hooks/use-page-error'
+import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 
 type Props = {}
 
@@ -37,7 +38,7 @@ export const Orders: React.FC<Props> = () => {
   const [isDialogOpened, setIsDialogOpened] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<TCustomer | null>(null)
   const [shippingAddress, setShippingAddress] = useState('')
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([])
+  const [orderItems, setOrderItems] = useState<ProductDetails[]>([])
 
   const queryClient = useQueryClient()
 
@@ -336,28 +337,23 @@ export const Orders: React.FC<Props> = () => {
   )
 }
 
-export type OrderItem = {
-  quantity: string
-  pricePerUnit: string
-  product: TProduct | null
-  unit: 'L' | 'T'
-}
-
 type OrderItemProps = {
   products: TProduct[]
-  orderItems: OrderItem[]
-  setOrderItems: React.Dispatch<React.SetStateAction<OrderItem[]>>
+  orderItems: ProductDetails[]
+  setOrderItems: React.Dispatch<React.SetStateAction<ProductDetails[]>>
   onRemoveOrderItem: (value: number) => void
+  order?: TOrder
 }
 
-const OrderItemRenderer = ({
+export const OrderItemRenderer = ({
   products,
   orderItems,
   setOrderItems,
   onRemoveOrderItem,
+  order,
 }: OrderItemProps) => {
   const updateOrderItem = useCallback(
-    (index: number, update: Partial<OrderItem>) => {
+    (index: number, update: Partial<ProductDetails>) => {
       setOrderItems((prev) => prev.map((item, i) => (i === index ? { ...item, ...update } : item)))
     },
     [setOrderItems]
@@ -372,25 +368,41 @@ const OrderItemRenderer = ({
               id="quantity"
               placeholder="Quantity"
               leftIcon="truck"
-              value={item.quantity}
+              value={item.quantity.toString()}
               type="number"
               onChange={(e) => {
-                updateOrderItem(idx, { quantity: e.currentTarget.value })
+                updateOrderItem(idx, { quantity: Number(e.currentTarget.value) })
               }}
               style={{ width: '150px' }}
-              intent={item.quantity ? Intent.SUCCESS : Intent.DANGER}
+              intent={
+                order
+                  ? order.productDetails[idx].quantity !== orderItems[idx].quantity
+                    ? Intent.WARNING
+                    : Intent.NONE
+                  : item.quantity
+                  ? Intent.SUCCESS
+                  : Intent.DANGER
+              }
             />
             <InputGroup
               id="price"
               leftIcon="dollar"
               placeholder="Price per unit"
-              value={item.pricePerUnit}
+              value={item.pricePerUnit.toString()}
               type="number"
               onChange={(e) => {
-                updateOrderItem(idx, { pricePerUnit: e.currentTarget.value })
+                updateOrderItem(idx, { pricePerUnit: Number(e.currentTarget.value) })
               }}
               style={{ width: '150px' }}
-              intent={item.pricePerUnit ? Intent.SUCCESS : Intent.DANGER}
+              intent={
+                order
+                  ? order.productDetails[idx].pricePerUnit !== orderItems[idx].pricePerUnit
+                    ? Intent.WARNING
+                    : Intent.NONE
+                  : item.quantity
+                  ? Intent.SUCCESS
+                  : Intent.DANGER
+              }
             />
             <Select<TProduct>
               items={products || []}
@@ -422,7 +434,15 @@ const OrderItemRenderer = ({
                 rightIcon="caret-down"
                 text={maybeRenderSelectedProduct(item.product) ?? 'Product'}
                 style={{ width: '120px' }}
-                intent={item.product ? Intent.SUCCESS : Intent.DANGER}
+                intent={
+                  order
+                    ? order.productDetails[idx].product.id !== orderItems[idx].product.id
+                      ? Intent.WARNING
+                      : Intent.NONE
+                    : item.quantity
+                    ? Intent.SUCCESS
+                    : Intent.DANGER
+                }
                 minimal
               />
             </Select>
@@ -456,7 +476,15 @@ const OrderItemRenderer = ({
                 rightIcon="caret-down"
                 text={item.unit ?? 'Units'}
                 style={{ width: '90px' }}
-                intent={item.unit ? Intent.SUCCESS : Intent.DANGER}
+                intent={
+                  order
+                    ? order.productDetails[idx].unit !== orderItems[idx].unit
+                      ? Intent.WARNING
+                      : Intent.NONE
+                    : item.quantity
+                    ? Intent.SUCCESS
+                    : Intent.DANGER
+                }
                 minimal
               />
             </Select>
@@ -464,7 +492,6 @@ const OrderItemRenderer = ({
               {item.quantity && item.pricePerUnit
                 ? `${(+item.quantity * +item.pricePerUnit).toFixed(3)} UAH`
                 : '0 UAH'}
-              {/* {(+item.quantity * +item.pricePerUnit).toFixed(3)}UAH */}
             </H5>
             <Button
               minimal

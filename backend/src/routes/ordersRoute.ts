@@ -9,5 +9,6 @@ orderRouter.get('/orders', authMiddleware, catchError(orderController.getAll))
 orderRouter.get('/orders/:id', authMiddleware, catchError(orderController.getOne))
 orderRouter.post('/orders/', authMiddleware, catchError(orderController.createOrder))
 orderRouter.delete('/orders/:id', authMiddleware, catchError(orderController.deleteOrder))
+orderRouter.put('/orders/:id', authMiddleware, catchError(orderController.updateOrder))
 
 export default orderRouter

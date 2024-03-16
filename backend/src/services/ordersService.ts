@@ -1,6 +1,7 @@
-import {Customer, PrismaClient} from '@prisma/client'
+import {Customer, Order, PrismaClient} from '@prisma/client'
 import {ApiError} from '../exceptions/ApiError'
 import {TProduct} from '../types/product'
+import {TOrder} from '../types/order'
 
 const prisma = new PrismaClient()
 
@@ -41,18 +42,18 @@ const createOrder = async (
     ApiError.BadRequest('No such customer')
   }
 
-  const productDetails: Record<
-    string,
-    {
-      quantity: string
-      pricePerUnit: string
-      product: TProduct | null
-      unit: 'L' | 'T'
-    }
-  > = {}
-  items.map((item, i) => {
-    productDetails[i + 1] = item
-  })
+  // const productDetails: Record<
+  //   string,
+  //   {
+  //     quantity: string
+  //     pricePerUnit: string
+  //     product: TProduct | null
+  //     unit: 'L' | 'T'
+  //   }
+  // > = {}
+  // items.map((item, i) => {
+  //   productDetails[i + 1] = item
+  // })
 
   const order = prisma.order.create({
     data: {
@@ -60,7 +61,7 @@ const createOrder = async (
       shippingAddress: shippingAddress,
       managerId,
       status: 'created',
-      productDetails,
+      productDetails: items,
     },
   })
 
@@ -89,9 +90,23 @@ const deleteOrder = async (id: number) => {
   return order
 }
 
+const updateOrder = async (id: number, updatedOrderData: Partial<Omit<TOrder, 'id'>>) => {
+  const updatedOrder = await prisma.order.update({
+    where: {id},
+    data: updatedOrderData,
+  })
+
+  if (!updatedOrder) {
+    ApiError.BadRequest('No such order')
+  }
+
+  return updatedOrder
+}
+
 export const orderService = {
   getOrders,
   getOrder,
   createOrder,
   deleteOrder,
+  updateOrder,
 }

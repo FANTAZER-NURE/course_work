@@ -25,11 +25,18 @@ const createOrder = async (req: any, res: any) => {
 const deleteOrder = async (req: any, res: any) => {
   const {id} = req.params
 
-  console.log('here', id)
-
   const order = await orderService.deleteOrder(+id)
 
   res.send(order)
+}
+
+const updateOrder = async (req: any, res: any) => {
+  const {id} = req.params
+  const updatedOrderData = req.body
+
+  const updatedOrder = await orderService.updateOrder(+id, updatedOrderData)
+
+  res.json(updatedOrder)
 }
 
 export const orderController = {
@@ -37,4 +44,5 @@ export const orderController = {
   getOne,
   createOrder,
   deleteOrder,
+  updateOrder,
 }
