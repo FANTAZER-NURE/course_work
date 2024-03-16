@@ -1,0 +1,19 @@
+.wrapper {
+  padding: 0.5em 1em;
+}
+
+.orderDetailsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  th {
+    font-weight: bold;
+  }
+}
