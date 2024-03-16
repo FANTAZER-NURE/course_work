@@ -2,23 +2,30 @@ import {
   Breadcrumb,
   BreadcrumbProps,
   Breadcrumbs,
+  Button,
   H2,
   H3,
   H4,
   Icon,
+  Intent,
   Spinner,
 } from '@blueprintjs/core'
-import { getApi } from 'api/httpClient'
-import { useQuery } from 'react-query'
-import { Link, useParams } from 'react-router-dom'
+import { deleteApi, getApi } from 'api/httpClient'
+import { useQuery, useQueryClient } from 'react-query'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import styles from './OrderPage.module.scss'
-import { useMemo } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
+import { FlexContainer } from 'shared/ui/FlexContainer'
+import { AuthContext } from 'shared/components/auth/AuthContext'
 
 interface OrderPageProps {}
 
 export const OrderPage: React.FC<OrderPageProps> = () => {
   const { id } = useParams()
+  const { user, users } = useContext(AuthContext)
+
+  const queryClient = useQueryClient()
 
   const {
     isLoading,
@@ -35,8 +42,8 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
     }
   )
 
-  const { isLoading: isLoadingUser, data: user } = useQuery(
-    ['user', id],
+  const { isLoading: isLoadingUser, data: manager } = useQuery(
+    ['manager', id],
     async () => {
       return await getApi(`/users/${order?.managerId}` as '/users/:id')
     },
@@ -91,11 +98,31 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
     return price
   }, [order])
 
+  const navigate = useNavigate()
+
+  const [isOrderDeleting, setIsOrderDeleting] = useState(false)
+
+  const handleDeleteOrder = useCallback(async () => {
+    setIsOrderDeleting(true)
+
+    try {
+      const res = await deleteApi(`/orders/${id}` as '/orders/:id')
+      queryClient.invalidateQueries(['orders', users])
+
+      console.log('res', res)
+    } catch (error) {
+      console.log(error)
+    }
+
+    setIsOrderDeleting(false)
+    navigate('../orders')
+  }, [id, navigate, queryClient, users])
+
   if (isLoading || isLoadingUser || isLoadingCustomer) {
     return <Spinner />
   }
 
-  if (error || !order || !user) {
+  if (error || !order || !manager) {
     return <div>Error fetching order</div>
   }
 
@@ -111,12 +138,28 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
     <div className={styles.wrapper}>
       <Breadcrumbs currentBreadcrumbRenderer={renderCurrentBreadcrumb} items={BREADCRUMBS} />
       <H2>Order #{order.id}</H2>
+      {user?.role !== 'director' ? (
+        <FlexContainer gap={5}>
+          <Button intent={Intent.WARNING} icon="edit">
+            Edit
+          </Button>
+          <Button
+            loading={isOrderDeleting}
+            intent={Intent.DANGER}
+            icon="cross"
+            onClick={handleDeleteOrder}
+          >
+            Delete
+          </Button>
+        </FlexContainer>
+      ) : null}
+
       <H3>
         <b>Customer ID:</b> {customer?.name}
       </H3>
-      <Link to={`../../users/${user.id}`}>
+      <Link to={`../../users/${manager.id}`}>
         <H3 style={{ color: '#4d5fc0' }}>
-          <b>Manager ID:</b> {user.name}
+          <b>Manager ID:</b> {manager.name}
         </H3>
       </Link>
       <H3>

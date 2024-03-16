@@ -10,11 +10,7 @@ const getAll = async (req: any, res: any) => {
 const getById = async (req: any, res: any) => {
   const {id} = req.params
 
-  console.log('HERE', id)
-
   const user = await usersService.findById(+id)
-
-  console.log('user', user)
 
   if (!user) {
     ApiError.BadRequest('No such user')

@@ -75,8 +75,8 @@ export interface PUT {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DELETE {
-  '/api/contactgroups/:id': {
+  '/orders/:id': {
     params: never
-    result: never
+    result: TOrder
   }
 }

@@ -17,15 +17,24 @@ const getOne = async (req: any, res: any) => {
 const createOrder = async (req: any, res: any) => {
   const {customerId, shippingAddress, items, managerId} = req.body
 
-  console.log(req.body)
-
   const orders = await orderService.createOrder(customerId, shippingAddress, items, managerId)
 
   res.send(orders)
+}
+
+const deleteOrder = async (req: any, res: any) => {
+  const {id} = req.params
+
+  console.log('here', id)
+
+  const order = await orderService.deleteOrder(+id)
+
+  res.send(order)
 }
 
 export const orderController = {
   getAll,
   getOne,
   createOrder,
+  deleteOrder,
 }

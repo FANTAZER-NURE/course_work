@@ -67,8 +67,31 @@ const createOrder = async (
   return order
 }
 
+const deleteOrder = async (id: number) => {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: id,
+    },
+  })
+
+  console.log('HERE', order)
+
+  if (!order) {
+    ApiError.BadRequest('No such order')
+  }
+
+  await prisma.order.delete({
+    where: {
+      id: id,
+    },
+  })
+
+  return order
+}
+
 export const orderService = {
   getOrders,
   getOrder,
   createOrder,
+  deleteOrder,
 }

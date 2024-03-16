@@ -2,7 +2,6 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import React, { useContext } from 'react'
 import { Spinner } from '@blueprintjs/core'
 import { AuthContext } from './AuthContext'
-import { Loader } from '../../../app/App'
 import { Header } from 'shared/ui/Header'
 
 export const RequireAuth = () => {
@@ -13,7 +12,7 @@ export const RequireAuth = () => {
   if (!isChecked) {
     return (
       <>
-        <Loader />
+        <Spinner />
       </>
     )
   }

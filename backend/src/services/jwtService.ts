@@ -2,7 +2,7 @@ import { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 
 function sign(user: Partial<User>) {
-  return jwt.sign(user, process.env.JWT_KEY || '', {expiresIn: '1m'})
+  return jwt.sign(user, process.env.JWT_KEY || '', {expiresIn: '10m'})
 }
 
 function verify(token: string) {
