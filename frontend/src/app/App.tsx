@@ -35,12 +35,12 @@ const App = () => {
         <Route path="*" element={<div>Page not found</div>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<LoginPage />} />
-        <Route path="orders/:id" element={<OrderPage />} />
         <Route path="register" element={<Register />} />
         <Route path="activate/:activationToken" element={<AccountActivationPage />} />
         <Route path="/" element={<RequireAuth />}>
           <Route path="users" element={<UsersPage />} />
           <Route path="orders/" element={<Orders />} />
+          <Route path="orders/:id" element={<OrderPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

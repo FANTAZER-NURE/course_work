@@ -167,6 +167,9 @@ export const Orders: React.FC<Props> = () => {
 
     setIsOrderPosting(false)
     setIsDialogOpened(false)
+    setShippingAddress('')
+    setOrderItems([])
+    setSelectedCustomer(null)
   }, [orderItems, queryClient, selectedCustomer, setError, shippingAddress, user, users])
 
   const filterCustomer: ItemPredicate<TCustomer> = (query, customer, _index, exactMatch) => {

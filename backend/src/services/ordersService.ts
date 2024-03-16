@@ -57,7 +57,7 @@ const createOrder = async (
   const order = prisma.order.create({
     data: {
       customerId: parseInt(customerId),
-      shippingAdress: shippingAddress,
+      shippingAddress: shippingAddress,
       managerId,
       status: 'created',
       productDetails,

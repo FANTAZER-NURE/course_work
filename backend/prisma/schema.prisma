@@ -17,7 +17,7 @@ model Order {
   status         String
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  shippingAdress String
+  shippingAddress String
   customer       Customer? @relation(fields: [customerId], references: [id])
   user        User?  @relation(fields: [managerId], references: [id])
   productDetails Json?

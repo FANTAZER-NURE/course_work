@@ -39,7 +39,7 @@ export const AccountActivationPage = () => {
       ) : (
         <>
           <p className="notification is-success is-light">Your account is now active</p>
-          <Link to="orders/">Go back to the platform</Link>
+          <Link to="../orders/">Go back to the platform</Link>
         </>
       )}
     </FlexContainer>

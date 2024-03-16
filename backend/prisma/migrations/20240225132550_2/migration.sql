@@ -6,7 +6,7 @@
   - Added the required column `shippindAdress` to the `Customer` table without a default value. This is not possible if the table is not empty.
   - Added the required column `managerId` to the `Order` table without a default value. This is not possible if the table is not empty.
   - Added the required column `orderPrice` to the `Order` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `shippingAdress` to the `Order` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `shippingAddress` to the `Order` table without a default value. This is not possible if the table is not empty.
 
 */
 -- AlterTable
@@ -17,7 +17,7 @@ ADD COLUMN     "shippindAdress" TEXT NOT NULL;
 -- AlterTable
 ALTER TABLE "Order" ADD COLUMN     "managerId" INTEGER NOT NULL,
 ADD COLUMN     "orderPrice" DECIMAL(65,30) NOT NULL,
-ADD COLUMN     "shippingAdress" TEXT NOT NULL;
+ADD COLUMN     "shippingAddress" TEXT NOT NULL;
 
 -- CreateTable
 CREATE TABLE "Manager" (

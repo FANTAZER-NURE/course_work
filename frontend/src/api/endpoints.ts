@@ -26,9 +26,17 @@ export interface GET {
     params: never
     result: TUser[]
   }
+  '/users/:id': {
+    params: never
+    result: TUser
+  }
   '/customers': {
     params: never
     result: TCustomer[]
+  }
+  '/customers/:id': {
+    params: never
+    result: TCustomer
   }
   '/products': {
     params: never
@@ -50,7 +58,7 @@ export interface POST {
     result: any
   }
   '/orders': {
-    params: { customerId: string; shippingAddress: string; items: OrderItem[], managerId: number }
+    params: { customerId: string; shippingAddress: string; items: OrderItem[]; managerId: number }
     result: any
   }
 }

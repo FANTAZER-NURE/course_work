@@ -8,14 +8,15 @@ const getCustomers = async () => {
   return customers
 }
 
-// const findByEmail = async (email: string) => {
-//   const customer = await prisma.customer.findUnique({
-//     where: {email},
-//   })
+const findById = async (id: number) => {
+  const customer = await prisma.customer.findUnique({
+    where: {id},
+  })
 
-//   return customer
-// }
+  return customer
+}
 
 export const customersService = {
   getCustomers,
+  findById,
 }

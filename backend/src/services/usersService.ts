@@ -20,8 +20,19 @@ const findByEmail = async (email: string) => {
   return user
 }
 
+const findById = async (id: number) => {
+  const user = await prisma.user.findUnique({
+    where: {id},
+  })
+
+  console.log(user)
+
+  return user
+}
+
 export const usersService = {
   getUsers,
   normalize,
   findByEmail,
+  findById,
 }

@@ -1,4 +1,4 @@
-import { AccessorKeyColumnDef } from '@tanstack/react-table'
+import { AccessorKeyColumnDef, Row } from '@tanstack/react-table'
 import { TOrder } from '../../../../backend/src/types/order'
 import { useMemo } from 'react'
 import { TUser } from '../../../../backend/src/types/user'
@@ -105,15 +105,31 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
 
           return price.toFixed(3)
         },
-        // sortingFn: () => {} // TODO!
+        sortingFn: (rowA: Row<OrderRowType>, rowB: Row<OrderRowType>) => {
+          const itemsA = rowA.original.productDetails
+          const itemsB = rowB.original.productDetails
+
+          let priceA = 0
+          let priceB = 0
+
+          Object.keys(itemsA).forEach((key) => {
+            priceA += itemsA[key].quantity * itemsA[key].pricePerUnit
+          })
+
+          Object.keys(itemsB).forEach((key) => {
+            priceB += itemsB[key].quantity * itemsB[key].pricePerUnit
+          })
+
+          return priceB < priceA ? 1 : priceA > priceB ? -1 : 0
+        },
       },
       {
         header: 'Shipping address',
-        accessorKey: 'shippingAdress',
+        accessorKey: 'shippingAddress',
         cell: (info) => info.getValue(),
       },
     ]
-  }, [managers])
+  }, [customers, managers])
 
   const allColumnKeys = useMemo(() => {
     return COLUMN_KEYS

@@ -88,7 +88,13 @@ export const UsersPage = () => {
       <h1 className="title">Users</h1>
 
       {user!.role === 'admin' ? (
-        <Button intent={Intent.PRIMARY} icon="new-person">
+        <Button
+          intent={Intent.PRIMARY}
+          icon="new-person"
+          onClick={() => {
+            navigate('../register')
+          }}
+        >
           Create User
         </Button>
       ) : null}
