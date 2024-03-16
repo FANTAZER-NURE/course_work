@@ -5,8 +5,6 @@ const prisma = new PrismaClient()
 const getCustomers = async () => {
   const customers = await prisma.customer.findMany()
 
-  console.log('----HERE-----', customers)
-
   return customers
 }
 

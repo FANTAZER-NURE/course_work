@@ -14,7 +14,18 @@ const getOne = async (req: any, res: any) => {
   res.send(orders)
 }
 
+const createOrder = async (req: any, res: any) => {
+  const {customerId, shippingAddress, items, managerId} = req.body
+
+  console.log(req.body)
+
+  const orders = await orderService.createOrder(customerId, shippingAddress, items, managerId)
+
+  res.send(orders)
+}
+
 export const orderController = {
   getAll,
   getOne,
+  createOrder,
 }

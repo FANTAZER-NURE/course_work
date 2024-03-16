@@ -3,6 +3,7 @@ import { TOrder } from '../../../backend/src/types/order'
 import { TUser } from '../../../backend/src/types/user'
 import { TCustomer } from '../../../backend/src/types/customer'
 import { TProduct } from '../../../backend/src/types/product'
+import { OrderItem } from 'pages/orders/Orders'
 
 export interface GET {
   '/orders': {
@@ -20,7 +21,7 @@ export interface GET {
   '/refresh': {
     params: never
     result: { token: string; user: any }
-  },
+  }
   '/users': {
     params: never
     result: TUser[]
@@ -46,6 +47,10 @@ export interface POST {
   }
   '/logout': {
     params: never
+    result: any
+  }
+  '/orders': {
+    params: { customerId: string; shippingAddress: string; items: OrderItem[], managerId: number }
     result: any
   }
 }

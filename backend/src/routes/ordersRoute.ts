@@ -7,5 +7,7 @@ const orderRouter = Router()
 
 orderRouter.get('/orders', authMiddleware, catchError(orderController.getAll))
 orderRouter.get('/orders/:id', authMiddleware, catchError(orderController.getOne))
+orderRouter.post('/orders/', authMiddleware, catchError(orderController.createOrder))
+
 
 export default orderRouter

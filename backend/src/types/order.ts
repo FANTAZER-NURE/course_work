@@ -1,4 +1,5 @@
 import {Order} from '@prisma/client'
+import { TProduct } from './product'
 
 export type TOrder = {
   id: string
@@ -20,5 +21,6 @@ type ProductDetails = {
   quantity: number
   pricePerUnit: number
   name: string
-  units: "T" | 'L'
+  unit: "T" | 'L'
+  product: TProduct
 }

@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import styles from './Orders.module.scss'
 import {
   Button,
@@ -12,15 +12,16 @@ import {
   H5,
   InputGroup,
   Intent,
+  Label,
   Spinner,
+  Tooltip,
 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { OrderRowType, useOrdersColumnDefs } from './use-orders-column-defs'
-import { TOrder } from '../../../../backend/src/types/order'
+import { useOrdersColumnDefs } from './use-orders-column-defs'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useNavigate } from 'react-router'
-import { getApi } from 'api/httpClient'
+import { getApi, postApi } from 'api/httpClient'
 import { TProduct } from '../../../../backend/src/types/product'
 import { AuthContext } from 'shared/components/auth/AuthContext'
 import { makeOrderRow } from 'utils/makeOrderRow'
@@ -28,6 +29,7 @@ import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import { MenuItem } from '@blueprintjs/core'
 import { TCustomer } from '../../../../backend/src/types/customer'
 import { ItemPredicate, ItemRenderer, Select } from '@blueprintjs/select'
+import { usePageError } from 'hooks/use-page-error'
 
 type Props = {}
 
@@ -36,7 +38,10 @@ export const Orders: React.FC<Props> = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<TCustomer | null>(null)
   const [shippingAddress, setShippingAddress] = useState('')
   const [orderItems, setOrderItems] = useState<OrderItem[]>([])
-  console.log('🚀 ~ orderItems:', orderItems)
+
+  const queryClient = useQueryClient()
+
+  const [error, setError] = usePageError('')
 
   useEffect(() => {
     if (selectedCustomer && selectedCustomer.shippindAdress) {
@@ -83,7 +88,7 @@ export const Orders: React.FC<Props> = () => {
     return users?.filter((user) => user.role === 'manager')
   }, [users])
 
-  const { columns } = useOrdersColumnDefs(managers || [])
+  const { columns } = useOrdersColumnDefs(managers || [], customers || [])
 
   const navigate = useNavigate()
 
@@ -101,6 +106,29 @@ export const Orders: React.FC<Props> = () => {
     return rows
   }, [orders])
 
+  const isCreateOrderDisabled = useMemo(() => {
+    if (!orderItems.length) {
+      return true
+    }
+
+    if (!shippingAddress || !selectedCustomer) {
+      return true
+    }
+
+    for (const order of orderItems) {
+      if (
+        !('quantity' in order) ||
+        !('pricePerUnit' in order) ||
+        !('product' in order) ||
+        !('unit' in order)
+      ) {
+        return true
+      }
+    }
+
+    return false
+  }, [orderItems, selectedCustomer, shippingAddress])
+
   const redirectToNewPage = useCallback(
     (value: string) => {
       navigate(`/orders/${value}`)
@@ -116,7 +144,32 @@ export const Orders: React.FC<Props> = () => {
     setOrderItems((prev) => prev.filter((_, i) => i !== index))
   }, [])
 
-  const filterСustomer: ItemPredicate<TCustomer> = (query, customer, _index, exactMatch) => {
+  const [isOrderPosting, setIsOrderPosting] = useState(false)
+
+  const handleCreateOrderRequest = useCallback(async () => {
+    if (!selectedCustomer || !user) {
+      return
+    }
+
+    try {
+      setIsOrderPosting(true)
+      await postApi('/orders', {
+        customerId: selectedCustomer?.id,
+        shippingAddress: shippingAddress,
+        items: orderItems,
+        managerId: user.id,
+      })
+      queryClient.invalidateQueries(['orders', users])
+    } catch (error) {
+      console.log(error)
+      setError(`cannot create order. \n ${error}`)
+    }
+
+    setIsOrderPosting(false)
+    setIsDialogOpened(false)
+  }, [orderItems, queryClient, selectedCustomer, setError, shippingAddress, user, users])
+
+  const filterCustomer: ItemPredicate<TCustomer> = (query, customer, _index, exactMatch) => {
     const normalizedTitle = customer.name.toLowerCase()
     const normalizedQuery = query.toLowerCase()
 
@@ -127,26 +180,26 @@ export const Orders: React.FC<Props> = () => {
     }
   }
 
-  const renderCustomer: ItemRenderer<TCustomer> = (
-    customer,
-    { handleClick, handleFocus, modifiers, query }
-  ) => {
-    if (!modifiers.matchesPredicate) {
-      return null
-    }
-    return (
-      <MenuItem
-        active={modifiers.active}
-        disabled={modifiers.disabled}
-        key={customer.id}
-        label={customer.shippindAdress}
-        onClick={handleClick}
-        onFocus={handleFocus}
-        roleStructure="listoption"
-        text={`${customer.name}`}
-      />
-    )
-  }
+  const renderCustomer: ItemRenderer<TCustomer> = useCallback(
+    (customer, { handleClick, handleFocus, modifiers, query }) => {
+      if (!modifiers.matchesPredicate) {
+        return null
+      }
+      return (
+        <MenuItem
+          active={modifiers.active}
+          disabled={modifiers.disabled}
+          key={customer.id}
+          label={customer.shippindAdress}
+          onClick={handleClick}
+          onFocus={handleFocus}
+          roleStructure="listoption"
+          text={`${customer.name}`}
+        />
+      )
+    },
+    []
+  )
 
   if (isFetchingCustomers || isFetchingOrders || isFetchingProducts) {
     return <Spinner />
@@ -186,37 +239,39 @@ export const Orders: React.FC<Props> = () => {
         style={{ width: '900px' }}
       >
         <DialogBody>
-          <FormGroup
-            helperText="You must fill all the fields"
-            label="Order Details"
-            labelFor="text-input"
-            // labelInfo="(required)"
-          >
-            <Select<TCustomer>
-              items={customers || []}
-              itemRenderer={renderCustomer}
-              noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
-              onItemSelect={setSelectedCustomer}
-              itemPredicate={filterСustomer}
-            >
-              <Button
-                alignText="left"
-                fill
-                icon="film"
-                rightIcon="caret-down"
-                text={maybeRenderSelectedCustomer(selectedCustomer) ?? '(No selection)'}
-              />
-            </Select>
+          <FormGroup helperText="You must fill all the fields" labelFor="text-input">
+            <Label>
+              Customer
+              <Select<TCustomer>
+                items={customers || []}
+                itemRenderer={renderCustomer}
+                noResults={
+                  <MenuItem disabled={true} text="No results." roleStructure="listoption" />
+                }
+                onItemSelect={setSelectedCustomer}
+                itemPredicate={filterCustomer}
+              >
+                <Button
+                  alignText="left"
+                  fill
+                  icon="user"
+                  rightIcon="caret-down"
+                  text={maybeRenderSelectedCustomer(selectedCustomer) ?? '(No selection)'}
+                />
+              </Select>
+            </Label>
             <VerticalSpacing />
-
-            <InputGroup
-              id="address"
-              placeholder="Placeholder text"
-              value={shippingAddress}
-              onChange={(e) => {
-                setShippingAddress(e.currentTarget.value)
-              }}
-            />
+            <Label>
+              Shipping address
+              <InputGroup
+                id="address"
+                placeholder="Shipping address"
+                value={shippingAddress}
+                onChange={(e) => {
+                  setShippingAddress(e.currentTarget.value)
+                }}
+              />
+            </Label>
 
             <VerticalSpacing />
             <Divider />
@@ -249,15 +304,36 @@ export const Orders: React.FC<Props> = () => {
             >
               Cancel
             </Button>
-            <Button intent={Intent.SUCCESS}>Create</Button>
+            {isCreateOrderDisabled ? (
+              <Tooltip content="All fields must be filled">
+                <Button
+                  intent={Intent.SUCCESS}
+                  disabled={isCreateOrderDisabled}
+                  loading={isOrderPosting}
+                >
+                  Create
+                </Button>
+              </Tooltip>
+            ) : (
+              <Button
+                intent={Intent.SUCCESS}
+                disabled={isCreateOrderDisabled}
+                onClick={handleCreateOrderRequest}
+                loading={isOrderPosting}
+              >
+                Create
+              </Button>
+            )}
           </FlexContainer>
+          {error && error}
         </DialogFooter>
       </Dialog>
+      {error && error}
     </FlexContainer>
   )
 }
 
-type OrderItem = {
+export type OrderItem = {
   quantity: string
   pricePerUnit: string
   product: TProduct | null

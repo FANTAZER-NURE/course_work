@@ -3,6 +3,7 @@ import { TOrder } from '../../../../backend/src/types/order'
 import { useMemo } from 'react'
 import { TUser } from '../../../../backend/src/types/user'
 import React from 'react'
+import { TCustomer } from '../../../../backend/src/types/customer'
 
 export type OrderRowType = TOrder & {
   orderPrice: number
@@ -10,7 +11,7 @@ export type OrderRowType = TOrder & {
 
 export const COLUMN_KEYS: Array<keyof OrderRowType> = ['id', 'createdAt']
 
-export function useOrdersColumnDefs(managers: TUser[]) {
+export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
   const columns = useMemo<AccessorKeyColumnDef<OrderRowType, any>[]>(() => {
     return [
       {
@@ -57,7 +58,17 @@ export function useOrdersColumnDefs(managers: TUser[]) {
       {
         header: 'Customer',
         accessorKey: 'customerId',
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          const customerId = info.getValue()
+
+          const customer = customers?.find((iter) => iter.id === customerId)
+
+          if (!customer) {
+            return '-'
+          }
+
+          return customer.name
+        },
       },
       {
         header: 'Order',
@@ -70,8 +81,8 @@ export function useOrdersColumnDefs(managers: TUser[]) {
                 const item = items[key]
                 return (
                   <div key={key}>
-                    {item.name}: {item.pricePerUnit * item.quantity}UAH ({item.quantity}
-                    {item.units})
+                    {item.product.name}: {item.pricePerUnit * item.quantity}UAH ({item.quantity}
+                    {item.unit})
                   </div>
                 )
               })}
