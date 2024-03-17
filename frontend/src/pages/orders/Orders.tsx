@@ -368,7 +368,7 @@ export const OrderItemRenderer = ({
               id="quantity"
               placeholder="Quantity"
               leftIcon="truck"
-              value={item.quantity.toString()}
+              value={item.quantity ? item.quantity.toString() : '0'}
               type="number"
               onChange={(e) => {
                 updateOrderItem(idx, { quantity: Number(e.currentTarget.value) })
@@ -376,7 +376,9 @@ export const OrderItemRenderer = ({
               style={{ width: '150px' }}
               intent={
                 order
-                  ? order.productDetails[idx].quantity !== orderItems[idx].quantity
+                  ? item.quantity &&
+                    order.productDetails[idx] &&
+                    order.productDetails[idx].quantity !== orderItems[idx].quantity
                     ? Intent.WARNING
                     : Intent.NONE
                   : item.quantity
@@ -388,7 +390,7 @@ export const OrderItemRenderer = ({
               id="price"
               leftIcon="dollar"
               placeholder="Price per unit"
-              value={item.pricePerUnit.toString()}
+              value={item.pricePerUnit ? item.pricePerUnit.toString() : '0'}
               type="number"
               onChange={(e) => {
                 updateOrderItem(idx, { pricePerUnit: Number(e.currentTarget.value) })
@@ -396,7 +398,9 @@ export const OrderItemRenderer = ({
               style={{ width: '150px' }}
               intent={
                 order
-                  ? order.productDetails[idx].pricePerUnit !== orderItems[idx].pricePerUnit
+                  ? item.pricePerUnit &&
+                    order.productDetails[idx] &&
+                    order.productDetails[idx].pricePerUnit !== orderItems[idx].pricePerUnit
                     ? Intent.WARNING
                     : Intent.NONE
                   : item.quantity
@@ -432,11 +436,13 @@ export const OrderItemRenderer = ({
                 fill
                 icon="fuel"
                 rightIcon="caret-down"
-                text={maybeRenderSelectedProduct(item.product) ?? 'Product'}
+                text={maybeRenderSelectedProduct(item.product ?? undefined) ?? 'Product'}
                 style={{ width: '120px' }}
                 intent={
                   order
-                    ? order.productDetails[idx].product.id !== orderItems[idx].product.id
+                    ? item.product &&
+                      order.productDetails[idx] &&
+                      order.productDetails[idx].product.id !== orderItems[idx].product.id
                       ? Intent.WARNING
                       : Intent.NONE
                     : item.quantity
@@ -478,7 +484,9 @@ export const OrderItemRenderer = ({
                 style={{ width: '90px' }}
                 intent={
                   order
-                    ? order.productDetails[idx].unit !== orderItems[idx].unit
+                    ? item.unit &&
+                      order.productDetails[idx] &&
+                      order.productDetails[idx].unit !== orderItems[idx].unit
                       ? Intent.WARNING
                       : Intent.NONE
                     : item.quantity

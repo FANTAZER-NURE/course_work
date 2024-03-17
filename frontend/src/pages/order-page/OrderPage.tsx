@@ -69,6 +69,9 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
         setShippingAddress(res.shippingAddress)
         setOrderItems(res.productDetails)
         setSelectedStatus(res.status)
+        if (customer) {
+          setSelectedCustomer(customer)
+        }
       },
     }
   )
@@ -86,7 +89,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
   )
 
   const { isLoading: isLoadingCustomer, data: customer } = useQuery(
-    ['customer', id],
+    ['customer', id, order?.customerId],
     async () => {
       return await getApi(`/customers/${order?.customerId}` as '/customers/:id')
     },
@@ -132,8 +135,8 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
 
   const BREADCRUMBS: BreadcrumbProps[] = useMemo(
     () => [
-      { href: '/orders', icon: 'folder-close', text: 'orders' },
-      { href: `/orders/${id}`, icon: 'document', text: 'order' },
+      { href: '/orders', icon: 'folder-close', text: 'Orders' },
+      { href: `/orders/${id}`, icon: 'document', text: 'Order' },
     ],
     [id]
   )
@@ -203,8 +206,6 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
 
     return true
   }, [orderItems, selectedCustomer, shippingAddress])
-
-  console.log(isOrderCorrect)
 
   const handleDeleteOrder = useCallback(async () => {
     setIsOrderDeleting(true)
@@ -279,7 +280,6 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
     setIsDialogOpened(false)
     setShippingAddress('')
     setOrderItems([])
-    setSelectedCustomer(null)
   }, [id, orderItems, queryClient, selectedCustomer, selectedStatus, shippingAddress, user])
 
   const handleResetToDefault = useCallback(() => {
@@ -516,7 +516,12 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
             <Button
               icon="plus"
               onClick={() => {
-                setOrderItems([...orderItems, {} as any])
+                setOrderItems([...orderItems, {
+                  quantity: 0,
+                  pricePerUnit: 0,
+                  unit: 'T',
+                  product: products![0]
+                } as any])
               }}
             >
               Add item
