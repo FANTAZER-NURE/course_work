@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { TUser } from '../../../../backend/src/types/user'
 import React from 'react'
 import { TCustomer } from '../../../../backend/src/types/customer'
+import { Link } from 'react-router-dom'
 
 export type OrderRowType = TOrder & {
   orderPrice: number
@@ -52,7 +53,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
             return '-'
           }
 
-          return manager.name
+          return <Link to={`../users/${manager.id}`}>{manager.name}</Link>
         },
       },
       {
