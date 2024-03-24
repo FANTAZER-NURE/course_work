@@ -17,17 +17,22 @@ import {
   Label,
   MenuItem,
   Spinner,
+  Tab,
+  TabId,
+  Tabs,
   Tooltip,
 } from '@blueprintjs/core'
 import { useQuery, useQueryClient } from 'react-query'
 import { deleteApi, getApi, putApi } from 'api/httpClient'
 import { FlexContainer } from 'shared/ui/FlexContainer'
-import { Avatar } from 'shared/ui/Avatar'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { AuthContext } from 'shared/components/auth/AuthContext'
-import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import { Select } from '@blueprintjs/select'
 import { TUser } from '../../../../backend/src/types/user'
+import { Table, isAccessorColumn } from 'shared/table/Table'
+import { makeOrderRow } from 'utils/makeOrderRow'
+import { useOrdersColumnDefs } from 'pages/orders/use-orders-column-defs'
+import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 
 const ROLES_MAP = {
   admin: 'Адміністратор',
@@ -42,19 +47,17 @@ export const UserPage: React.FC<UserPageProps> = () => {
   const [isDialogOpened, setIsDialogOpened] = useState(false)
   const [isDeleteDialogOpened, setIsDeleteDialogOpened] = useState(false)
   const [isUserDeleting, setIsUserDeleting] = useState(false)
-  const { user: loggedUser } = useContext(AuthContext)
+  const { user: loggedUser, users } = useContext(AuthContext)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<TUser['role'] | null>(null)
-  const [isUserUpdating, setIsUserUpdating] = useState(false);
+  const [isUserUpdating, setIsUserUpdating] = useState(false)
+  const [selectedTabId, setSelectedTabId] = useState<TabId>('active')
 
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
-  const {
-    isLoading,
-    data: user,
-  } = useQuery(
+  const { isLoading, data: user } = useQuery(
     ['user', id],
     async () => {
       return await getApi(`/users/${id}` as '/users/:id')
@@ -69,6 +72,34 @@ export const UserPage: React.FC<UserPageProps> = () => {
       },
     }
   )
+
+  const { data: orders, isFetching: isFetchingOrders } = useQuery(
+    ['ordersOnUserPage', user],
+    async () => {
+      return await getApi(`/orders`)
+    },
+    {
+      staleTime: 60_000,
+      keepPreviousData: true,
+    }
+  )
+
+  const { data: customers, isFetching: isFetchingCustomers } = useQuery(
+    ['customers', users],
+    async () => {
+      return await getApi(`/customers`)
+    },
+    {
+      staleTime: 60_000,
+      keepPreviousData: true,
+    }
+  )
+
+  const managers = useMemo(() => {
+    return users?.filter((user) => user.role === 'manager')
+  }, [users])
+
+  const { columns } = useOrdersColumnDefs(managers || [], customers || [])
 
   const BREADCRUMBS: BreadcrumbProps[] = useMemo(
     () => [
@@ -93,6 +124,30 @@ export const UserPage: React.FC<UserPageProps> = () => {
 
     return true
   }, [email, name])
+
+  const rowsActive = useMemo(() => {
+    if (!orders) {
+      return []
+    }
+
+    const rows = orders.filter((iter) => iter.status !== 'done').map((order) => makeOrderRow(order))
+
+    return rows
+  }, [orders])
+
+  const rowsDone = useMemo(() => {
+    if (!orders) {
+      return []
+    }
+
+    const rows = orders.filter((iter) => iter.status === 'done').map((order) => makeOrderRow(order))
+
+    return rows
+  }, [orders])
+
+  const accessorColumns = useMemo(() => {
+    return columns.filter(isAccessorColumn)
+  }, [columns])
 
   const handleDeleteUser = useCallback(async () => {
     setIsUserDeleting(true)
@@ -129,7 +184,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
       await putApi(`/users/${id}` as '/users/:id', {
         name,
         email,
-        role
+        role,
       })
       queryClient.invalidateQueries(['user', id])
     } catch (error) {
@@ -138,10 +193,16 @@ export const UserPage: React.FC<UserPageProps> = () => {
 
     setIsUserUpdating(false)
     setIsDialogOpened(false)
-
   }, [email, id, name, queryClient, role, user])
 
-  if (isLoading) {
+  const redirectToNewPage = useCallback(
+    (value: string) => {
+      navigate(`/orders/${value}`)
+    },
+    [navigate]
+  )
+
+  if (isLoading || isFetchingCustomers || isFetchingOrders) {
     return <Spinner />
   }
 
@@ -181,6 +242,67 @@ export const UserPage: React.FC<UserPageProps> = () => {
 
       <H3>Role: {ROLES_MAP[user.role]}</H3>
       <H3>Email: {user.email}</H3>
+
+      <FlexContainer centered column>
+        <FlexContainer centeredX className={styles.tableWrapper}>
+          <Tabs
+            animate
+            onChange={(id) => {
+              setSelectedTabId(id)
+            }}
+            selectedTabId={selectedTabId}
+            className={styles.tabs}
+          >
+            <Tab
+              title="Active orders"
+              id="active"
+              tagContent={rowsActive.length}
+              tagProps={{ intent: Intent.NONE, round: true }}
+              className={styles.tabs}
+              panel={
+                <>
+                  <Table
+                    data={rowsActive}
+                    columns={accessorColumns}
+                    theme="light"
+                    isLoading={isFetchingOrders}
+                    redirectToNewPage={redirectToNewPage}
+                    redirectColumns={['id']}
+                  />
+                </>
+              }
+            ></Tab>
+            <Tab
+              title="Completed orders"
+              id="completed"
+              tagContent={rowsDone.length}
+              tagProps={{ intent: Intent.NONE, round: true }}
+              className={styles.tabs}
+              panel={
+                <>
+                  <Table
+                    data={rowsDone}
+                    columns={accessorColumns}
+                    theme="light"
+                    isLoading={isFetchingOrders}
+                    redirectToNewPage={redirectToNewPage}
+                    redirectColumns={['id']}
+                  />
+                </>
+              }
+            ></Tab>
+          </Tabs>
+        </FlexContainer>
+        <VerticalSpacing />
+        {/* <Table
+          data={rows}
+          columns={accessorColumns}
+          theme="light"
+          isLoading={isFetchingOrders}
+          redirectToNewPage={redirectToNewPage}
+          redirectColumns={['id']}
+        /> */}
+      </FlexContainer>
 
       <Dialog
         title="Update user"

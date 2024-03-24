@@ -192,11 +192,9 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
         !('quantity' in order) ||
         !('pricePerUnit' in order) ||
         !('product' in order) ||
-        !('unit' in order) ||
         !order.quantity ||
         !order.pricePerUnit ||
-        !order.product ||
-        !order.unit
+        !order.product
       ) {
         return false
       }
@@ -296,6 +294,9 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
     setSelectedCustomer(customer)
     setSelectedStatus(order.status)
   }, [customers, order])
+
+  console.log(isOrderCorrect)
+  console.log(isOrderModified)
 
   if (
     isLoading ||
@@ -514,12 +515,15 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
             <Button
               icon="plus"
               onClick={() => {
-                setOrderItems([...orderItems, {
-                  quantity: 0,
-                  pricePerUnit: 0,
-                  unit: 'T',
-                  product: products![0]
-                } as any])
+                setOrderItems([
+                  ...orderItems,
+                  {
+                    quantity: 0,
+                    pricePerUnit: 0,
+                    unit: 'T',
+                    product: products![0],
+                  } as any,
+                ])
               }}
             >
               Add item
