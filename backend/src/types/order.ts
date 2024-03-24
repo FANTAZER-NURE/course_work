@@ -17,6 +17,5 @@ export type ProductDetails = {
   id: string
   quantity: number
   pricePerUnit: number
-  unit: 'T' | 'L'
   product: TProduct
 }

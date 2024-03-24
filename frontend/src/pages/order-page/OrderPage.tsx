@@ -396,7 +396,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
               <tr key={productDetail.product.id}>
                 <td>{productDetail.product.id}</td>
                 <td>{productDetail.product.name}</td>
-                <td>{`${productDetail.quantity} ${productDetail.unit}`}</td>
+                <td>{`${productDetail.quantity} T`}</td>
                 <td>{parseInt(productDetail.pricePerUnit.toString()).toFixed(2)}</td>
                 <td>{(+productDetail.quantity * +productDetail.pricePerUnit).toFixed(2)} UAH</td>
               </tr>

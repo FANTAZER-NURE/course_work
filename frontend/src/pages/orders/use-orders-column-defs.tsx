@@ -81,7 +81,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
                 return (
                   <div key={item.id}>
                     {item.product.name}: {item.pricePerUnit * item.quantity}UAH ({item.quantity}
-                    {item.unit})
+                    T)
                   </div>
                 )
               })}

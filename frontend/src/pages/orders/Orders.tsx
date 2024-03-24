@@ -120,8 +120,7 @@ export const Orders: React.FC<Props> = () => {
       if (
         !('quantity' in order) ||
         !('pricePerUnit' in order) ||
-        !('product' in order) ||
-        !('unit' in order)
+        !('product' in order)
       ) {
         return true
       }
@@ -364,138 +363,103 @@ export const OrderItemRenderer = ({
       {orderItems.map((item, idx) => (
         <>
           <FlexContainer between centeredY gap={5}>
-            <InputGroup
-              id="quantity"
-              placeholder="Quantity"
-              leftIcon="truck"
-              value={item.quantity ? item.quantity.toString() : '0'}
-              type="number"
-              onChange={(e) => {
-                updateOrderItem(idx, { quantity: Number(e.currentTarget.value) })
-              }}
-              style={{ width: '150px' }}
-              intent={
-                order
-                  ? item.quantity &&
-                    order.productDetails[idx] &&
-                    order.productDetails[idx].quantity !== orderItems[idx].quantity
-                    ? Intent.WARNING
-                    : Intent.NONE
-                  : item.quantity
-                  ? Intent.SUCCESS
-                  : Intent.DANGER
-              }
-            />
-            <InputGroup
-              id="price"
-              leftIcon="dollar"
-              placeholder="Price per unit"
-              value={item.pricePerUnit ? item.pricePerUnit.toString() : '0'}
-              type="number"
-              onChange={(e) => {
-                updateOrderItem(idx, { pricePerUnit: Number(e.currentTarget.value) })
-              }}
-              style={{ width: '150px' }}
-              intent={
-                order
-                  ? item.pricePerUnit &&
-                    order.productDetails[idx] &&
-                    order.productDetails[idx].pricePerUnit !== orderItems[idx].pricePerUnit
-                    ? Intent.WARNING
-                    : Intent.NONE
-                  : item.quantity
-                  ? Intent.SUCCESS
-                  : Intent.DANGER
-              }
-            />
-            <Select<TProduct>
-              items={products || []}
-              itemRenderer={(product, { handleClick, handleFocus, modifiers, query }) => {
-                if (!modifiers.matchesPredicate) {
-                  return null
-                }
-                return (
-                  <MenuItem
-                    active={modifiers.active}
-                    disabled={modifiers.disabled}
-                    key={product.id}
-                    onClick={handleClick}
-                    onFocus={handleFocus}
-                    roleStructure="listoption"
-                    text={`${product.name}`}
-                  />
-                )
-              }}
-              onItemSelect={(item) => {
-                updateOrderItem(idx, { product: item })
-              }}
-              filterable={false}
-            >
-              <Button
-                alignText="left"
-                fill
-                icon="fuel"
-                rightIcon="caret-down"
-                text={maybeRenderSelectedProduct(item.product ?? undefined) ?? 'Product'}
-                style={{ width: '120px' }}
+            <Label>
+              Quantity
+              <InputGroup
+                id="quantity"
+                placeholder="Quantity"
+                leftIcon="truck"
+                value={item.quantity ? item.quantity.toString() : '0'}
+                type="number"
+                onChange={(e) => {
+                  updateOrderItem(idx, { quantity: Number(e.currentTarget.value) })
+                }}
+                style={{ width: '150px' }}
                 intent={
                   order
-                    ? item.product &&
+                    ? item.quantity &&
                       order.productDetails[idx] &&
-                      order.productDetails[idx].product.id !== orderItems[idx].product.id
+                      order.productDetails[idx].quantity !== orderItems[idx].quantity
                       ? Intent.WARNING
                       : Intent.NONE
                     : item.quantity
                     ? Intent.SUCCESS
                     : Intent.DANGER
                 }
-                minimal
               />
-            </Select>
-            <Select
-              items={['L', 'T']}
-              itemRenderer={(unit, { handleClick, handleFocus, modifiers, query }) => {
-                if (!modifiers.matchesPredicate) {
-                  return null
-                }
-                return (
-                  <MenuItem
-                    active={item.unit === unit}
-                    disabled={modifiers.disabled}
-                    key={unit}
-                    onClick={handleClick}
-                    onFocus={handleFocus}
-                    roleStructure="listoption"
-                    text={unit}
-                  />
-                )
-              }}
-              onItemSelect={(item) => {
-                updateOrderItem(idx, { unit: item as 'T' | 'L' })
-              }}
-              filterable={false}
-            >
-              <Button
-                alignText="left"
-                fill
-                icon="box"
-                rightIcon="caret-down"
-                text={item.unit ?? 'Units'}
-                style={{ width: '90px' }}
+            </Label>
+            <Label>
+              Price per unit
+              <InputGroup
+                id="price"
+                leftIcon="dollar"
+                placeholder="Price per unit"
+                value={item.pricePerUnit ? item.pricePerUnit.toString() : '0'}
+                type="number"
+                onChange={(e) => {
+                  updateOrderItem(idx, { pricePerUnit: Number(e.currentTarget.value) })
+                }}
+                style={{ width: '150px' }}
                 intent={
                   order
-                    ? item.unit &&
+                    ? item.pricePerUnit &&
                       order.productDetails[idx] &&
-                      order.productDetails[idx].unit !== orderItems[idx].unit
+                      order.productDetails[idx].pricePerUnit !== orderItems[idx].pricePerUnit
                       ? Intent.WARNING
                       : Intent.NONE
                     : item.quantity
                     ? Intent.SUCCESS
                     : Intent.DANGER
                 }
-                minimal
               />
-            </Select>
+            </Label>
+            <Label>
+              Product
+              <Select<TProduct>
+                items={products || []}
+                itemRenderer={(product, { handleClick, handleFocus, modifiers, query }) => {
+                  if (!modifiers.matchesPredicate) {
+                    return null
+                  }
+                  return (
+                    <MenuItem
+                      active={modifiers.active}
+                      disabled={modifiers.disabled}
+                      key={product.id}
+                      onClick={handleClick}
+                      onFocus={handleFocus}
+                      roleStructure="listoption"
+                      text={`${product.name}`}
+                    />
+                  )
+                }}
+                onItemSelect={(item) => {
+                  updateOrderItem(idx, { product: item })
+                }}
+                filterable={false}
+              >
+                <Button
+                  alignText="left"
+                  fill
+                  icon="fuel"
+                  rightIcon="caret-down"
+                  text={maybeRenderSelectedProduct(item.product ?? undefined) ?? 'Product'}
+                  style={{ width: '120px' }}
+                  intent={
+                    order
+                      ? item.product &&
+                        order.productDetails[idx] &&
+                        order.productDetails[idx].product.id !== orderItems[idx].product.id
+                        ? Intent.WARNING
+                        : Intent.NONE
+                      : item.quantity
+                      ? Intent.SUCCESS
+                      : Intent.DANGER
+                  }
+                  minimal
+                />
+              </Select>
+            </Label>
             <H5 style={{ color: Colors.GRAY3, marginBottom: 0, width: '200px' }}>
               {item.quantity && item.pricePerUnit
                 ? `${(+item.quantity * +item.pricePerUnit).toFixed(3)} UAH`
