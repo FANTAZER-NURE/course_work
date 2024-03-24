@@ -1,5 +1,6 @@
 import {PrismaClient, User} from '@prisma/client'
 import {ApiError} from '../exceptions/ApiError'
+import { TUser } from 'src/types/user'
 
 const prisma = new PrismaClient()
 
@@ -51,10 +52,29 @@ const deleteUser = async (id: number) => {
   return user
 }
 
+
+const updateUser = async (id: number, updatedOrderData: {
+  name: string,
+  email: string,
+  role: TUser['role']
+}) => {
+  const updatedUser = await prisma.user.update({
+    where: {id},
+    data: updatedOrderData,
+  })
+
+  if (!updatedUser) {
+    ApiError.BadRequest('No such order')
+  }
+
+  return updatedUser
+}
+
 export const usersService = {
   getUsers,
   normalize,
   findByEmail,
   findById,
   deleteUser,
+  updateUser,
 }

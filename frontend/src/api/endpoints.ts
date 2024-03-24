@@ -70,9 +70,15 @@ export interface POST {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PUT {
   '/orders/:id': {
-    // params: Models.ContactGroup
-    // result: Models.ContactGroup
     params: Partial<Omit<TOrder, 'id'>>
+    result: any
+  }
+  '/users/:id': {
+    params: {
+      name: string
+      email: string
+      role: TUser['role']
+    }
     result: any
   }
 }

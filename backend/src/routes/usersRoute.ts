@@ -8,5 +8,6 @@ const usersRouter = Router()
 usersRouter.get('/users', authMiddleware,catchError(usersController.getAll))
 usersRouter.get('/users/:id', authMiddleware, catchError(usersController.getById))
 usersRouter.delete('/users/:id', authMiddleware, catchError(usersController.deleteUser))
+usersRouter.put('/users/:id', authMiddleware, catchError(usersController.updateUser))
 
 export default usersRouter

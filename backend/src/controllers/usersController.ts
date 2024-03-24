@@ -29,8 +29,19 @@ const deleteUser = async (req: any, res: any) => {
   res.send(user)
 }
 
+
+const updateUser = async (req: any, res: any) => {
+  const {id} = req.params
+  const updatedUserData = req.body
+
+  const updatedUser = await usersService.updateUser(+id, updatedUserData)
+
+  res.json(updatedUser)
+}
+
 export const usersController = {
   getAll,
   getById,
   deleteUser,
+  updateUser,
 }
