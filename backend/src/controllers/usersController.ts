@@ -21,7 +21,16 @@ const getById = async (req: any, res: any) => {
   res.json(usersService.normalize(user))
 }
 
+const deleteUser = async (req: any, res: any) => {
+  const {id} = req.params
+
+  const user = await usersService.deleteUser(+id)
+
+  res.send(user)
+}
+
 export const usersController = {
   getAll,
   getById,
+  deleteUser,
 }

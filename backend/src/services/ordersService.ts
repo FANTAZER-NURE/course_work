@@ -75,8 +75,6 @@ const deleteOrder = async (id: number) => {
     },
   })
 
-  console.log('HERE', order)
-
   if (!order) {
     ApiError.BadRequest('No such order')
   }

@@ -83,4 +83,8 @@ export interface DELETE {
     params: never
     result: TOrder
   }
+  '/users/:id': {
+    params: never
+    result: TUser
+  }
 }

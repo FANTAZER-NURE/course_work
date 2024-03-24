@@ -1,4 +1,5 @@
 import {PrismaClient, User} from '@prisma/client'
+import {ApiError} from '../exceptions/ApiError'
 
 const prisma = new PrismaClient()
 
@@ -30,9 +31,30 @@ const findById = async (id: number) => {
   return user
 }
 
+const deleteUser = async (id: number) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id,
+    },
+  })
+
+  if (!user) {
+    ApiError.BadRequest('No such user')
+  }
+
+  await prisma.user.delete({
+    where: {
+      id: id,
+    },
+  })
+
+  return user
+}
+
 export const usersService = {
   getUsers,
   normalize,
   findByEmail,
   findById,
+  deleteUser,
 }
