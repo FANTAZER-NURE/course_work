@@ -11,8 +11,6 @@ import {
   FormGroup,
   H2,
   H3,
-  H4,
-  Icon,
   InputGroup,
   Intent,
   Label,
