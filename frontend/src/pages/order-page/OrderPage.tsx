@@ -30,7 +30,7 @@ import { AuthContext } from 'shared/components/auth/AuthContext'
 import { ItemPredicate, ItemRenderer, Select } from '@blueprintjs/select'
 import { TCustomer } from '../../../../backend/src/types/customer'
 import { OrderItemRenderer } from 'pages/orders/Orders'
-import { ProductDetails } from '../../../../backend/src/types/order'
+import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import isEqual from 'lodash/isEqual'
 
 interface OrderPageProps {}
@@ -47,7 +47,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<TCustomer | null>(null)
   const [shippingAddress, setShippingAddress] = useState('')
   const [isOrderUpdating, setIsOrderUpdating] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState<TOrder['status'] | ''>('')
 
   const queryClient = useQueryClient()
 
@@ -265,7 +265,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
         shippingAddress,
         productDetails: orderItems,
         customerId: selectedCustomer.id,
-        status: selectedStatus,
+        status: selectedStatus as TOrder['status'],
       })
       queryClient.invalidateQueries(['order', id])
     } catch (error) {
@@ -483,7 +483,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                   )
                 }}
                 onItemSelect={(item) => {
-                  setSelectedStatus(item)
+                  setSelectedStatus(item as TOrder['status'])
                 }}
                 filterable={false}
               >

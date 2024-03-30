@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from 'react-query'
 import styles from './Orders.module.scss'
 import {
   Button,
+  Classes,
   Colors,
   Dialog,
   DialogBody,
@@ -33,6 +34,11 @@ import { ItemPredicate, ItemRenderer, MultiSelect, Select } from '@blueprintjs/s
 import { usePageError } from 'hooks/use-page-error'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import { TUser } from '../../../../backend/src/types/user'
+import moment from 'moment'
+import { DISPLAY_DATE_FORMAT, formatDateForDisplay, momentFormatter } from 'utils/formatDate'
+import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
+import classNames from 'classnames'
+import { IconNames } from '@blueprintjs/icons'
 
 type Props = {}
 
@@ -43,6 +49,7 @@ export const Orders: React.FC<Props> = () => {
   const [selectedStatuses, setSelectedStatuses] = useState<TOrder['status'][]>([])
   const [shippingAddress, setShippingAddress] = useState('')
   const [orderItems, setOrderItems] = useState<ProductDetails[]>([])
+  const [dateRange, setDateRange] = useState<DateRange>([null, null])
 
   const queryClient = useQueryClient()
 
@@ -102,22 +109,58 @@ export const Orders: React.FC<Props> = () => {
   }, [columns])
 
   const rows = useMemo(() => {
-  if (!orders) {
-    return [];
-  }
+    if (!orders) {
+      return []
+    }
 
-  const filteredRows = orders
-    .map((order) => makeOrderRow(order))
-    .filter((row) =>
-      !selectedManagers.length ||
-      selectedManagers.some((manager) => manager.id === row.managerId)
-    )
-    .filter((row) =>
-      !selectedStatuses.length || selectedStatuses.includes(row.status)
-    );
+    const filteredRows = orders
+      .map((order) => makeOrderRow(order))
+      .filter(
+        (row) =>
+          !selectedManagers.length ||
+          selectedManagers.some((manager) => manager.id === row.managerId)
+      )
+      .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
+      .filter((row) => {
+        // Ensure createdAt is a valid Date object
 
-  return filteredRows;
-}, [orders, selectedManagers, selectedStatuses]);
+        const createdAt = new Date(row.createdAt)
+
+        if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
+          return false // Exclude invalid dates
+        }
+
+        const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+
+        const [startDate, endDate] = dateRange
+        // Check if dateRange is empty (both null)
+        if (!startDate && !endDate) {
+          return true // No date filter applied
+        }
+
+        const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+
+        // Ensure formatted dates are valid strings
+        if (!formattedStartDate || !formattedEndDate) return false
+
+        return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
+      })
+
+    return filteredRows
+  }, [dateRange, orders, selectedManagers, selectedStatuses])
 
   const isCreateOrderDisabled = useMemo(() => {
     if (!orderItems.length) {
@@ -261,82 +304,107 @@ export const Orders: React.FC<Props> = () => {
         </Button>
       )}
       <VerticalSpacing />
-      <FlexContainer gap={10}>
-
+      <FlexContainer gap={10} wrap>
         <MultiSelect<TUser>
-            items={managers || []}
-            itemRenderer={renderManager}
-            noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
-            onItemSelect={(manager) => {
-              if (selectedManagers.map((iter) => iter.id).includes(manager.id)) {
-                setSelectedManagers((prev) => {
-                  return prev.filter((iter) => iter.id !== manager.id)
-                })
-                return
-              }
-              setSelectedManagers((prev) => {
-                return [...prev, manager]
-              })
-            }}
-            itemPredicate={filterManager}
-            tagRenderer={renderManagerTag}
-            onRemove={(manager) => {
+          items={managers || []}
+          itemRenderer={renderManager}
+          noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+          onItemSelect={(manager) => {
+            if (selectedManagers.map((iter) => iter.id).includes(manager.id)) {
               setSelectedManagers((prev) => {
                 return prev.filter((iter) => iter.id !== manager.id)
               })
-            }}
-            selectedItems={selectedManagers}
-            itemsEqual={(itemA, itemB) => {
-              return itemA.id === itemB.id ? true : false
-            }}
-            onClear={() => setSelectedManagers([])}
-            placeholder="Менеджер..."
-            className={styles.multiSelect}
+              return
+            }
+            setSelectedManagers((prev) => {
+              return [...prev, manager]
+            })
+          }}
+          itemPredicate={filterManager}
+          tagRenderer={renderManagerTag}
+          onRemove={(manager) => {
+            setSelectedManagers((prev) => {
+              return prev.filter((iter) => iter.id !== manager.id)
+            })
+          }}
+          selectedItems={selectedManagers}
+          itemsEqual={(itemA, itemB) => {
+            return itemA.id === itemB.id ? true : false
+          }}
+          onClear={() => setSelectedManagers([])}
+          placeholder="Менеджер..."
+          className={styles.multiSelect}
         />
-        
-        <MultiSelect<TOrder['status']>
-            items={['created', 'loading', 'shipping', 'shipped', 'done']}
-            itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
-                if (!modifiers.matchesPredicate) {
-                  return null
-                }
-                return (
-                  <MenuItem
-                    active={modifiers.active}
-                    disabled={modifiers.disabled}
-                    key={status}
-                    onClick={handleClick}
-                    onFocus={handleFocus}
-                    roleStructure="listoption"
-                    text={status}
-                  />
-                )
-              }}
-            noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
-            onItemSelect={(status) => {
-              if (selectedStatuses.includes(status)) {
-                setSelectedStatuses((prev) => {
-                  return prev.filter((iter) => iter !== status)
-                })
-                return
-              }
 
-              setSelectedStatuses((prev) => {
-                return [...prev, status]
-              })
-            }}
-            tagRenderer={(value) => value}
-            onRemove={(status) => {
+        <MultiSelect<TOrder['status']>
+          items={['created', 'loading', 'shipping', 'shipped', 'done']}
+          itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
+            if (!modifiers.matchesPredicate) {
+              return null
+            }
+            return (
+              <MenuItem
+                active={modifiers.active}
+                disabled={modifiers.disabled}
+                key={status}
+                onClick={handleClick}
+                onFocus={handleFocus}
+                roleStructure="listoption"
+                text={status}
+              />
+            )
+          }}
+          noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+          onItemSelect={(status) => {
+            if (selectedStatuses.includes(status)) {
               setSelectedStatuses((prev) => {
                 return prev.filter((iter) => iter !== status)
               })
-            }}
-            selectedItems={selectedStatuses}
-            onClear={() => setSelectedManagers([])}
-            placeholder="Статус..."
-            className={styles.multiSelect}
-          />
+              return
+            }
 
+            setSelectedStatuses((prev) => {
+              return [...prev, status]
+            })
+          }}
+          tagRenderer={(value) => value}
+          onRemove={(status) => {
+            setSelectedStatuses((prev) => {
+              return prev.filter((iter) => iter !== status)
+            })
+          }}
+          selectedItems={selectedStatuses}
+          onClear={() => setSelectedStatuses([])}
+          placeholder="Статус..."
+          className={styles.multiSelect}
+        />
+
+        <FlexContainer gap={5}>
+          <DateRangeInput3
+            // minDate={seasonFromTo.from.toDate()}
+            // maxDate={seasonFromTo.to.toDate()}
+            className={classNames(Classes.POPOVER_DISMISS_OVERRIDE, styles.dateInput)}
+            onChange={(pickerValue: DateRange) => {
+              setDateRange(pickerValue)
+            }}
+            formatDate={momentFormatter(DISPLAY_DATE_FORMAT).formatDate}
+            parseDate={(str) => new Date(str)}
+            // closeOnSelection={false}
+            highlightCurrentDay
+            shortcuts
+            // inputProps={{ leftIcon: IconNames.CALENDAR }}
+            popoverProps={{ position: 'bottom' }}
+            value={dateRange}
+            footerElement={<Button onClick={() => setDateRange([null, null])}>Reset</Button>}
+            allowSingleDayRange
+            startInputProps={{
+              leftIcon: IconNames.CALENDAR,
+            }}
+            endInputProps={{
+              leftIcon: IconNames.CALENDAR,
+            }}
+          />
+        </FlexContainer>
       </FlexContainer>
       <VerticalSpacing />
       <FlexContainer centeredX className={styles.tableWrapper}>
@@ -602,10 +670,6 @@ export const OrderItemRenderer = ({
 
 function maybeRenderSelectedCustomer(selectedCustomer: TCustomer | null) {
   return selectedCustomer ? `${selectedCustomer.name}` : undefined
-}
-
-function maybeRenderSelectedManager(selectedManager: TUser | null) {
-  return selectedManager ? `${selectedManager.name}` : undefined
 }
 
 function maybeRenderSelectedProduct(selectedProduct: TProduct | null) {
