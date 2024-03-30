@@ -415,6 +415,7 @@ export const Orders: React.FC<Props> = () => {
           isLoading={isFetchingOrders}
           redirectToNewPage={redirectToNewPage}
           redirectColumns={['id']}
+          totalRow
         />
       </FlexContainer>
 

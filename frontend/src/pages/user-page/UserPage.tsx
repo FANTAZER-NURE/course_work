@@ -274,6 +274,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
                       isLoading={isFetchingOrders}
                       redirectToNewPage={redirectToNewPage}
                       redirectColumns={['id']}
+                      totalRow
                     />
                   </>
                 }
@@ -293,6 +294,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
                       isLoading={isFetchingOrders}
                       redirectToNewPage={redirectToNewPage}
                       redirectColumns={['id']}
+                      totalRow
                     />
                   </>
                 }

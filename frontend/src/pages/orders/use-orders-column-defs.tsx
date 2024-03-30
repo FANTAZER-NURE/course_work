@@ -21,7 +21,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
         cell: (info) => info.getValue(),
       },
       {
-        header: 'Date',
+        header: 'Дата',
         accessorKey: 'createdAt',
         cell: (info) => {
           const date = new Date(info.getValue())
@@ -37,12 +37,12 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
         },
       },
       {
-        header: 'Status',
+        header: 'Статус',
         accessorKey: 'status',
         cell: (info) => info.getValue(),
       },
       {
-        header: 'Manager',
+        header: 'Менеджер',
         accessorKey: 'managerId',
         cell: (info) => {
           const managerId = info.getValue()
@@ -57,7 +57,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
         },
       },
       {
-        header: 'Customer',
+        header: 'Замовник',
         accessorKey: 'customerId',
         cell: (info) => {
           const customerId = info.getValue()
@@ -72,7 +72,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
         },
       },
       {
-        header: 'Order',
+        header: 'Замовлення',
         accessorKey: 'productDetails',
         cell: ({ row, getValue }) => {
           const items = row.original.productDetails
@@ -92,7 +92,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
       },
 
       {
-        header: 'Full Price',
+        header: 'Повна ціна (грн)',
         accessorKey: 'fullPrice',
         cell: (info) => {
           const items = info.row.original.productDetails
@@ -103,7 +103,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
             price += item.quantity * item.pricePerUnit
           })
 
-          return price.toFixed(3)
+          return price.toLocaleString('en-US')
         },
         sortingFn: (rowA: Row<OrderRowType>, rowB: Row<OrderRowType>) => {
           const itemsA = rowA.original.productDetails
@@ -124,7 +124,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
         },
       },
       {
-        header: 'Shipping address',
+        header: 'Адреса доставки',
         accessorKey: 'shippingAddress',
         cell: (info) => info.getValue(),
       },

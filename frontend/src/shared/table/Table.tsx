@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -18,6 +18,7 @@ import classNames from 'classnames'
 import { Spinner, Tooltip } from '@blueprintjs/core'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { Loader } from '../../app/App'
+import { TOrder } from '../../../../backend/src/types/order'
 
 export interface BaseTableRow {
   _id: string
@@ -59,6 +60,7 @@ interface SCTableProps<T> {
   theme: 'dark' | 'light'
   redirectToNewPage: (value: string) => void
   redirectColumns: string[]
+  totalRow?: boolean
 }
 
 export function Table<T extends { id: string }>({
@@ -68,21 +70,10 @@ export function Table<T extends { id: string }>({
   theme,
   redirectToNewPage,
   redirectColumns,
+  totalRow,
 }: SCTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [expanded, setExpanded] = useState<ExpandedState>(true)
-
-  // const handleSortingChange: OnChangeFn<SortingState> = useCallback(
-  //   (updater) => {
-  //     const state = typeof updater === 'function' ? updater(sorting) : updater
-  //     if (state.length) {
-  //       setSorting(state)
-  //     } else {
-  //       setSorting([{ id: 'position', desc: false }])
-  //     }
-  //   },
-  //   [sorting]
-  // )
 
   const table = useReactTable<T>({
     data,
@@ -99,100 +90,198 @@ export function Table<T extends { id: string }>({
     getExpandedRowModel: getExpandedRowModel(),
   })
 
+  const totalPrice = useMemo(() => {
+    if (totalRow) {
+      return data.reduce((total, order) => total + (order as any).orderPrice, 0)
+    }
+
+    return 0
+  }, [data, totalRow])
+
+  const total95 = useMemo(() => {
+    if (totalRow) {
+      return data.reduce((total, order) => {
+        const matchingProduct = (order as any as TOrder).productDetails.find(
+          (product) => product.product.id === 1
+        )
+
+        console.log('matchingProduct', matchingProduct)
+
+        if (matchingProduct) {
+          return total + matchingProduct.quantity
+        }
+
+        return total
+      }, 0)
+    }
+
+    return 0
+  }, [data, totalRow])
+
+  console.log(data)
+
+  const total92 = useMemo(() => {
+    if (totalRow) {
+      return data.reduce((total, order) => {
+        const matchingProduct = (order as any as TOrder).productDetails.find(
+          (product) => product.product.id === 2
+        )
+
+        if (matchingProduct) {
+          return total + matchingProduct.quantity
+        }
+
+        return total
+      }, 0)
+    }
+
+    return 0
+  }, [data, totalRow])
+  const totalDiesel = useMemo(() => {
+    if (totalRow) {
+      return data.reduce((total, order) => {
+        const matchingProduct = (order as any as TOrder).productDetails.find(
+          (product) => product.product.id === 3
+        )
+
+        if (matchingProduct) {
+          return total + matchingProduct.quantity
+        }
+
+        return total
+      }, 0)
+    }
+
+    return 0
+  }, [data, totalRow])
+
   return (
     <div className={styles.wrapper}>
       <table className={styles.table}>
-        <thead className={styles.thead}>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header, i) => (
-                <th key={header.id} className={classNames(styles.tableHeaderCell)}>
-                  {header.isPlaceholder ? null : (
-                    <div
-                      style={{
-                        width: getMetaFromColumn(header.column).width,
-                        height: '2em',
-                        color: header.column.getIsSorted()
-                          ? theme === 'dark'
-                            ? '#F0B726'
-                            : '#C87619'
-                          : undefined,
-                      }}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      <Tooltip
-                        content={getMetaFromColumn(header.column).tooltip}
-                        placement="bottom"
-                        targetTagName="div"
-                      >
-                        <FlexContainer centeredY gap={5}>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {header.column.getCanSort()
-                            ? {
-                                asc: (
-                                  <FaSortUp
-                                    className={classNames({
-                                      [styles.sortIcon]: !header.column.getIsSorted(),
-                                      [styles.sortIconSorted]: header.column.getIsSorted(),
-                                    })}
-                                  />
-                                ),
-                                desc: (
-                                  <FaSortDown
-                                    className={classNames({
-                                      [styles.sortIcon]: !header.column.getIsSorted(),
-                                      [styles.sortIconSorted]: header.column.getIsSorted(),
-                                    })}
-                                  />
-                                ),
-                              }[header.column.getIsSorted() as string] ?? (
-                                <FaSort
-                                  className={classNames({
-                                    [styles.sortIcon]: !header.column.getIsSorted(),
-                                    [styles.sortIconSorted]: header.column.getIsSorted(),
-                                  })}
-                                />
-                              )
-                            : null}
-                        </FlexContainer>
-                      </Tooltip>
-                    </div>
-                  )}
-                </th>
+        {data.length ? (
+          <>
+            <thead className={styles.thead}>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header, i) => (
+                    <th key={header.id} className={classNames(styles.tableHeaderCell)}>
+                      {header.isPlaceholder ? null : (
+                        <div
+                          style={{
+                            width: getMetaFromColumn(header.column).width,
+                            height: '2em',
+                            color: header.column.getIsSorted()
+                              ? theme === 'dark'
+                                ? '#F0B726'
+                                : '#C87619'
+                              : undefined,
+                          }}
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          <Tooltip
+                            content={getMetaFromColumn(header.column).tooltip}
+                            placement="bottom"
+                            targetTagName="div"
+                          >
+                            <FlexContainer centeredY gap={5}>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {header.column.getCanSort()
+                                ? {
+                                    asc: (
+                                      <FaSortUp
+                                        className={classNames({
+                                          [styles.sortIcon]: !header.column.getIsSorted(),
+                                          [styles.sortIconSorted]: header.column.getIsSorted(),
+                                        })}
+                                      />
+                                    ),
+                                    desc: (
+                                      <FaSortDown
+                                        className={classNames({
+                                          [styles.sortIcon]: !header.column.getIsSorted(),
+                                          [styles.sortIconSorted]: header.column.getIsSorted(),
+                                        })}
+                                      />
+                                    ),
+                                  }[header.column.getIsSorted() as string] ?? (
+                                    <FaSort
+                                      className={classNames({
+                                        [styles.sortIcon]: !header.column.getIsSorted(),
+                                        [styles.sortIconSorted]: header.column.getIsSorted(),
+                                      })}
+                                    />
+                                  )
+                                : null}
+                            </FlexContainer>
+                          </Tooltip>
+                        </div>
+                      )}
+                    </th>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className={styles.tbody}>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <tr key={row.id} className={styles.tr}>
-                {row.getVisibleCells().map((cell, i) => {
-                  return (
-                    <td
-                      className={classNames(styles.tableCell, {
-                        [styles.redirectCell]: redirectColumns.includes(cell.column.id),
-                      })}
-                      key={cell.id}
-                      style={{
-                        width: getMetaFromColumn(cell.column).width,
-                      }}
-                      onClick={() => {
-                        if (redirectColumns.includes(cell.column.id)) {
-                          redirectToNewPage(row.original.id)
-                        }
-                      }}
-                    >
-                      <div style={{ width: getMetaFromColumn(cell.column).width }}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </div>
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
+            </thead>
+            <tbody className={styles.tbody}>
+              {totalRow ? (
+                <tr className={styles.tr}>
+                  <td className={styles.tableCell}></td>
+                  <td className={styles.tableCell}></td>
+                  <td className={styles.tableCell}></td>
+                  <td className={styles.tableCell}></td>
+                  <td className={styles.tableCell}></td>
+                  <td className={styles.tableCell}>
+                    <Tooltip content="Загальний обʼєм">
+                      <b>
+                        A95: {total95}T
+                        <br />
+                        A92: {total92}T
+                        <br />
+                        Дизель: {totalDiesel}T
+                      </b>
+                    </Tooltip>
+                  </td>
+                  <td className={styles.tableCell}>
+                    <Tooltip content="Загальна сума">
+                      <b>{totalPrice.toLocaleString('en-US')}</b>
+                    </Tooltip>
+                  </td>
+                  <td className={styles.tableCell}></td>
+                </tr>
+              ) : null}
+
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <tr key={row.id} className={styles.tr}>
+                    {row.getVisibleCells().map((cell, i) => {
+                      return (
+                        <td
+                          className={classNames(styles.tableCell, {
+                            [styles.redirectCell]: redirectColumns.includes(cell.column.id),
+                          })}
+                          key={cell.id}
+                          style={{
+                            width: getMetaFromColumn(cell.column).width,
+                          }}
+                          onClick={() => {
+                            if (redirectColumns.includes(cell.column.id)) {
+                              redirectToNewPage(row.original.id)
+                            }
+                          }}
+                        >
+                          <div style={{ width: getMetaFromColumn(cell.column).width }}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </div>
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </>
+        ) : (
+          'No data'
+        )}
       </table>
       {isLoading ? (
         <div
