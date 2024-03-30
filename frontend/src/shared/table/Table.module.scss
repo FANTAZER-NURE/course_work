@@ -9,8 +9,8 @@ $table-border-color: $gray3;
 $table-hover-bg: #38465f;
 
 .wrapper {
-  overflow: auto;
-  width: 100%;
+  // overflow: auto;
+  // width: 100%;
 }
 
 .container {
@@ -37,6 +37,7 @@ $table-hover-bg: #38465f;
     position: sticky;
     top: 0;
     z-index: 20;
+    transform: translateY(-2px);
 
     &::-webkit-scrollbar {
       display: none; // Equivalent of Tailwind's hidden

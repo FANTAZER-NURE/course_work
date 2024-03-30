@@ -100,7 +100,7 @@ export function Table<T extends { id: string }>({
   })
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <table className={styles.table}>
         <thead className={styles.thead}>
           {table.getHeaderGroups().map((headerGroup) => (

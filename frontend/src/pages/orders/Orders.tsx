@@ -40,6 +40,7 @@ export const Orders: React.FC<Props> = () => {
   const [isDialogOpened, setIsDialogOpened] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<TCustomer | null>(null)
   const [selectedManagers, setSelectedManagers] = useState<TUser[]>([])
+  const [selectedStatuses, setSelectedStatuses] = useState<TOrder['status'][]>([])
   const [shippingAddress, setShippingAddress] = useState('')
   const [orderItems, setOrderItems] = useState<ProductDetails[]>([])
 
@@ -101,20 +102,22 @@ export const Orders: React.FC<Props> = () => {
   }, [columns])
 
   const rows = useMemo(() => {
-    if (!orders) {
-      return []
-    }
+  if (!orders) {
+    return [];
+  }
 
-    const rows = orders.map((order) => makeOrderRow(order))
+  const filteredRows = orders
+    .map((order) => makeOrderRow(order))
+    .filter((row) =>
+      !selectedManagers.length ||
+      selectedManagers.some((manager) => manager.id === row.managerId)
+    )
+    .filter((row) =>
+      !selectedStatuses.length || selectedStatuses.includes(row.status)
+    );
 
-    return rows.filter((iter) => {
-      if (selectedManagers.length) {
-        return selectedManagers.map((manager) => manager.id).includes(iter.managerId)
-      }
-
-      return true
-    })
-  }, [orders, selectedManagers])
+  return filteredRows;
+}, [orders, selectedManagers, selectedStatuses]);
 
   const isCreateOrderDisabled = useMemo(() => {
     if (!orderItems.length) {
@@ -258,39 +261,82 @@ export const Orders: React.FC<Props> = () => {
         </Button>
       )}
       <VerticalSpacing />
-      <FlexContainer>
+      <FlexContainer gap={10}>
+
         <MultiSelect<TUser>
-          items={managers || []}
-          itemRenderer={renderManager}
-          noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
-          onItemSelect={(manager) => {
-            console.log('hereeee')
-            if (selectedManagers.map((iter) => iter.id).includes(manager.id)) {
+            items={managers || []}
+            itemRenderer={renderManager}
+            noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+            onItemSelect={(manager) => {
+              if (selectedManagers.map((iter) => iter.id).includes(manager.id)) {
+                setSelectedManagers((prev) => {
+                  return prev.filter((iter) => iter.id !== manager.id)
+                })
+                return
+              }
+              setSelectedManagers((prev) => {
+                return [...prev, manager]
+              })
+            }}
+            itemPredicate={filterManager}
+            tagRenderer={renderManagerTag}
+            onRemove={(manager) => {
               setSelectedManagers((prev) => {
                 return prev.filter((iter) => iter.id !== manager.id)
               })
-
-              return
-            }
-            setSelectedManagers((prev) => {
-              return [...prev, manager]
-            })
-          }}
-          itemPredicate={filterManager}
-          tagRenderer={renderManagerTag}
-          onRemove={(manager) => {
-            setSelectedManagers((prev) => {
-              return prev.filter((iter) => iter.id !== manager.id)
-            })
-          }}
-          selectedItems={selectedManagers}
-          itemsEqual={(itemA, itemB) => {
-            return itemA.id === itemB.id ? true : false
-          }}
-          onClear={() => setSelectedManagers([])}
-          placeholder="Менеджер..."
-          className={styles.multiSelect}
+            }}
+            selectedItems={selectedManagers}
+            itemsEqual={(itemA, itemB) => {
+              return itemA.id === itemB.id ? true : false
+            }}
+            onClear={() => setSelectedManagers([])}
+            placeholder="Менеджер..."
+            className={styles.multiSelect}
         />
+        
+        <MultiSelect<TOrder['status']>
+            items={['created', 'loading', 'shipping', 'shipped', 'done']}
+            itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
+                if (!modifiers.matchesPredicate) {
+                  return null
+                }
+                return (
+                  <MenuItem
+                    active={modifiers.active}
+                    disabled={modifiers.disabled}
+                    key={status}
+                    onClick={handleClick}
+                    onFocus={handleFocus}
+                    roleStructure="listoption"
+                    text={status}
+                  />
+                )
+              }}
+            noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+            onItemSelect={(status) => {
+              if (selectedStatuses.includes(status)) {
+                setSelectedStatuses((prev) => {
+                  return prev.filter((iter) => iter !== status)
+                })
+                return
+              }
+
+              setSelectedStatuses((prev) => {
+                return [...prev, status]
+              })
+            }}
+            tagRenderer={(value) => value}
+            onRemove={(status) => {
+              setSelectedStatuses((prev) => {
+                return prev.filter((iter) => iter !== status)
+              })
+            }}
+            selectedItems={selectedStatuses}
+            onClear={() => setSelectedManagers([])}
+            placeholder="Статус..."
+            className={styles.multiSelect}
+          />
+
       </FlexContainer>
       <VerticalSpacing />
       <FlexContainer centeredX className={styles.tableWrapper}>
