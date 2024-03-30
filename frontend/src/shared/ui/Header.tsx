@@ -15,7 +15,7 @@ export const Header = () => {
     <Navbar>
       <Navbar.Group align={Alignment.LEFT} style={{ width: '80%' }}>
         <Navbar.Heading style={{ width: '30%' }}>
-          <Link to={`../user/${user?.id}`}>
+          <Link to={`../users/${user?.id}`}>
             <FlexContainer centered gap={5}>
               <Avatar url="" rounded width={30} height={30} />
               <H5 style={{ marginBottom: 0 }}>{user?.name}</H5>

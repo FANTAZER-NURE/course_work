@@ -130,20 +130,24 @@ export const UserPage: React.FC<UserPageProps> = () => {
       return []
     }
 
-    const rows = orders.filter((iter) => iter.status !== 'done').map((order) => makeOrderRow(order))
+    const rows = orders
+      .filter((iter) => iter.status !== 'done' && iter.managerId === user?.id)
+      .map((order) => makeOrderRow(order))
 
     return rows
-  }, [orders])
+  }, [orders, user?.id])
 
   const rowsDone = useMemo(() => {
     if (!orders) {
       return []
     }
 
-    const rows = orders.filter((iter) => iter.status === 'done').map((order) => makeOrderRow(order))
+    const rows = orders
+      .filter((iter) => iter.status === 'done' && iter.managerId === user?.id)
+      .map((order) => makeOrderRow(order))
 
     return rows
-  }, [orders])
+  }, [orders, user?.id])
 
   const accessorColumns = useMemo(() => {
     return columns.filter(isAccessorColumn)
@@ -243,66 +247,61 @@ export const UserPage: React.FC<UserPageProps> = () => {
       <H3>Role: {ROLES_MAP[user.role]}</H3>
       <H3>Email: {user.email}</H3>
 
-      <FlexContainer centered column>
-        <FlexContainer centeredX className={styles.tableWrapper}>
-          <Tabs
-            animate
-            onChange={(id) => {
-              setSelectedTabId(id)
-            }}
-            selectedTabId={selectedTabId}
-            className={styles.tabs}
-          >
-            <Tab
-              title="Active orders"
-              id="active"
-              tagContent={rowsActive.length}
-              tagProps={{ intent: Intent.NONE, round: true }}
+      {user.role === 'manager' ? (
+        <FlexContainer centered column>
+          <FlexContainer centeredX className={styles.tableWrapper}>
+            <Tabs
+              animate
+              onChange={(id) => {
+                setSelectedTabId(id)
+              }}
+              selectedTabId={selectedTabId}
               className={styles.tabs}
-              panel={
-                <>
-                  <Table
-                    data={rowsActive}
-                    columns={accessorColumns}
-                    theme="light"
-                    isLoading={isFetchingOrders}
-                    redirectToNewPage={redirectToNewPage}
-                    redirectColumns={['id']}
-                  />
-                </>
-              }
-            ></Tab>
-            <Tab
-              title="Completed orders"
-              id="completed"
-              tagContent={rowsDone.length}
-              tagProps={{ intent: Intent.NONE, round: true }}
-              className={styles.tabs}
-              panel={
-                <>
-                  <Table
-                    data={rowsDone}
-                    columns={accessorColumns}
-                    theme="light"
-                    isLoading={isFetchingOrders}
-                    redirectToNewPage={redirectToNewPage}
-                    redirectColumns={['id']}
-                  />
-                </>
-              }
-            ></Tab>
-          </Tabs>
+              large
+            >
+              <Tab
+                title="Active orders"
+                id="active"
+                tagContent={rowsActive.length}
+                tagProps={{ intent: Intent.NONE, round: true }}
+                className={styles.tabs}
+                panel={
+                  <>
+                    <Table
+                      data={rowsActive}
+                      columns={accessorColumns}
+                      theme="light"
+                      isLoading={isFetchingOrders}
+                      redirectToNewPage={redirectToNewPage}
+                      redirectColumns={['id']}
+                    />
+                  </>
+                }
+              ></Tab>
+              <Tab
+                title="Completed orders"
+                id="completed"
+                tagContent={rowsDone.length}
+                tagProps={{ intent: Intent.NONE, round: true }}
+                className={styles.tabs}
+                panel={
+                  <>
+                    <Table
+                      data={rowsDone}
+                      columns={accessorColumns}
+                      theme="light"
+                      isLoading={isFetchingOrders}
+                      redirectToNewPage={redirectToNewPage}
+                      redirectColumns={['id']}
+                    />
+                  </>
+                }
+              ></Tab>
+            </Tabs>
+          </FlexContainer>
+          <VerticalSpacing />
         </FlexContainer>
-        <VerticalSpacing />
-        {/* <Table
-          data={rows}
-          columns={accessorColumns}
-          theme="light"
-          isLoading={isFetchingOrders}
-          redirectToNewPage={redirectToNewPage}
-          redirectColumns={['id']}
-        /> */}
-      </FlexContainer>
+      ) : null}
 
       <Dialog
         title="Update user"

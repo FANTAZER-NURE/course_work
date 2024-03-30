@@ -1,5 +1,4 @@
 .wrapper {
-  // @apply bg-red-400;
   padding: 0.5rem;
   height: calc(100vh - 50px);
 }
@@ -16,4 +15,8 @@
   & > div {
     height: 30px;
   }
+}
+
+.multiSelect {
+  min-width: 100px;
 }

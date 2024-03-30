@@ -14,6 +14,7 @@ import {
   Intent,
   Label,
   Spinner,
+  Tag,
   Tooltip,
 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
@@ -28,15 +29,17 @@ import { makeOrderRow } from 'utils/makeOrderRow'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import { MenuItem } from '@blueprintjs/core'
 import { TCustomer } from '../../../../backend/src/types/customer'
-import { ItemPredicate, ItemRenderer, Select } from '@blueprintjs/select'
+import { ItemPredicate, ItemRenderer, MultiSelect, Select } from '@blueprintjs/select'
 import { usePageError } from 'hooks/use-page-error'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
+import { TUser } from '../../../../backend/src/types/user'
 
 type Props = {}
 
 export const Orders: React.FC<Props> = () => {
   const [isDialogOpened, setIsDialogOpened] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<TCustomer | null>(null)
+  const [selectedManagers, setSelectedManagers] = useState<TUser[]>([])
   const [shippingAddress, setShippingAddress] = useState('')
   const [orderItems, setOrderItems] = useState<ProductDetails[]>([])
 
@@ -104,8 +107,14 @@ export const Orders: React.FC<Props> = () => {
 
     const rows = orders.map((order) => makeOrderRow(order))
 
-    return rows
-  }, [orders])
+    return rows.filter((iter) => {
+      if (selectedManagers.length) {
+        return selectedManagers.map((manager) => manager.id).includes(iter.managerId)
+      }
+
+      return true
+    })
+  }, [orders, selectedManagers])
 
   const isCreateOrderDisabled = useMemo(() => {
     if (!orderItems.length) {
@@ -117,11 +126,7 @@ export const Orders: React.FC<Props> = () => {
     }
 
     for (const order of orderItems) {
-      if (
-        !('quantity' in order) ||
-        !('pricePerUnit' in order) ||
-        !('product' in order)
-      ) {
+      if (!('quantity' in order) || !('pricePerUnit' in order) || !('product' in order)) {
         return true
       }
     }
@@ -183,6 +188,17 @@ export const Orders: React.FC<Props> = () => {
     }
   }
 
+  const filterManager: ItemPredicate<TUser> = (query, customer, _index, exactMatch) => {
+    const normalizedTitle = customer.name.toLowerCase()
+    const normalizedQuery = query.toLowerCase()
+
+    if (exactMatch) {
+      return normalizedTitle === normalizedQuery
+    } else {
+      return `${normalizedTitle} ${customer.email}`.indexOf(normalizedQuery) >= 0
+    }
+  }
+
   const renderCustomer: ItemRenderer<TCustomer> = useCallback(
     (customer, { handleClick, handleFocus, modifiers, query }) => {
       if (!modifiers.matchesPredicate) {
@@ -204,6 +220,29 @@ export const Orders: React.FC<Props> = () => {
     []
   )
 
+  const renderManager: ItemRenderer<TUser> = useCallback(
+    (customer, { handleClick, handleFocus, modifiers, query }) => {
+      if (!modifiers.matchesPredicate) {
+        return null
+      }
+      return (
+        <MenuItem
+          active={modifiers.active}
+          disabled={modifiers.disabled}
+          key={customer.id}
+          label={customer.email}
+          onClick={handleClick}
+          onFocus={handleFocus}
+          roleStructure="listoption"
+          text={`${customer.name}`}
+        />
+      )
+    },
+    []
+  )
+
+  const renderManagerTag = (manager: TUser) => manager.name
+
   if (isFetchingCustomers || isFetchingOrders || isFetchingProducts) {
     return <Spinner />
   }
@@ -218,6 +257,41 @@ export const Orders: React.FC<Props> = () => {
           Create order
         </Button>
       )}
+      <VerticalSpacing />
+      <FlexContainer>
+        <MultiSelect<TUser>
+          items={managers || []}
+          itemRenderer={renderManager}
+          noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+          onItemSelect={(manager) => {
+            console.log('hereeee')
+            if (selectedManagers.map((iter) => iter.id).includes(manager.id)) {
+              setSelectedManagers((prev) => {
+                return prev.filter((iter) => iter.id !== manager.id)
+              })
+
+              return
+            }
+            setSelectedManagers((prev) => {
+              return [...prev, manager]
+            })
+          }}
+          itemPredicate={filterManager}
+          tagRenderer={renderManagerTag}
+          onRemove={(manager) => {
+            setSelectedManagers((prev) => {
+              return prev.filter((iter) => iter.id !== manager.id)
+            })
+          }}
+          selectedItems={selectedManagers}
+          itemsEqual={(itemA, itemB) => {
+            return itemA.id === itemB.id ? true : false
+          }}
+          onClear={() => setSelectedManagers([])}
+          placeholder="Менеджер..."
+          className={styles.multiSelect}
+        />
+      </FlexContainer>
       <VerticalSpacing />
       <FlexContainer centeredX className={styles.tableWrapper}>
         <Table
@@ -482,6 +556,10 @@ export const OrderItemRenderer = ({
 
 function maybeRenderSelectedCustomer(selectedCustomer: TCustomer | null) {
   return selectedCustomer ? `${selectedCustomer.name}` : undefined
+}
+
+function maybeRenderSelectedManager(selectedManager: TUser | null) {
+  return selectedManager ? `${selectedManager.name}` : undefined
 }
 
 function maybeRenderSelectedProduct(selectedProduct: TProduct | null) {
