@@ -36,7 +36,7 @@ $table-hover-bg: #38465f;
     text-align: center; // Equivalent of Tailwind's text-center
     position: sticky;
     top: 0;
-    z-index: 20;
+    // z-index: 20;
     transform: translateY(-2px);
 
     &::-webkit-scrollbar {

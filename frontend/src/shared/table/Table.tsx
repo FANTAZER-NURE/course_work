@@ -223,7 +223,7 @@ export function Table<T extends { id: string }>({
             </thead>
             <tbody className={styles.tbody}>
               {totalRow ? (
-                <tr className={styles.tr}>
+                <tr className={styles.tr} style={{ backgroundColor: '#EDEFF2' }}>
                   <td className={styles.tableCell}></td>
                   <td className={styles.tableCell}></td>
                   <td className={styles.tableCell}></td>

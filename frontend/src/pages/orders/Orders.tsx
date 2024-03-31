@@ -381,18 +381,15 @@ export const Orders: React.FC<Props> = () => {
 
         <FlexContainer gap={5}>
           <DateRangeInput3
-            // minDate={seasonFromTo.from.toDate()}
-            // maxDate={seasonFromTo.to.toDate()}
             className={classNames(Classes.POPOVER_DISMISS_OVERRIDE, styles.dateInput)}
             onChange={(pickerValue: DateRange) => {
               setDateRange(pickerValue)
             }}
             formatDate={momentFormatter(DISPLAY_DATE_FORMAT).formatDate}
             parseDate={(str) => new Date(str)}
-            // closeOnSelection={false}
+            closeOnSelection={false}
             highlightCurrentDay
             shortcuts
-            // inputProps={{ leftIcon: IconNames.CALENDAR }}
             popoverProps={{ position: 'bottom' }}
             value={dateRange}
             footerElement={<Button onClick={() => setDateRange([null, null])}>Reset</Button>}

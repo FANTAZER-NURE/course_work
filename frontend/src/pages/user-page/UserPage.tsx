@@ -6,6 +6,7 @@ import {
   Breadcrumbs,
   Button,
   Callout,
+  Classes,
   Dialog,
   DialogBody,
   DialogFooter,
@@ -27,12 +28,17 @@ import { deleteApi, getApi, putApi } from 'api/httpClient'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { AuthContext } from 'shared/components/auth/AuthContext'
-import { Select } from '@blueprintjs/select'
+import { MultiSelect, Select } from '@blueprintjs/select'
 import { TUser } from '../../../../backend/src/types/user'
 import { Table, isAccessorColumn } from 'shared/table/Table'
 import { makeOrderRow } from 'utils/makeOrderRow'
 import { useOrdersColumnDefs } from 'pages/orders/use-orders-column-defs'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
+import { TOrder } from '../../../../backend/src/types/order'
+import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
+import classNames from 'classnames'
+import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
+import { IconNames } from '@blueprintjs/icons'
 
 const ROLES_MAP = {
   admin: 'Адміністратор',
@@ -53,6 +59,8 @@ export const UserPage: React.FC<UserPageProps> = () => {
   const [role, setRole] = useState<TUser['role'] | null>(null)
   const [isUserUpdating, setIsUserUpdating] = useState(false)
   const [selectedTabId, setSelectedTabId] = useState<TabId>('active')
+  const [selectedStatuses, setSelectedStatuses] = useState<TOrder['status'][]>([])
+  const [dateRange, setDateRange] = useState<DateRange>([null, null])
 
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -133,9 +141,47 @@ export const UserPage: React.FC<UserPageProps> = () => {
     const rows = orders
       .filter((iter) => iter.status !== 'done' && iter.managerId === user?.id)
       .map((order) => makeOrderRow(order))
+      .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
+      .filter((row) => {
+        // Ensure createdAt is a valid Date object
+
+        const createdAt = new Date(row.createdAt)
+
+        if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
+          return false // Exclude invalid dates
+        }
+
+        const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+
+        const [startDate, endDate] = dateRange
+        // Check if dateRange is empty (both null)
+        if (!startDate && !endDate) {
+          return true // No date filter applied
+        }
+
+        const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+
+        // Ensure formatted dates are valid strings
+        if (!formattedStartDate || !formattedEndDate) return false
+
+        return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
+      })
 
     return rows
-  }, [orders, user?.id])
+  }, [dateRange, orders, selectedStatuses, user])
 
   const rowsDone = useMemo(() => {
     if (!orders) {
@@ -145,9 +191,47 @@ export const UserPage: React.FC<UserPageProps> = () => {
     const rows = orders
       .filter((iter) => iter.status === 'done' && iter.managerId === user?.id)
       .map((order) => makeOrderRow(order))
+      .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
+      .filter((row) => {
+        // Ensure createdAt is a valid Date object
+
+        const createdAt = new Date(row.createdAt)
+
+        if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
+          return false // Exclude invalid dates
+        }
+
+        const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+
+        const [startDate, endDate] = dateRange
+        // Check if dateRange is empty (both null)
+        if (!startDate && !endDate) {
+          return true // No date filter applied
+        }
+
+        const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+
+        // Ensure formatted dates are valid strings
+        if (!formattedStartDate || !formattedEndDate) return false
+
+        return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
+      })
 
     return rows
-  }, [orders, user?.id])
+  }, [dateRange, orders, selectedStatuses, user])
 
   const accessorColumns = useMemo(() => {
     return columns.filter(isAccessorColumn)
@@ -249,6 +333,74 @@ export const UserPage: React.FC<UserPageProps> = () => {
 
       {user.role === 'manager' ? (
         <FlexContainer centered column>
+          <FlexContainer gap={10} wrap>
+            <MultiSelect<TOrder['status']>
+              items={['created', 'loading', 'shipping', 'shipped', 'done']}
+              itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
+                if (!modifiers.matchesPredicate) {
+                  return null
+                }
+                return (
+                  <MenuItem
+                    active={modifiers.active}
+                    disabled={modifiers.disabled}
+                    key={status}
+                    onClick={handleClick}
+                    onFocus={handleFocus}
+                    roleStructure="listoption"
+                    text={status}
+                  />
+                )
+              }}
+              noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+              onItemSelect={(status) => {
+                if (selectedStatuses.includes(status)) {
+                  setSelectedStatuses((prev) => {
+                    return prev.filter((iter) => iter !== status)
+                  })
+                  return
+                }
+
+                setSelectedStatuses((prev) => {
+                  return [...prev, status]
+                })
+              }}
+              tagRenderer={(value) => value}
+              onRemove={(status) => {
+                setSelectedStatuses((prev) => {
+                  return prev.filter((iter) => iter !== status)
+                })
+              }}
+              selectedItems={selectedStatuses}
+              onClear={() => setSelectedStatuses([])}
+              placeholder="Статус..."
+              className={styles.multiSelect}
+            />
+
+            <FlexContainer gap={5}>
+              <DateRangeInput3
+                className={classNames(Classes.POPOVER_DISMISS_OVERRIDE, styles.dateInput)}
+                onChange={(pickerValue: DateRange) => {
+                  setDateRange(pickerValue)
+                }}
+                formatDate={momentFormatter(DISPLAY_DATE_FORMAT).formatDate}
+                parseDate={(str) => new Date(str)}
+                closeOnSelection={false}
+                highlightCurrentDay
+                shortcuts
+                popoverProps={{ position: 'bottom' }}
+                value={dateRange}
+                footerElement={<Button onClick={() => setDateRange([null, null])}>Reset</Button>}
+                allowSingleDayRange
+                startInputProps={{
+                  leftIcon: IconNames.CALENDAR,
+                }}
+                endInputProps={{
+                  leftIcon: IconNames.CALENDAR,
+                }}
+              />
+            </FlexContainer>
+          </FlexContainer>
           <FlexContainer centeredX className={styles.tableWrapper}>
             <Tabs
               animate
