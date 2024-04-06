@@ -10,6 +10,7 @@ import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { IconNames } from '@blueprintjs/icons'
 import styles from './SalesRevenueChart.module.scss'
 import { TCustomer } from '../../../../backend/src/types/customer'
+import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 
 interface CustomersChartProps {
   customers: TCustomer[]
@@ -32,43 +33,7 @@ export const CustomersChart: React.FC<CustomersChartProps> = ({ customers, order
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
 
   const filteredOrders = useMemo(() => {
-    return orders.filter((row) => {
-      // Ensure createdAt is a valid Date object
-
-      const createdAt = new Date(row.createdAt)
-
-      if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
-        return false // Exclude invalid dates
-      }
-
-      const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-
-      const [startDate, endDate] = dateRange
-      // Check if dateRange is empty (both null)
-      if (!startDate && !endDate) {
-        return true // No date filter applied
-      }
-
-      const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-      const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-
-      // Ensure formatted dates are valid strings
-      if (!formattedStartDate || !formattedEndDate) return false
-
-      return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
-    })
+    return orders.filter((row) => isOrderInDateRange(row, dateRange))
   }, [dateRange, orders])
 
   const data = useMemo(() => {

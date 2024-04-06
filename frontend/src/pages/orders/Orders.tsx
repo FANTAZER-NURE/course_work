@@ -39,6 +39,7 @@ import classNames from 'classnames'
 import { IconNames } from '@blueprintjs/icons'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
 import { StatusFilter } from 'shared/ui/StatusFilter'
+import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 
 type Props = {}
 
@@ -137,43 +138,7 @@ export const Orders: React.FC<Props> = () => {
 
       //   return selectedFuel.some((fuel) => productIds.includes(fuel.id.toString()))
       // })
-      .filter((row) => {
-        // Ensure createdAt is a valid Date object
-
-        const createdAt = new Date(row.createdAt)
-
-        if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
-          return false // Exclude invalid dates
-        }
-
-        const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-
-        const [startDate, endDate] = dateRange
-        // Check if dateRange is empty (both null)
-        if (!startDate && !endDate) {
-          return true // No date filter applied
-        }
-
-        const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-        const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-
-        // Ensure formatted dates are valid strings
-        if (!formattedStartDate || !formattedEndDate) return false
-
-        return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
-      })
+      .filter((row) => isOrderInDateRange(row, dateRange))
 
     return filteredRows
   }, [dateRange, orders, selectedManagers, selectedStatuses])

@@ -39,6 +39,7 @@ import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
 import classNames from 'classnames'
 import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { IconNames } from '@blueprintjs/icons'
+import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 
 const ROLES_MAP = {
   admin: 'Адміністратор',
@@ -142,43 +143,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
       .filter((iter) => iter.status !== 'done' && iter.managerId === user?.id)
       .map((order) => makeOrderRow(order))
       .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
-      .filter((row) => {
-        // Ensure createdAt is a valid Date object
-
-        const createdAt = new Date(row.createdAt)
-
-        if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
-          return false // Exclude invalid dates
-        }
-
-        const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-
-        const [startDate, endDate] = dateRange
-        // Check if dateRange is empty (both null)
-        if (!startDate && !endDate) {
-          return true // No date filter applied
-        }
-
-        const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-        const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-
-        // Ensure formatted dates are valid strings
-        if (!formattedStartDate || !formattedEndDate) return false
-
-        return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
-      })
+      .filter((row) => isOrderInDateRange(row, dateRange))
 
     return rows
   }, [dateRange, orders, selectedStatuses, user])

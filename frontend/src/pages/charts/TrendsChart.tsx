@@ -32,18 +32,11 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({ orders }) => {
   const filteredOrders = useMemo(() => {
     return orders.filter((row) => {
       // Ensure createdAt is a valid Date object
-
       const createdAt = new Date(row.createdAt)
 
       if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
         return false // Exclude invalid dates
       }
-
-      const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
 
       const [startDate, endDate] = dateRange
       // Check if dateRange is empty (both null)
@@ -51,21 +44,11 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({ orders }) => {
         return true // No date filter applied
       }
 
-      const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-      const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
+      // Ensure dates are valid
+      if (!startDate || !endDate) return false
 
-      // Ensure formatted dates are valid strings
-      if (!formattedStartDate || !formattedEndDate) return false
-
-      return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
+      // Compare date objects directly
+      return createdAt >= startDate && createdAt <= endDate
     })
   }, [dateRange, orders])
 

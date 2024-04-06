@@ -22,6 +22,7 @@ import styles from './SalesRevenueChart.module.scss'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
 import { getColorForManager } from './SalesRevenueChart'
 import { StatusFilter } from 'shared/ui/StatusFilter'
+import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 
 interface OrdersChartProps {
   managers: TUser[]
@@ -36,43 +37,7 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({ managers, orders }) =>
   const filteredOrders = useMemo(() => {
     return orders
       .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
-      .filter((row) => {
-        // Ensure createdAt is a valid Date object
-
-        const createdAt = new Date(row.createdAt)
-
-        if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
-          return false // Exclude invalid dates
-        }
-
-        const formattedCreatedAt = createdAt.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-
-        const [startDate, endDate] = dateRange
-        // Check if dateRange is empty (both null)
-        if (!startDate && !endDate) {
-          return true // No date filter applied
-        }
-
-        const formattedStartDate = startDate?.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-        const formattedEndDate = endDate?.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })
-
-        // Ensure formatted dates are valid strings
-        if (!formattedStartDate || !formattedEndDate) return false
-
-        return formattedCreatedAt >= formattedStartDate && formattedCreatedAt <= formattedEndDate
-      })
+      .filter((row) => isOrderInDateRange(row, dateRange))
   }, [dateRange, orders, selectedStatuses])
 
   const data = useMemo(() => {
