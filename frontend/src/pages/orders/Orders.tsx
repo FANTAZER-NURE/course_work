@@ -15,7 +15,6 @@ import {
   Intent,
   Label,
   Spinner,
-  Tag,
   Tooltip,
 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/table/Table'
@@ -34,11 +33,11 @@ import { ItemPredicate, ItemRenderer, MultiSelect, Select } from '@blueprintjs/s
 import { usePageError } from 'hooks/use-page-error'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import { TUser } from '../../../../backend/src/types/user'
-import moment from 'moment'
-import { DISPLAY_DATE_FORMAT, formatDateForDisplay, momentFormatter } from 'utils/formatDate'
+import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
 import classNames from 'classnames'
 import { IconNames } from '@blueprintjs/icons'
+import { createOrders } from 'script.mjs'
 
 type Props = {}
 
@@ -50,6 +49,9 @@ export const Orders: React.FC<Props> = () => {
   const [shippingAddress, setShippingAddress] = useState('')
   const [orderItems, setOrderItems] = useState<ProductDetails[]>([])
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
+  const [selectedFuel, setSelectedFuel] = useState<{ name: string; id: number }[]>([])
+
+  // createOrders(20)
 
   const queryClient = useQueryClient()
 
@@ -121,6 +123,19 @@ export const Orders: React.FC<Props> = () => {
           selectedManagers.some((manager) => manager.id === row.managerId)
       )
       .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
+      // .filter((row) => {
+      //   console.log('here')
+
+      //   if (!selectedFuel.length) {
+      //     return true
+      //   }
+
+      //   console.log('here')
+
+      //   const productIds = row.productDetails.map((iter) => iter.id)
+
+      //   return selectedFuel.some((fuel) => productIds.includes(fuel.id.toString()))
+      // })
       .filter((row) => {
         // Ensure createdAt is a valid Date object
 
@@ -300,7 +315,7 @@ export const Orders: React.FC<Props> = () => {
       </FlexContainer>
       {user?.role === 'director' ? null : (
         <Button intent={Intent.PRIMARY} icon="plus" onClick={handleCreateOrder}>
-          Create order
+          Створити замовлення
         </Button>
       )}
       <VerticalSpacing />
@@ -308,7 +323,9 @@ export const Orders: React.FC<Props> = () => {
         <MultiSelect<TUser>
           items={managers || []}
           itemRenderer={renderManager}
-          noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+          noResults={
+            <MenuItem disabled={true} text="Немає результатів." roleStructure="listoption" />
+          }
           onItemSelect={(manager) => {
             if (selectedManagers.map((iter) => iter.id).includes(manager.id)) {
               setSelectedManagers((prev) => {
@@ -354,7 +371,9 @@ export const Orders: React.FC<Props> = () => {
               />
             )
           }}
-          noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+          noResults={
+            <MenuItem disabled={true} text="Немає результатів." roleStructure="listoption" />
+          }
           onItemSelect={(status) => {
             if (selectedStatuses.includes(status)) {
               setSelectedStatuses((prev) => {
@@ -376,6 +395,54 @@ export const Orders: React.FC<Props> = () => {
           selectedItems={selectedStatuses}
           onClear={() => setSelectedStatuses([])}
           placeholder="Статус..."
+          className={styles.multiSelect}
+        />
+        <MultiSelect<{ name: string; id: number }>
+          items={[
+            { name: 'A95', id: 1 },
+            { name: 'A92', id: 2 },
+            { name: 'Дизель', id: 3 },
+          ]}
+          itemRenderer={(fuel, { handleClick, handleFocus, modifiers, query }) => {
+            if (!modifiers.matchesPredicate) {
+              return null
+            }
+            return (
+              <MenuItem
+                active={modifiers.active}
+                disabled={modifiers.disabled}
+                key={fuel.id}
+                onClick={handleClick}
+                onFocus={handleFocus}
+                roleStructure="listoption"
+                text={fuel.name}
+              />
+            )
+          }}
+          noResults={
+            <MenuItem disabled={true} text="Немає результатів." roleStructure="listoption" />
+          }
+          onItemSelect={(fuel) => {
+            if (selectedFuel.includes(fuel)) {
+              setSelectedFuel((prev) => {
+                return prev.filter((iter) => iter.id !== fuel.id)
+              })
+              return
+            }
+
+            setSelectedFuel((prev) => {
+              return [...prev, fuel]
+            })
+          }}
+          tagRenderer={(value) => value.name}
+          onRemove={(fuel) => {
+            setSelectedFuel((prev) => {
+              return prev.filter((iter) => iter.id !== fuel.id)
+            })
+          }}
+          selectedItems={selectedFuel}
+          onClear={() => setSelectedStatuses([])}
+          placeholder="Паливо..."
           className={styles.multiSelect}
         />
 
@@ -417,7 +484,7 @@ export const Orders: React.FC<Props> = () => {
       </FlexContainer>
 
       <Dialog
-        title="Create order"
+        title="Створити замовлення"
         icon="plus"
         isOpen={isDialogOpened}
         canEscapeKeyClose
@@ -428,14 +495,14 @@ export const Orders: React.FC<Props> = () => {
         style={{ width: '900px' }}
       >
         <DialogBody>
-          <FormGroup helperText="You must fill all the fields" labelFor="text-input">
+          <FormGroup helperText="Ви маєте ззаповнити всі поля" labelFor="text-input">
             <Label>
-              Customer
+              Замовник
               <Select<TCustomer>
                 items={customers || []}
                 itemRenderer={renderCustomer}
                 noResults={
-                  <MenuItem disabled={true} text="No results." roleStructure="listoption" />
+                  <MenuItem disabled={true} text="Немає результатів." roleStructure="listoption" />
                 }
                 onItemSelect={setSelectedCustomer}
                 itemPredicate={filterCustomer}
@@ -445,16 +512,16 @@ export const Orders: React.FC<Props> = () => {
                   fill
                   icon="user"
                   rightIcon="caret-down"
-                  text={maybeRenderSelectedCustomer(selectedCustomer) ?? '(No selection)'}
+                  text={maybeRenderSelectedCustomer(selectedCustomer) ?? 'Не вибрано'}
                 />
               </Select>
             </Label>
             <VerticalSpacing />
             <Label>
-              Shipping address
+              Адреса доставки
               <InputGroup
                 id="address"
-                placeholder="Shipping address"
+                placeholder="Адреса доставки"
                 value={shippingAddress}
                 onChange={(e) => {
                   setShippingAddress(e.currentTarget.value)
@@ -480,7 +547,7 @@ export const Orders: React.FC<Props> = () => {
                 setOrderItems([...orderItems, {} as any])
               }}
             >
-              Add item
+              Додати товар
             </Button>
           </FormGroup>
         </DialogBody>
@@ -491,7 +558,7 @@ export const Orders: React.FC<Props> = () => {
                 setIsDialogOpened(false)
               }}
             >
-              Cancel
+              Відмінити
             </Button>
             {isCreateOrderDisabled ? (
               <Tooltip content="All fields must be filled">
@@ -500,7 +567,7 @@ export const Orders: React.FC<Props> = () => {
                   disabled={isCreateOrderDisabled}
                   loading={isOrderPosting}
                 >
-                  Create
+                  Створити
                 </Button>
               </Tooltip>
             ) : (
@@ -510,7 +577,7 @@ export const Orders: React.FC<Props> = () => {
                 onClick={handleCreateOrderRequest}
                 loading={isOrderPosting}
               >
-                Create
+                Створити
               </Button>
             )}
           </FlexContainer>
@@ -550,10 +617,10 @@ export const OrderItemRenderer = ({
         <>
           <FlexContainer between centeredY gap={5}>
             <Label>
-              Quantity
+              Обʼєм
               <InputGroup
                 id="quantity"
-                placeholder="Quantity"
+                placeholder="Обʼєм"
                 leftIcon="truck"
                 value={item.quantity ? item.quantity.toString() : '0'}
                 type="number"
@@ -575,11 +642,11 @@ export const OrderItemRenderer = ({
               />
             </Label>
             <Label>
-              Price per unit
+              Ціна за тону
               <InputGroup
                 id="price"
                 leftIcon="dollar"
-                placeholder="Price per unit"
+                placeholder="Ціна за тону"
                 value={item.pricePerUnit ? item.pricePerUnit.toString() : '0'}
                 type="number"
                 onChange={(e) => {
@@ -600,7 +667,7 @@ export const OrderItemRenderer = ({
               />
             </Label>
             <Label>
-              Product
+              Товар
               <Select<TProduct>
                 items={products || []}
                 itemRenderer={(product, { handleClick, handleFocus, modifiers, query }) => {
@@ -648,7 +715,7 @@ export const OrderItemRenderer = ({
             </Label>
             <H5 style={{ color: Colors.GRAY3, marginBottom: 0, width: '200px' }}>
               {item.quantity && item.pricePerUnit
-                ? `${(+item.quantity * +item.pricePerUnit).toFixed(3)} UAH`
+                ? `${(+item.quantity * +item.pricePerUnit).toFixed(3)} грн`
                 : '0 UAH'}
             </H5>
             <Button

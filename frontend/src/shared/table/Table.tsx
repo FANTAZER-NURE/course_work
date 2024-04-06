@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -10,12 +10,11 @@ import {
   AccessorKeyColumnDef,
   ExpandedState,
   getExpandedRowModel,
-  OnChangeFn,
 } from '@tanstack/react-table'
 import styles from './Table.module.scss'
 import { FaSort, FaSortDown, FaSortUp } from 'react-icons/fa'
 import classNames from 'classnames'
-import { Spinner, Tooltip } from '@blueprintjs/core'
+import { Tooltip } from '@blueprintjs/core'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { Loader } from '../../app/App'
 import { TOrder } from '../../../../backend/src/types/order'
@@ -105,8 +104,6 @@ export function Table<T extends { id: string }>({
           (product) => product.product.id === 1
         )
 
-        console.log('matchingProduct', matchingProduct)
-
         if (matchingProduct) {
           return total + matchingProduct.quantity
         }
@@ -117,8 +114,6 @@ export function Table<T extends { id: string }>({
 
     return 0
   }, [data, totalRow])
-
-  console.log(data)
 
   const total92 = useMemo(() => {
     if (totalRow) {

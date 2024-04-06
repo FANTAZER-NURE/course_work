@@ -1,3 +1,4 @@
+import {ApiError} from '../exceptions/ApiError'
 import {orderService} from '../services/ordersService'
 
 const getAll = async (req: any, res: any) => {
@@ -16,6 +17,17 @@ const getOne = async (req: any, res: any) => {
 
 const createOrder = async (req: any, res: any) => {
   const {customerId, shippingAddress, items, managerId} = req.body
+  console.log('---here-----')
+
+  console.log(customerId)
+  console.log(shippingAddress)
+  console.log(managerId)
+  console.log(items)
+
+  if (!items.length) {
+    ApiError.NotFound()
+    return
+  }
 
   const orders = await orderService.createOrder(customerId, shippingAddress, items, managerId)
 

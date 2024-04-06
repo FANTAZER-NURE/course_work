@@ -26,7 +26,7 @@ export async function createOrders(number) {
 
   function onRequest(request) {
     const accessToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0aXRhbm9sZWcwNzExMDJAZ21haWwuY29tIiwibmFtZSI6ItCa0LDQu9C40L3QvtCy0YHRjNC60LjQuSDQntC70LXQsyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcxMTc5NTk2OSwiZXhwIjoxNzExNzk2NTY5fQ.lJsHRdSz-XUMMDhjTk4u-n7zmYfa4wssi1u7F8QgJP8'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0aXRhbm9sZWcwNzExMDJAZ21haWwuY29tIiwibmFtZSI6ItCa0LDQu9C40L3QvtCy0YHRjNC60LjQuSDQntC70LXQsyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTcxMTg4NzU0MSwiZXhwIjoxNzExODg4MTQxfQ.iZn7Bf3niqDToDcaxhZz7FwA3zGuu4rmoVzWukZ02r8'
 
     if (accessToken) {
       request.headers.set('Authorization', `Bearer ${accessToken}`)
@@ -66,6 +66,32 @@ export async function createOrders(number) {
   const customerIds = customers.map((iter) => iter.id)
   const customerAddress = customers.map((iter) => iter.shippindAdress)
 
+  // try {
+
+  //   for (let i = 0; i < number; i++) {
+  //     const customerIndex = i % customerIds.length
+  //     const customerId = customerIds[customerIndex]
+  //     const shippingAddress = customerAddress[customerIndex]
+  //     const managerId = Number(mangerIds[customerIndex]) // Convert string to number
+
+  //     const randomItemCount = Math.floor(Math.random() * 3) + 1 // Generates random number between 1 and 3
+  //     const orderItems = []
+  //     for (let j = 0; j < randomItemCount; j++) {
+  //       const randomItemIndex = Math.floor(Math.random() * items.length)
+  //       orderItems.push(items[randomItemIndex])
+  //     }
+
+  //     await postApi('/orders', {
+  //       customerId,
+  //       shippingAddress,
+  //       orderItems, // Update to send the randomly selected order items
+  //       managerId,
+  //     })
+  //   }
+  // } catch (error) {
+  //   console.log(error)
+  // }
+
   try {
     for (let i = 0; i < number; i++) {
       const customerIndex = i % customerIds.length
@@ -73,17 +99,29 @@ export async function createOrders(number) {
       const shippingAddress = customerAddress[customerIndex]
       const managerId = Number(mangerIds[customerIndex]) // Convert string to number
 
-      const randomItemCount = Math.floor(Math.random() * 3) + 1
+      const randomItemCount = Math.floor(Math.random() * 3) + 1 // Generates random number between 1 and 3
       const orderItems = []
-      for (let j = 0; j < randomItemCount; j++) {
-        const randomItemIndex = Math.floor(Math.random() * items.length)
-        orderItems.push(items[randomItemIndex])
+
+      if (items.length > 0) {
+        while (orderItems.length < randomItemCount && orderItems.length < items.length) {
+          const randomItemIndex = Math.floor(Math.random() * items.length)
+          const randomProduct = items[randomItemIndex]
+          if (!orderItems.some((item) => item.product.id === randomProduct.product.id)) {
+            orderItems.push(randomProduct)
+          }
+        }
+        console.log('items', orderItems)
+      } else {
+        console.log('No items available to create order.')
+        return
       }
+
+      console.log('HERE', orderItems)
 
       await postApi('/orders', {
         customerId,
         shippingAddress,
-        items,
+        items: orderItems, // Update to send the randomly selected order items
         managerId,
       })
     }
