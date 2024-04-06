@@ -183,7 +183,16 @@ export const SalesByProductChart: React.FC<SalesByProductProps> = ({ managers, o
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
-            <YAxis className={styles.yAxis} />
+            <YAxis
+              className={styles.yAxis}
+              label={{
+                value: 'Обʼєм (тон)',
+                angle: -90,
+                dy: 50,
+                position: 'insideLeft',
+                style: { fontWeight: 'bold' },
+              }}
+            />
             <Legend />
             <Tooltip
               formatter={(value, name, props) => {
@@ -207,8 +216,6 @@ export const SalesByProductChart: React.FC<SalesByProductProps> = ({ managers, o
                     value: string
                   }
                   const radius = 10
-
-                  console.log(props)
 
                   return (
                     <text
@@ -242,8 +249,6 @@ export const SalesByProductChart: React.FC<SalesByProductProps> = ({ managers, o
                   }
                   const radius = 10
 
-                  console.log(props)
-
                   return (
                     <text
                       x={x + width / 2}
@@ -275,8 +280,6 @@ export const SalesByProductChart: React.FC<SalesByProductProps> = ({ managers, o
                     value: string
                   }
                   const radius = 10
-
-                  console.log(props)
 
                   return (
                     <text

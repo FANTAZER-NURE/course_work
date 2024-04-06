@@ -126,7 +126,7 @@ export const CustomersChart: React.FC<CustomersChartProps> = ({ customers, order
         <ResponsiveContainer
           // minHeight={1000}
           width={1000}
-          height={800}
+          height={600}
           className={classNames(Classes.ELEVATION_4, styles.chartContainer)}
         >
           <PieChart width={800} height={800}>
@@ -136,7 +136,7 @@ export const CustomersChart: React.FC<CustomersChartProps> = ({ customers, order
               cy="50%"
               labelLine={false}
               label
-              outerRadius={300}
+              outerRadius={250}
               fill="#8884d8"
               dataKey="orders"
             >

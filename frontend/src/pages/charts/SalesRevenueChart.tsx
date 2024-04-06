@@ -20,6 +20,7 @@ import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { IconNames } from '@blueprintjs/icons'
 import styles from './SalesRevenueChart.module.scss'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
+import { formatTick } from 'utils/formatTick'
 
 interface SalesRevenueChartProps {
   managers: TUser[]
@@ -207,7 +208,18 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
-            <YAxis className={styles.yAxis} />
+            <YAxis
+              className={styles.yAxis}
+              tickFormatter={formatTick}
+              label={{
+                value: chartMode === 'sales' ? 'Обʼєм (тон)' : 'Виручка (грн)',
+                angle: -90,
+                dy: 50,
+                dx: -10,
+                position: 'insideLeft',
+                style: { fontWeight: 'bold' },
+              }}
+            />
 
             <Tooltip
               formatter={(value, name, props) => {

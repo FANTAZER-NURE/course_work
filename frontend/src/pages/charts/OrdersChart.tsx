@@ -163,7 +163,16 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({ managers, orders }) =>
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
-            <YAxis className={styles.yAxis} />
+            <YAxis
+              className={styles.yAxis}
+              label={{
+                value: 'К-сть замовлень',
+                angle: -90,
+                dy: 50,
+                position: 'insideLeft',
+                style: { fontWeight: 'bold' },
+              }}
+            />
             <Tooltip
               formatter={(value, name, props) => {
                 return `${value} замовлень`

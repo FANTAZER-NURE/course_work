@@ -9,6 +9,7 @@ import { AuthContext } from 'shared/components/auth/AuthContext'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import styles from './Analytics.module.scss'
 import { CustomersChart } from 'pages/charts/CustomersChart'
+import { TrendsChart } from 'pages/charts/TrendsChart'
 
 interface AnalyticsProps {}
 
@@ -51,6 +52,8 @@ export const Analytics: React.FC<AnalyticsProps> = () => {
 
   return (
     <div className={styles.wrapper}>
+      <TrendsChart orders={orders} />
+      <VerticalSpacing size="xlarge" />
       <SalesRevenueChart managers={managers} orders={orders} />
       <VerticalSpacing size="xlarge" />
       <SalesByProductChart managers={managers} orders={orders} />
