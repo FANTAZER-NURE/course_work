@@ -12,6 +12,7 @@ import { AccountActivationPage } from 'pages/register/AccountActivationPage'
 import { Spinner } from '@blueprintjs/core/lib/esm/components/spinner/spinner'
 import { UsersPage } from 'pages/users/UsersPage'
 import { UserPage } from 'pages/user-page/UserPage'
+import { Analytics } from 'pages/analytics/Analytics'
 
 export const Loader = () => (
   <div className="loader-wrapper">
@@ -43,6 +44,7 @@ const App = () => {
           <Route path="users/:id" element={<UserPage />} />
           <Route path="orders/" element={<Orders />} />
           <Route path="orders/:id" element={<OrderPage />} />
+          <Route path="analytics" element={<Analytics />} />
         </Route>
       </Routes>
     </BrowserRouter>

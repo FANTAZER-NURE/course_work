@@ -1,0 +1,7 @@
+.yAxis {
+  & > text {
+    transform: translateX() rotateX(90deg);
+    font-size: 72px;
+    // transform: rotate(-90deg, 25deg, 285deg);
+  }
+}
