@@ -110,13 +110,10 @@ export async function createOrders(number) {
             orderItems.push(randomProduct)
           }
         }
-        console.log('items', orderItems)
       } else {
         console.log('No items available to create order.')
         return
       }
-
-      console.log('HERE', orderItems)
 
       await postApi('/orders', {
         customerId,

@@ -165,7 +165,11 @@ export const SalesByProductChart: React.FC<SalesByProductProps> = ({ managers, o
       <VerticalSpacing />
 
       <FlexContainer style={{ width: '100%' }} centered>
-        <ResponsiveContainer minHeight={600} width={1000}>
+        <ResponsiveContainer
+          minHeight={600}
+          width={1000}
+          className={classNames(Classes.ELEVATION_4, styles.chartContainer)}
+        >
           <BarChart
             width={500}
             height={300}

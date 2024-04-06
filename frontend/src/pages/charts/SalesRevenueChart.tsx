@@ -12,7 +12,7 @@ import {
   YAxis,
 } from 'recharts'
 import { FlexContainer } from 'shared/ui/FlexContainer'
-import { Button, Classes, H2, MenuItem, SegmentedControl } from '@blueprintjs/core'
+import { Button, Classes, H2, SegmentedControl } from '@blueprintjs/core'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
 import classNames from 'classnames'
@@ -98,25 +98,30 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
   }, [filteredOrders, managers, selectedManagers])
 
   const revenueData = useMemo(() => {
-    return managers.map((manager, i) => {
-      const managerRevenue = filteredOrders.reduce((acc, order) => {
-        if (order.managerId === manager.id) {
-          // Calculate total revenue by summing product pricePerUnit * quantity
-          const orderRevenue = order.productDetails.reduce((orderAcc, product) => {
-            return orderAcc + product.pricePerUnit * product.quantity
-          }, 0)
-          return acc + orderRevenue
-        }
-        return acc
-      }, 0) // Initial accumulator for sum
+    return managers
+      .filter(
+        (row) =>
+          !selectedManagers.length || selectedManagers.some((manager) => manager.id === row.id)
+      )
+      .map((manager, i) => {
+        const managerRevenue = filteredOrders.reduce((acc, order) => {
+          if (order.managerId === manager.id) {
+            // Calculate total revenue by summing product pricePerUnit * quantity
+            const orderRevenue = order.productDetails.reduce((orderAcc, product) => {
+              return orderAcc + product.pricePerUnit * product.quantity
+            }, 0)
+            return acc + orderRevenue
+          }
+          return acc
+        }, 0) // Initial accumulator for sum
 
-      return {
-        name: manager.name,
-        Виручка: managerRevenue, // Total manager revenue
-        fill: getColorForManager(i),
-      }
-    })
-  }, [filteredOrders, managers])
+        return {
+          name: manager.name,
+          Виручка: managerRevenue, // Total manager revenue
+          fill: getColorForManager(i),
+        }
+      })
+  }, [filteredOrders, managers, selectedManagers])
 
   const handleChartModeChange = useCallback((option: string) => {
     setChartMode((prev) => (prev === 'sales' ? 'revenue' : 'sales'))
@@ -127,25 +132,7 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
       <FlexContainer style={{ width: '100%' }} centered>
         <H2>Продажі та виручка</H2>
       </FlexContainer>
-      <FlexContainer style={{ width: '100%' }} centered>
-        <div style={{ width: 'fit-content' }}>
-          <SegmentedControl
-            options={[
-              {
-                label: 'Продажі',
-                value: 'sales',
-              },
-              {
-                label: 'Виручка',
-                value: 'revenue',
-              },
-            ]}
-            value={chartMode}
-            onValueChange={handleChartModeChange}
-          />
-        </div>
-      </FlexContainer>
-      <VerticalSpacing />
+
       <FlexContainer style={{ width: '100%' }} centered gap={10}>
         <div>
           <DateRangeInput3
@@ -178,11 +165,35 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
           className={styles.multiSelect}
         />
       </FlexContainer>
+      {/* <VerticalSpacing /> */}
+
+      <FlexContainer style={{ width: '100%' }} centered>
+        <div style={{ width: 'fit-content' }}>
+          <SegmentedControl
+            options={[
+              {
+                label: 'Продажі',
+                value: 'sales',
+              },
+              {
+                label: 'Виручка',
+                value: 'revenue',
+              },
+            ]}
+            value={chartMode}
+            onValueChange={handleChartModeChange}
+          />
+        </div>
+      </FlexContainer>
 
       <VerticalSpacing />
 
       <FlexContainer style={{ width: '100%' }} centered>
-        <ResponsiveContainer minHeight={600} width={1000}>
+        <ResponsiveContainer
+          minHeight={600}
+          width={1000}
+          className={classNames(Classes.ELEVATION_4, styles.chartContainer)}
+        >
           <BarChart
             width={500}
             height={300}
@@ -219,7 +230,7 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
   )
 }
 
-function getColorForManager(managerId: number) {
+export function getColorForManager(managerId: number) {
   const colors = ['#8ABBFF', '#72CA9B', '#FBB360', '#D69FD6']
   return colors[managerId % colors.length]
 }

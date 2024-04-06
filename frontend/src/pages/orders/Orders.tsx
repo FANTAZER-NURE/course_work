@@ -38,6 +38,7 @@ import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
 import classNames from 'classnames'
 import { IconNames } from '@blueprintjs/icons'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
+import { StatusFilter } from 'shared/ui/StatusFilter'
 
 type Props = {}
 
@@ -291,8 +292,7 @@ export const Orders: React.FC<Props> = () => {
           selectedManagers={selectedManagers}
           setSelectedManagers={setSelectedManagers}
         />
-
-        <MultiSelect<TOrder['status']>
+        {/* <MultiSelect<TOrder['status']>
           items={['created', 'loading', 'shipping', 'shipped', 'done']}
           itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
             if (!modifiers.matchesPredicate) {
@@ -335,6 +335,10 @@ export const Orders: React.FC<Props> = () => {
           onClear={() => setSelectedStatuses([])}
           placeholder="Статус..."
           className={styles.multiSelect}
+        /> */}
+        <StatusFilter
+          selectedStatuses={selectedStatuses}
+          setSelectedStatuses={setSelectedStatuses}
         />
         <MultiSelect<{ name: string; id: number }>
           items={[
@@ -384,7 +388,6 @@ export const Orders: React.FC<Props> = () => {
           placeholder="Паливо..."
           className={styles.multiSelect}
         />
-
         <FlexContainer gap={5}>
           <DateRangeInput3
             className={classNames(Classes.POPOVER_DISMISS_OVERRIDE, styles.dateInput)}
