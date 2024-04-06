@@ -1,5 +1,6 @@
 import { Spinner } from '@blueprintjs/core'
 import { getApi } from 'api/httpClient'
+import { SalesByProductChart } from 'pages/charts/SalesByProductChart'
 import { SalesRevenueChart } from 'pages/charts/SalesRevenueChart'
 import { useContext, useMemo } from 'react'
 import { useQuery } from 'react-query'
@@ -36,6 +37,7 @@ export const Analytics: React.FC<AnalyticsProps> = () => {
   return (
     <div>
       <SalesRevenueChart managers={managers} orders={orders} />
+      <SalesByProductChart managers={managers} orders={orders} />
     </div>
   )
 }

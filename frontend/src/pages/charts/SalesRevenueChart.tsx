@@ -12,13 +12,14 @@ import {
   YAxis,
 } from 'recharts'
 import { FlexContainer } from 'shared/ui/FlexContainer'
-import { Button, Classes, H2, SegmentedControl } from '@blueprintjs/core'
+import { Button, Classes, H2, MenuItem, SegmentedControl } from '@blueprintjs/core'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
 import classNames from 'classnames'
 import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { IconNames } from '@blueprintjs/icons'
 import styles from './SalesRevenueChart.module.scss'
+import { ManagerFilter } from 'shared/ui/ManagerFilter'
 
 interface SalesRevenueChartProps {
   managers: TUser[]
@@ -28,6 +29,7 @@ interface SalesRevenueChartProps {
 export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, orders }) => {
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
   const [chartMode, setChartMode] = useState<'sales' | 'revenue'>('sales')
+  const [selectedManagers, setSelectedManagers] = useState<TUser[]>([])
 
   const filteredOrders = useMemo(() => {
     return orders.filter((row) => {
@@ -70,25 +72,30 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
   }, [dateRange, orders])
 
   const salesData = useMemo(() => {
-    return managers.map((manager, i) => {
-      const managerVolume = filteredOrders.reduce((acc, order) => {
-        if (order.managerId === manager.id) {
-          // Calculate total quantity by summing product quantities
-          const orderQuantity = order.productDetails.reduce((orderAcc, product) => {
-            return orderAcc + product.quantity
-          }, 0)
-          return acc + orderQuantity
-        }
-        return acc
-      }, 0) // Initial accumulator for sum
+    return managers
+      .filter(
+        (row) =>
+          !selectedManagers.length || selectedManagers.some((manager) => manager.id === row.id)
+      )
+      .map((manager, i) => {
+        const managerVolume = filteredOrders.reduce((acc, order) => {
+          if (order.managerId === manager.id) {
+            // Calculate total quantity by summing product quantities
+            const orderQuantity = order.productDetails.reduce((orderAcc, product) => {
+              return orderAcc + product.quantity
+            }, 0)
+            return acc + orderQuantity
+          }
+          return acc
+        }, 0) // Initial accumulator for sum
 
-      return {
-        name: manager.name,
-        Тони: managerVolume, // Use volume instead of tons for clarity
-        fill: getColorForManager(i),
-      }
-    })
-  }, [filteredOrders, managers])
+        return {
+          name: manager.name,
+          Тони: managerVolume, // Use volume instead of tons for clarity
+          fill: getColorForManager(i),
+        }
+      })
+  }, [filteredOrders, managers, selectedManagers])
 
   const revenueData = useMemo(() => {
     return managers.map((manager, i) => {
@@ -139,29 +146,37 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
         </div>
       </FlexContainer>
       <VerticalSpacing />
-      <FlexContainer style={{ width: '100%' }} centered column>
-        <DateRangeInput3
-          className={classNames(Classes.POPOVER_DISMISS_OVERRIDE)}
-          onChange={(pickerValue: DateRange) => {
-            setDateRange(pickerValue)
-          }}
-          formatDate={momentFormatter(DISPLAY_DATE_FORMAT).formatDate}
-          parseDate={(str) => new Date(str)}
-          closeOnSelection={false}
-          highlightCurrentDay
-          shortcuts
-          popoverProps={{ position: 'bottom' }}
-          value={dateRange}
-          footerElement={<Button onClick={() => setDateRange([null, null])}>Reset</Button>}
-          allowSingleDayRange
-          startInputProps={{
-            leftIcon: IconNames.CALENDAR,
-          }}
-          endInputProps={{
-            leftIcon: IconNames.CALENDAR,
-          }}
+      <FlexContainer style={{ width: '100%' }} centered gap={10}>
+        <div>
+          <DateRangeInput3
+            className={classNames(Classes.POPOVER_DISMISS_OVERRIDE)}
+            onChange={(pickerValue: DateRange) => {
+              setDateRange(pickerValue)
+            }}
+            formatDate={momentFormatter(DISPLAY_DATE_FORMAT).formatDate}
+            parseDate={(str) => new Date(str)}
+            closeOnSelection={false}
+            highlightCurrentDay
+            shortcuts
+            popoverProps={{ position: 'bottom' }}
+            value={dateRange}
+            footerElement={<Button onClick={() => setDateRange([null, null])}>Reset</Button>}
+            allowSingleDayRange
+            startInputProps={{
+              leftIcon: IconNames.CALENDAR,
+            }}
+            endInputProps={{
+              leftIcon: IconNames.CALENDAR,
+            }}
+          />
+          <i style={{ fontSize: 12 }}>*Якщо не задана дата - відображені дані за всю історію</i>
+        </div>
+        <ManagerFilter
+          managers={managers}
+          selectedManagers={selectedManagers}
+          setSelectedManagers={setSelectedManagers}
+          className={styles.multiSelect}
         />
-        <i style={{ fontSize: 12 }}>*Якщо не задана дата - відображені дані за всю історію</i>
       </FlexContainer>
 
       <VerticalSpacing />
@@ -194,7 +209,7 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
             />
             <Bar
               dataKey={chartMode === 'sales' ? 'Тони' : 'Виручка'}
-              label={{ fill: 'black', fontSize: 20 }}
+              label={{ fill: '#738091', fontSize: 20 }}
               activeBar={<Rectangle fill="pink" stroke="blue" />}
             />
           </BarChart>

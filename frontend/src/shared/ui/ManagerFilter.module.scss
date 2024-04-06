@@ -1,0 +1,8 @@
+.multiSelect {
+  min-width: 100px;
+  display: flex;
+
+  &> div {
+    width: 100%;
+  }
+}

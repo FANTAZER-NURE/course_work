@@ -37,6 +37,7 @@ import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
 import classNames from 'classnames'
 import { IconNames } from '@blueprintjs/icons'
+import { ManagerFilter } from 'shared/ui/ManagerFilter'
 
 type Props = {}
 
@@ -248,17 +249,6 @@ export const Orders: React.FC<Props> = () => {
     }
   }
 
-  const filterManager: ItemPredicate<TUser> = (query, customer, _index, exactMatch) => {
-    const normalizedTitle = customer.name.toLowerCase()
-    const normalizedQuery = query.toLowerCase()
-
-    if (exactMatch) {
-      return normalizedTitle === normalizedQuery
-    } else {
-      return `${normalizedTitle} ${customer.email}`.indexOf(normalizedQuery) >= 0
-    }
-  }
-
   const renderCustomer: ItemRenderer<TCustomer> = useCallback(
     (customer, { handleClick, handleFocus, modifiers, query }) => {
       if (!modifiers.matchesPredicate) {
@@ -280,29 +270,6 @@ export const Orders: React.FC<Props> = () => {
     []
   )
 
-  const renderManager: ItemRenderer<TUser> = useCallback(
-    (customer, { handleClick, handleFocus, modifiers, query }) => {
-      if (!modifiers.matchesPredicate) {
-        return null
-      }
-      return (
-        <MenuItem
-          active={modifiers.active}
-          disabled={modifiers.disabled}
-          key={customer.id}
-          label={customer.email}
-          onClick={handleClick}
-          onFocus={handleFocus}
-          roleStructure="listoption"
-          text={`${customer.name}`}
-        />
-      )
-    },
-    []
-  )
-
-  const renderManagerTag = (manager: TUser) => manager.name
-
   if (isFetchingCustomers || isFetchingOrders || isFetchingProducts) {
     return <Spinner />
   }
@@ -319,37 +286,10 @@ export const Orders: React.FC<Props> = () => {
       )}
       <VerticalSpacing />
       <FlexContainer gap={10} wrap>
-        <MultiSelect<TUser>
-          items={managers || []}
-          itemRenderer={renderManager}
-          noResults={
-            <MenuItem disabled={true} text="Немає результатів." roleStructure="listoption" />
-          }
-          onItemSelect={(manager) => {
-            if (selectedManagers.map((iter) => iter.id).includes(manager.id)) {
-              setSelectedManagers((prev) => {
-                return prev.filter((iter) => iter.id !== manager.id)
-              })
-              return
-            }
-            setSelectedManagers((prev) => {
-              return [...prev, manager]
-            })
-          }}
-          itemPredicate={filterManager}
-          tagRenderer={renderManagerTag}
-          onRemove={(manager) => {
-            setSelectedManagers((prev) => {
-              return prev.filter((iter) => iter.id !== manager.id)
-            })
-          }}
-          selectedItems={selectedManagers}
-          itemsEqual={(itemA, itemB) => {
-            return itemA.id === itemB.id ? true : false
-          }}
-          onClear={() => setSelectedManagers([])}
-          placeholder="Менеджер..."
-          className={styles.multiSelect}
+        <ManagerFilter
+          managers={managers}
+          selectedManagers={selectedManagers}
+          setSelectedManagers={setSelectedManagers}
         />
 
         <MultiSelect<TOrder['status']>
