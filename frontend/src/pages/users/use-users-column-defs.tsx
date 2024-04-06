@@ -29,17 +29,17 @@ export function useUsersColumnDefs(orders: TOrder[]) {
         enableSorting: false,
       },
       {
-        header: 'Name',
+        header: 'Імʼя',
         accessorKey: 'name',
         cell: (info) => info.getValue(),
       },
       {
-        header: 'Email',
+        header: 'Пошта',
         accessorKey: 'email',
         cell: (info) => info.getValue(),
       },
       {
-        header: 'Active Orders',
+        header: 'Активні замовлення',
         accessorKey: 'orders',
         cell: (info) => {
           const value = (info.getValue() as 'admin') || 'director' || 'manager'
@@ -54,7 +54,7 @@ export function useUsersColumnDefs(orders: TOrder[]) {
         },
       },
       {
-        header: 'Role',
+        header: 'Роль',
         accessorKey: 'role',
         cell: (info) => {
           const value = (info.getValue() as 'admin') || 'director' || 'manager'

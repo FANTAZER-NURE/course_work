@@ -243,7 +243,7 @@ export const Orders: React.FC<Props> = () => {
   return (
     <FlexContainer column centered className={styles.wrapper}>
       <FlexContainer centered>
-        <H2>Orders</H2>
+        <H2>Журнал замовлень</H2>
       </FlexContainer>
       {user?.role === 'director' ? null : (
         <Button intent={Intent.PRIMARY} icon="plus" onClick={handleCreateOrder}>
@@ -257,50 +257,7 @@ export const Orders: React.FC<Props> = () => {
           selectedManagers={selectedManagers}
           setSelectedManagers={setSelectedManagers}
         />
-        {/* <MultiSelect<TOrder['status']>
-          items={['created', 'loading', 'shipping', 'shipped', 'done']}
-          itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
-            if (!modifiers.matchesPredicate) {
-              return null
-            }
-            return (
-              <MenuItem
-                active={modifiers.active}
-                disabled={modifiers.disabled}
-                key={status}
-                onClick={handleClick}
-                onFocus={handleFocus}
-                roleStructure="listoption"
-                text={status}
-              />
-            )
-          }}
-          noResults={
-            <MenuItem disabled={true} text="Немає результатів." roleStructure="listoption" />
-          }
-          onItemSelect={(status) => {
-            if (selectedStatuses.includes(status)) {
-              setSelectedStatuses((prev) => {
-                return prev.filter((iter) => iter !== status)
-              })
-              return
-            }
 
-            setSelectedStatuses((prev) => {
-              return [...prev, status]
-            })
-          }}
-          tagRenderer={(value) => value}
-          onRemove={(status) => {
-            setSelectedStatuses((prev) => {
-              return prev.filter((iter) => iter !== status)
-            })
-          }}
-          selectedItems={selectedStatuses}
-          onClear={() => setSelectedStatuses([])}
-          placeholder="Статус..."
-          className={styles.multiSelect}
-        /> */}
         <StatusFilter
           selectedStatuses={selectedStatuses}
           setSelectedStatuses={setSelectedStatuses}

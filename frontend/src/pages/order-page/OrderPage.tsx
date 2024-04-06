@@ -23,7 +23,7 @@ import { deleteApi, getApi, putApi } from 'api/httpClient'
 import { useQuery, useQueryClient } from 'react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import styles from './OrderPage.module.scss'
-import { useCallback, useContext, useMemo, useState } from 'react'
+import { SetStateAction, useCallback, useContext, useMemo, useState } from 'react'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { AuthContext } from 'shared/components/auth/AuthContext'
@@ -32,6 +32,7 @@ import { TCustomer } from '../../../../backend/src/types/customer'
 import { OrderItemRenderer } from 'pages/orders/Orders'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import isEqual from 'lodash/isEqual'
+import { StatusFilter } from 'shared/ui/StatusFilter'
 
 interface OrderPageProps {}
 
@@ -133,8 +134,8 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
 
   const BREADCRUMBS: BreadcrumbProps[] = useMemo(
     () => [
-      { href: '/orders', icon: 'folder-close', text: 'Orders' },
-      { href: `/orders/${id}`, icon: 'document', text: 'Order' },
+      { href: '/orders', icon: 'folder-close', text: 'Замовлення' },
+      { href: `/orders/${id}`, icon: 'document', text: 'Замовлення' },
     ],
     [id]
   )
@@ -318,11 +319,11 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
   return (
     <div className={styles.wrapper}>
       <Breadcrumbs currentBreadcrumbRenderer={renderCurrentBreadcrumb} items={BREADCRUMBS} />
-      <H2>Order #{order.id}</H2>
+      <VerticalSpacing />
       {user?.role !== 'director' ? (
         <FlexContainer gap={5}>
           <Button intent={Intent.WARNING} icon="edit" onClick={() => setIsDialogOpened(true)}>
-            Edit
+            Редагувати
           </Button>
           <Button
             loading={isOrderDeleting}
@@ -330,29 +331,31 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
             icon="cross"
             onClick={() => setIsDeleteDialogOpened(true)}
           >
-            Delete
+            Видалити
           </Button>
         </FlexContainer>
       ) : null}
+      <VerticalSpacing />
 
+      <H2>Замовлення №{order.id}</H2>
       <H3>
-        <b>Customer ID:</b> {customer?.name}
+        <b>Замовник:</b> {customer?.name}
       </H3>
       <Link to={`../../users/${manager.id}`}>
         <H3 style={{ color: '#4d5fc0' }}>
-          <b>Manager ID:</b> {manager.name}
+          <b>Менеджер:</b> {manager.name}
         </H3>
       </Link>
       <H3>
         <FlexContainer centeredY gap={10}>
-          <b>Status:</b>{' '}
+          <b>Статус:</b>{' '}
           <Tag intent={order.status === 'done' ? Intent.SUCCESS : Intent.WARNING} minimal>
             {order.status}
           </Tag>
         </FlexContainer>
       </H3>
       <H3>
-        <b>Created At: </b>
+        <b>Створено об: </b>
         {createdAt.toLocaleString('en-US', {
           day: '2-digit',
           month: '2-digit',
@@ -363,7 +366,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
         })}
       </H3>
       <H3>
-        <b>Updated At: </b>
+        <b>Востаннє змінено об: </b>
         {updatedAt.toLocaleString('en-US', {
           day: '2-digit',
           month: '2-digit',
@@ -374,19 +377,19 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
         })}
       </H3>
       <H3>
-        <b>Shipping Address:</b> {order.shippingAddress}
+        <b>Адреса доставки:</b> {order.shippingAddress}
       </H3>
       <VerticalSpacing />
-      <H2>Order Details</H2>
+      <H2>Деталі замовлення</H2>
 
       <table className={styles.orderDetailsTable}>
         <thead>
           <tr>
-            <th>Product ID</th>
-            <th>Name</th>
-            <th>Quantity</th>
-            <th>Unit Price</th>
-            <th>Total Price</th>
+            <th>ID продукту</th>
+            <th>Продукт</th>
+            <th>Обʼєм (тон)</th>
+            <th>Ціна за тону</th>
+            <th>Вартість за позицію</th>
           </tr>
         </thead>
         <tbody>
@@ -404,11 +407,11 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
       </table>
       <VerticalSpacing />
       <H3>
-        <b>Total Order Price:</b> {fullPrice} UAH
+        <b>Вартість всього замовлення:</b> {fullPrice} грн
       </H3>
 
       <Dialog
-        title="Update order"
+        title="Редагувати замовлення"
         icon="edit"
         isOpen={isDialogOpened}
         canEscapeKeyClose
@@ -422,13 +425,13 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
           <FormGroup
             helperText={
               isOrderModified
-                ? `*Yellow highlight - means this field is modified`
-                : 'You must fill all the fields'
+                ? `*Якщо поле підсвічене жовтим, значить ви змінили дані в цьому полі`
+                : 'Ви маєте заповнити всі поля, щоб зберегти зміни'
             }
             labelFor="text-input"
           >
             <Label>
-              Customer
+              Замовник
               <Select<TCustomer>
                 items={customers || []}
                 itemRenderer={renderCustomer}
@@ -450,10 +453,10 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
             </Label>
             <VerticalSpacing />
             <Label>
-              Shipping address
+              Адреса доставки
               <InputGroup
                 id="address"
-                placeholder="Shipping address"
+                placeholder=" Адреса доставки"
                 value={shippingAddress}
                 onChange={(e) => {
                   setShippingAddress(e.currentTarget.value)
@@ -463,7 +466,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
             </Label>
 
             <Label>
-              Status
+              Статус
               <Select
                 items={['created', 'loading', 'shipping', 'shipped', 'done']}
                 itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
@@ -526,7 +529,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                 ])
               }}
             >
-              Add item
+              Додати позицію
             </Button>
           </FormGroup>
         </DialogBody>
@@ -537,10 +540,10 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                 setIsDialogOpened(false)
               }}
             >
-              Cancel
+              Відмінити
             </Button>
             <Button icon="reset" intent={Intent.PRIMARY} onClick={handleResetToDefault}>
-              Reset
+              Скинути до початкового стану
             </Button>
             {!isOrderCorrect || !isOrderModified ? (
               <Tooltip content="All fields must be filled">
@@ -549,7 +552,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                   disabled={!isOrderCorrect || !isOrderModified}
                   loading={isOrderUpdating}
                 >
-                  Edit
+                  Редагувати
                 </Button>
               </Tooltip>
             ) : (
@@ -559,7 +562,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                 onClick={handleUpdateOrderRequest}
                 loading={isOrderUpdating}
               >
-                Edit
+                Редагувати
               </Button>
             )}
           </FlexContainer>
@@ -567,7 +570,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
       </Dialog>
 
       <Dialog
-        title="Delete order"
+        title="Видалити замовлення"
         icon="trash"
         isOpen={isDeleteDialogOpened}
         canEscapeKeyClose
@@ -577,8 +580,12 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
         }}
       >
         <DialogBody>
-          <Callout intent={Intent.DANGER} title="You are about to delete this order" icon="trash">
-            Are you sure?
+          <Callout
+            intent={Intent.DANGER}
+            title="Вим намагаєтеся видалити це замовлення"
+            icon="trash"
+          >
+            Ви впевнені?
           </Callout>
         </DialogBody>
         <DialogFooter>
@@ -588,10 +595,10 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                 setIsDeleteDialogOpened(false)
               }}
             >
-              Cancel
+              Відмінити
             </Button>
             <Button intent={Intent.DANGER} onClick={handleDeleteOrder}>
-              Delete
+              Видалити
             </Button>
           </FlexContainer>
         </DialogFooter>

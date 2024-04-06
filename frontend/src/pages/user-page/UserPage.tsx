@@ -112,10 +112,10 @@ export const UserPage: React.FC<UserPageProps> = () => {
 
   const BREADCRUMBS: BreadcrumbProps[] = useMemo(
     () => [
-      { href: '/users', icon: 'people', text: 'Users' },
-      { href: `/users/${id}`, icon: 'user', text: '' },
+      { href: '/users', icon: 'people', text: 'Користувачі' as string },
+      { href: `/users/${id}`, icon: 'user', text: user?.name as string },
     ],
-    [id]
+    [id, user?.name]
   )
 
   const isUserModified = useMemo(() => {
@@ -264,11 +264,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
   }
 
   const renderCurrentBreadcrumb = ({ text, ...restProps }: BreadcrumbProps) => {
-    return (
-      <Breadcrumb {...restProps}>
-        {text} {user.name}
-      </Breadcrumb>
-    )
+    return <Breadcrumb {...restProps}>{text}</Breadcrumb>
   }
 
   return (
@@ -280,7 +276,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
       {loggedUser?.role === 'admin' ? (
         <FlexContainer gap={5} centeredY>
           <Button intent={Intent.WARNING} icon="edit" onClick={() => setIsDialogOpened(true)}>
-            Edit
+            Редагувати
           </Button>
           <Button
             loading={isUserDeleting}
@@ -288,13 +284,13 @@ export const UserPage: React.FC<UserPageProps> = () => {
             icon="cross"
             onClick={() => setIsDeleteDialogOpened(true)}
           >
-            Delete
+            Видалити
           </Button>
         </FlexContainer>
       ) : null}
 
-      <H3>Role: {ROLES_MAP[user.role]}</H3>
-      <H3>Email: {user.email}</H3>
+      <H3>Роль: {ROLES_MAP[user.role]}</H3>
+      <H3>Пошта: {user.email}</H3>
 
       {user.role === 'manager' ? (
         <FlexContainer centered column>
@@ -317,7 +313,9 @@ export const UserPage: React.FC<UserPageProps> = () => {
                   />
                 )
               }}
-              noResults={<MenuItem disabled={true} text="No results." roleStructure="listoption" />}
+              noResults={
+                <MenuItem disabled={true} text="Нема результатів." roleStructure="listoption" />
+              }
               onItemSelect={(status) => {
                 if (selectedStatuses.includes(status)) {
                   setSelectedStatuses((prev) => {
@@ -377,7 +375,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
               large
             >
               <Tab
-                title="Active orders"
+                title="Активні замовлення"
                 id="active"
                 tagContent={rowsActive.length}
                 tagProps={{ intent: Intent.NONE, round: true }}
@@ -397,7 +395,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
                 }
               ></Tab>
               <Tab
-                title="Completed orders"
+                title="Виконанані замовлення"
                 id="completed"
                 tagContent={rowsDone.length}
                 tagProps={{ intent: Intent.NONE, round: true }}
@@ -423,7 +421,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
       ) : null}
 
       <Dialog
-        title="Update user"
+        title="Редагувати користувача"
         icon="edit"
         isOpen={isDialogOpened}
         canEscapeKeyClose
@@ -437,16 +435,16 @@ export const UserPage: React.FC<UserPageProps> = () => {
           <FormGroup
             helperText={
               isUserModified
-                ? `*Yellow highlight - means this field is modified`
-                : 'You must fill all the fields'
+                ? `*Якщо поле підсвічене жовтим, значить ви змінили дані в цьому полі`
+                : 'Ви маєте заповнити всі поля, щоб зберегти зміни'
             }
             labelFor="text-input"
           >
             <Label>
-              Name
+              Імʼя
               <InputGroup
                 id="name"
-                placeholder="Name"
+                placeholder="Імʼя"
                 value={name}
                 onChange={(e) => {
                   setName(e.currentTarget.value)
@@ -455,10 +453,10 @@ export const UserPage: React.FC<UserPageProps> = () => {
               />
             </Label>
             <Label>
-              Email
+              Пошта
               <InputGroup
                 id="email"
-                placeholder="Email"
+                placeholder="Пошта"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.currentTarget.value)
@@ -467,7 +465,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
               />
             </Label>
             <Label>
-              Status
+              Статус
               <Select
                 items={['director', 'manager']}
                 itemRenderer={(status, { handleClick, handleFocus, modifiers, query }) => {
@@ -511,10 +509,10 @@ export const UserPage: React.FC<UserPageProps> = () => {
                 setIsDialogOpened(false)
               }}
             >
-              Cancel
+              Відмінити
             </Button>
             <Button icon="reset" intent={Intent.PRIMARY} onClick={handleResetToDefault}>
-              Reset
+              Скинути
             </Button>
             {!isUserCorrect || !isUserModified ? (
               <Tooltip content="All fields must be filled/modified">
@@ -523,7 +521,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
                   disabled={!isUserCorrect || !isUserModified}
                   loading={isUserUpdating}
                 >
-                  Edit
+                  Редагувати
                 </Button>
               </Tooltip>
             ) : (
@@ -533,7 +531,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
                 onClick={handleUpdateUserRequest}
                 loading={isUserUpdating}
               >
-                Edit
+                Редагувати
               </Button>
             )}
           </FlexContainer>
@@ -541,7 +539,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
       </Dialog>
 
       <Dialog
-        title="Delete user"
+        title="Видалити користувача"
         icon="trash"
         isOpen={isDeleteDialogOpened}
         canEscapeKeyClose
@@ -551,8 +549,12 @@ export const UserPage: React.FC<UserPageProps> = () => {
         }}
       >
         <DialogBody>
-          <Callout intent={Intent.DANGER} title="You are about to delete this order" icon="trash">
-            Are you sure?
+          <Callout
+            intent={Intent.DANGER}
+            title="Ви намагаєтеся видалити цього користувача"
+            icon="trash"
+          >
+            Ви впевнені?
           </Callout>
         </DialogBody>
         <DialogFooter>
@@ -562,10 +564,10 @@ export const UserPage: React.FC<UserPageProps> = () => {
                 setIsDeleteDialogOpened(false)
               }}
             >
-              Cancel
+              Відмінити
             </Button>
             <Button intent={Intent.DANGER} onClick={handleDeleteUser}>
-              Delete
+              Видалити
             </Button>
           </FlexContainer>
         </DialogFooter>

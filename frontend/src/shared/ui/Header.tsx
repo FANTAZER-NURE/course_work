@@ -33,7 +33,7 @@ export const Header = () => {
             }
             to="/orders"
           >
-            <Button className={styles.button} minimal icon="numbered-list" text="Orders" />
+            <Button className={styles.button} minimal icon="numbered-list" text="Замовлення" />
           </NavLink>
           <NavLink
             className={({ isActive }) =>
@@ -45,7 +45,7 @@ export const Header = () => {
               className={styles.button}
               minimal
               icon="user"
-              text={user?.role !== 'admin' ? 'Managers' : 'Users'}
+              text={user?.role !== 'admin' ? 'Менеджери' : 'Користувачі'}
             />
           </NavLink>
           <NavLink
@@ -54,7 +54,7 @@ export const Header = () => {
             }
             to="/analytics"
           >
-            <Button className={styles.button} minimal icon="series-search" text="Analytics" />
+            <Button className={styles.button} minimal icon="series-search" text="Аналітика" />
           </NavLink>
         </FlexContainer>
       </Navbar.Group>
@@ -62,7 +62,7 @@ export const Header = () => {
       {user && (
         <Navbar.Group align={Alignment.RIGHT}>
           <Button className="bp3-minimal" icon="log-out" onClick={logout}>
-            Logout
+            Вийти
           </Button>
         </Navbar.Group>
       )}
