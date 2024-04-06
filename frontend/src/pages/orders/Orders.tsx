@@ -37,7 +37,6 @@ import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { DateRange, DateRangeInput3 } from '@blueprintjs/datetime2'
 import classNames from 'classnames'
 import { IconNames } from '@blueprintjs/icons'
-import { createOrders } from 'script.mjs'
 
 type Props = {}
 
