@@ -11,6 +11,7 @@ import styles from './Analytics.module.scss'
 import { CustomersChart } from 'pages/analytics/charts/CustomersChart'
 import { TrendsChart } from 'pages/analytics/charts/TrendsChart'
 import { OrderFrequencyChart } from './charts/OrderFrequencyChart'
+import { AverageOrderPriceChart } from './charts/AverageOrderPriceChart'
 
 interface AnalyticsProps {}
 
@@ -64,6 +65,8 @@ export const Analytics: React.FC<AnalyticsProps> = () => {
       <CustomersChart customers={customers} orders={orders} />
       <VerticalSpacing size="xlarge" />
       <OrderFrequencyChart orders={orders} managers={managers} />
+      <VerticalSpacing size="xlarge" />
+      <AverageOrderPriceChart orders={orders} managers={managers} />
     </div>
   )
 }
