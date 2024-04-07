@@ -12,6 +12,7 @@ import { CustomersChart } from 'pages/analytics/charts/CustomersChart'
 import { TrendsChart } from 'pages/analytics/charts/TrendsChart'
 import { OrderFrequencyChart } from './charts/OrderFrequencyChart'
 import { AverageOrderPriceChart } from './charts/AverageOrderPriceChart'
+import { AverageOrderVolumeChart } from './charts/AverageOrderVolume'
 
 interface AnalyticsProps {}
 
@@ -67,6 +68,8 @@ export const Analytics: React.FC<AnalyticsProps> = () => {
       <OrderFrequencyChart orders={orders} managers={managers} />
       <VerticalSpacing size="xlarge" />
       <AverageOrderPriceChart orders={orders} managers={managers} />
+      <VerticalSpacing size="xlarge" />
+      <AverageOrderVolumeChart orders={orders} managers={managers} />
     </div>
   )
 }

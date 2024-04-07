@@ -24,7 +24,7 @@ import { getColorForManager } from './SalesRevenueChart'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
 import { formatTick } from 'utils/formatTick'
 
-interface AverageOrderPriceChartProps {
+interface AverageOrderVolumeChartProps {
   orders: TOrder[]
   managers: TUser[]
 }
@@ -34,7 +34,7 @@ type MonthlyData = { date: Date; total: number; count: number } & {
   [managerId: string]: number | string
 }
 
-export const AverageOrderPriceChart: React.FC<AverageOrderPriceChartProps> = ({
+export const AverageOrderVolumeChart: React.FC<AverageOrderVolumeChartProps> = ({
   orders,
   managers,
 }) => {
@@ -59,24 +59,24 @@ export const AverageOrderPriceChart: React.FC<AverageOrderPriceChartProps> = ({
       const month = createdAt.toLocaleString('default', { month: 'short', year: 'numeric' })
       const managerId = order.managerId.toString()
 
-      // Calculate the total price of the order
-      let orderPrice = 0
+      // Calculate the total volume of the order
+      let orderVolume = 0
       order.productDetails.forEach((item) => {
-        orderPrice += item.quantity * item.pricePerUnit
+        orderVolume += item.quantity
       })
 
       if (monthlyData[month]) {
         monthlyData[month][managerId] =
-          ((monthlyData[month][managerId] as number) || 0) + orderPrice
-        monthlyData[month].total = (monthlyData[month].total || 0) + orderPrice
+          ((monthlyData[month][managerId] as number) || 0) + orderVolume
+        monthlyData[month].total = (monthlyData[month].total || 0) + orderVolume
         monthlyData[month].count = (monthlyData[month].count || 0) + 1
       } else {
         monthlyData[month] = {
           date: createdAt,
           name: month,
-          total: orderPrice,
+          total: orderVolume,
           count: 1,
-          [managerId]: orderPrice,
+          [managerId]: orderVolume,
         } as MonthlyData
       }
     })
@@ -84,7 +84,7 @@ export const AverageOrderPriceChart: React.FC<AverageOrderPriceChartProps> = ({
     const sortedData = Object.values(monthlyData)
     sortedData.sort((a, b) => a.date.getTime() - b.date.getTime())
 
-    // Calculate the average price and remove the date, total, and count properties
+    // Calculate the average volume and remove the date, total, and count properties
     return sortedData.map(({ date, total, count, ...rest }) => {
       Object.keys(rest).forEach((key) => {
         if (key !== 'name') {
@@ -98,7 +98,7 @@ export const AverageOrderPriceChart: React.FC<AverageOrderPriceChartProps> = ({
   return (
     <div>
       <FlexContainer style={{ width: '100%' }} centered>
-        <H2>Середня ціня замовлення</H2>
+        <H2>Середній обʼєм замовлення</H2>
       </FlexContainer>
       <VerticalSpacing />
       <FlexContainer style={{ width: '100%' }} centered gap={10}>
@@ -156,11 +156,10 @@ export const AverageOrderPriceChart: React.FC<AverageOrderPriceChartProps> = ({
             <XAxis dataKey="name" />
             <YAxis
               label={{
-                value: 'Середня ціна замовлення (грн)',
+                value: 'Середній обʼєм замовлення (тон)',
                 angle: -90,
                 position: 'insideLeft',
-                dy: 50,
-                dx: -30,
+                dy: 70,
                 style: { fontWeight: 'bold' },
               }}
               tickFormatter={formatTick}
@@ -176,7 +175,7 @@ export const AverageOrderPriceChart: React.FC<AverageOrderPriceChartProps> = ({
             <Tooltip
               formatter={(value, name, props) => {
                 const manager = managers.find((manager) => manager.id === name)
-                return [`${Number(value).toFixed(3)} грн`, manager?.name]
+                return [`${Number(value).toFixed(3)} тон`, manager?.name]
               }}
             />
             {filteredManagers.map((manager, i) => (
