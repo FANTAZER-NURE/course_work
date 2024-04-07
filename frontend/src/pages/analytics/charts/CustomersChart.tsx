@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { TOrder } from '../../../../backend/src/types/order'
+import { TOrder } from '../../../../../backend/src/types/order'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { Button, Classes, H2 } from '@blueprintjs/core'
@@ -9,8 +9,8 @@ import classNames from 'classnames'
 import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { IconNames } from '@blueprintjs/icons'
 import styles from './SalesRevenueChart.module.scss'
-import { TCustomer } from '../../../../backend/src/types/customer'
 import { isOrderInDateRange } from 'utils/isOrderInDateRange'
+import { TCustomer } from '../../../../../backend/src/types/customer'
 
 interface CustomersChartProps {
   customers: TCustomer[]

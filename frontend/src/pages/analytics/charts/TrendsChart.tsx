@@ -1,5 +1,4 @@
 import { PureComponent, useCallback, useMemo, useState } from 'react'
-import { TOrder } from '../../../../backend/src/types/order'
 import {
   Area,
   AreaChart,
@@ -21,6 +20,8 @@ import { DISPLAY_DATE_FORMAT, momentFormatter } from 'utils/formatDate'
 import { IconNames } from '@blueprintjs/icons'
 import styles from './TrendsChart.module.scss'
 import { formatTick } from 'utils/formatTick'
+import { isOrderInDateRange } from 'utils/isOrderInDateRange'
+import { TOrder } from '../../../../../backend/src/types/order'
 
 interface TrendsChartProps {
   orders: TOrder[]
@@ -30,26 +31,7 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({ orders }) => {
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
 
   const filteredOrders = useMemo(() => {
-    return orders.filter((row) => {
-      // Ensure createdAt is a valid Date object
-      const createdAt = new Date(row.createdAt)
-
-      if (!(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
-        return false // Exclude invalid dates
-      }
-
-      const [startDate, endDate] = dateRange
-      // Check if dateRange is empty (both null)
-      if (!startDate && !endDate) {
-        return true // No date filter applied
-      }
-
-      // Ensure dates are valid
-      if (!startDate || !endDate) return false
-
-      // Compare date objects directly
-      return createdAt >= startDate && createdAt <= endDate
-    })
+    return orders.filter((row) => isOrderInDateRange(row, dateRange))
   }, [dateRange, orders])
 
   const data = useMemo(() => {
@@ -175,6 +157,8 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({ orders }) => {
                   return `${value} тон`
                 }
 
+                
+
                 return `${value} грн`
               }}
             />
@@ -184,6 +168,7 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({ orders }) => {
               dataKey="Обʼєм"
               stroke="#8884d8"
               activeDot={{ r: 8 }}
+              strokeWidth={2}
             />
             <Line
               yAxisId="right"
@@ -191,6 +176,7 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({ orders }) => {
               dataKey="Виручка"
               stroke="#82ca9d"
               activeDot={{ r: 8 }}
+              strokeWidth={2}
             />
           </LineChart>
         </ResponsiveContainer>

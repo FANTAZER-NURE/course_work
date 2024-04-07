@@ -1,15 +1,16 @@
 import { Spinner } from '@blueprintjs/core'
 import { getApi } from 'api/httpClient'
-import { OrdersChart } from 'pages/charts/OrdersChart'
-import { SalesByProductChart } from 'pages/charts/SalesByProductChart'
-import { SalesRevenueChart } from 'pages/charts/SalesRevenueChart'
+import { OrdersChart } from 'pages/analytics/charts/OrdersChart'
+import { SalesByProductChart } from 'pages/analytics/charts/SalesByProductChart'
+import { SalesRevenueChart } from 'pages/analytics/charts/SalesRevenueChart'
 import { useContext, useMemo } from 'react'
 import { useQuery } from 'react-query'
 import { AuthContext } from 'shared/components/auth/AuthContext'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import styles from './Analytics.module.scss'
-import { CustomersChart } from 'pages/charts/CustomersChart'
-import { TrendsChart } from 'pages/charts/TrendsChart'
+import { CustomersChart } from 'pages/analytics/charts/CustomersChart'
+import { TrendsChart } from 'pages/analytics/charts/TrendsChart'
+import { OrderFrequencyChart } from './charts/OrderFrequencyChart'
 
 interface AnalyticsProps {}
 
@@ -61,6 +62,8 @@ export const Analytics: React.FC<AnalyticsProps> = () => {
       <OrdersChart managers={managers} orders={orders} />
       <VerticalSpacing size="xlarge" />
       <CustomersChart customers={customers} orders={orders} />
+      <VerticalSpacing size="xlarge" />
+      <OrderFrequencyChart orders={orders} managers={managers} />
     </div>
   )
 }

@@ -1,6 +1,4 @@
 import { useCallback, useMemo, useState } from 'react'
-import { TOrder } from '../../../../backend/src/types/order'
-import { TUser } from '../../../../backend/src/types/user'
 import {
   Bar,
   BarChart,
@@ -22,6 +20,8 @@ import styles from './SalesRevenueChart.module.scss'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
 import { formatTick } from 'utils/formatTick'
 import { isOrderInDateRange } from 'utils/isOrderInDateRange'
+import { TUser } from '../../../../../backend/src/types/user'
+import { TOrder } from '../../../../../backend/src/types/order'
 
 interface SalesRevenueChartProps {
   managers: TUser[]

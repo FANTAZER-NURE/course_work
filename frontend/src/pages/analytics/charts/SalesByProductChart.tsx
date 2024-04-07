@@ -1,6 +1,4 @@
 import { useMemo, useState } from 'react'
-import { TOrder } from '../../../../backend/src/types/order'
-import { TUser } from '../../../../backend/src/types/user'
 import {
   Bar,
   BarChart,
@@ -23,6 +21,8 @@ import { IconNames } from '@blueprintjs/icons'
 import styles from './SalesRevenueChart.module.scss'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
 import { isOrderInDateRange } from 'utils/isOrderInDateRange'
+import { TUser } from '../../../../../backend/src/types/user'
+import { TOrder } from '../../../../../backend/src/types/order'
 
 interface SalesByProductProps {
   managers: TUser[]

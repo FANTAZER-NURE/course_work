@@ -23,7 +23,7 @@ import { deleteApi, getApi, putApi } from 'api/httpClient'
 import { useQuery, useQueryClient } from 'react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import styles from './OrderPage.module.scss'
-import { SetStateAction, useCallback, useContext, useMemo, useState } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { VerticalSpacing } from 'shared/ui/VerticalSpacing'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { AuthContext } from 'shared/components/auth/AuthContext'
@@ -32,7 +32,6 @@ import { TCustomer } from '../../../../backend/src/types/customer'
 import { OrderItemRenderer } from 'pages/orders/Orders'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import isEqual from 'lodash/isEqual'
-import { StatusFilter } from 'shared/ui/StatusFilter'
 
 interface OrderPageProps {}
 
