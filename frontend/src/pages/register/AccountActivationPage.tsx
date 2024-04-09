@@ -32,14 +32,14 @@ export const AccountActivationPage = () => {
 
   return (
     <FlexContainer centered style={{ height: '100vh' }} column>
-      <h1 className="title">Account activation</h1>
+      <h1 className="title">Активація аккаунту</h1>
 
       {error ? (
         <p className="notification is-danger is-light">{error}</p>
       ) : (
         <>
-          <p className="notification is-success is-light">Your account is now active</p>
-          <Link to="../orders/">Go back to the platform</Link>
+          <p className="notification is-success is-light">Ваш аккаунт активовано!</p>
+          <Link to="../orders/">Повернутися на платформу</Link>
         </>
       )}
     </FlexContainer>

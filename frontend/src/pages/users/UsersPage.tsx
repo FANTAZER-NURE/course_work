@@ -85,7 +85,7 @@ export const UsersPage = () => {
 
   return (
     <FlexContainer column centered className={classNames(styles.wrapper)}>
-      <h1 className="title">Users</h1>
+      <h1 className="title"> {user?.role === 'admin' ? 'Користувачі' : 'Менеджери'}</h1>
 
       {user!.role === 'admin' ? (
         <Button
@@ -95,7 +95,7 @@ export const UsersPage = () => {
             navigate('../register')
           }}
         >
-          Create User
+          Створити користувача
         </Button>
       ) : null}
 

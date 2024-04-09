@@ -9,13 +9,13 @@ import styles from './Login.module.scss'
 
 function validateEmail(value: string) {
   if (!value) {
-    return 'Email is required'
+    return 'Введіть email'
   }
 
   const emailPattern = /^[\w.+-]+@([\w-]+\.){1,3}[\w-]{2,}$/
 
   if (!emailPattern.test(value)) {
-    return 'Email is not valid'
+    return 'Email не валідний'
   }
 
   return null
@@ -23,11 +23,11 @@ function validateEmail(value: string) {
 
 function validatePassword(value: string) {
   if (!value) {
-    return 'Password is required'
+    return 'Введіть пароль'
   }
 
   if (value.length < 6) {
-    return 'At least 6 characters'
+    return 'Пароль має бути не менше 6 символів'
   }
 
   return null
@@ -60,7 +60,7 @@ export const LoginPage = () => {
       >
         {({ touched, errors, isSubmitting }) => (
           <Form className={cn('box', styles.form)}>
-            <h1 className="title">Log in</h1>
+            <h1 className="title">Вхід</h1>
             <div className="field">
               <label htmlFor="email" className="label">
                 Email
@@ -72,7 +72,7 @@ export const LoginPage = () => {
                   name="email"
                   type="email"
                   id="email"
-                  placeholder="e.g. bobsmith@gmail.com"
+                  placeholder="bobsmith@gmail.com"
                   className={cn('input', {
                     'is-danger': touched.email && errors.email,
                   })}
@@ -93,7 +93,7 @@ export const LoginPage = () => {
             </div>
             <div className="field">
               <label htmlFor="password" className="label">
-                Password
+                Пароль
               </label>
 
               <div className="control has-icons-left has-icons-right">
@@ -122,7 +122,7 @@ export const LoginPage = () => {
               {touched.password && errors.password ? (
                 <p className="help is-danger">{errors.password}</p>
               ) : (
-                <p className="help">At least 6 characters</p>
+                <p className="help">Мінімум 6 символів</p>
               )}
             </div>
             <div className="field">
@@ -133,7 +133,7 @@ export const LoginPage = () => {
                 })}
                 disabled={Boolean(isSubmitting || errors.email || errors.password)}
               >
-                Log in
+                Увійти
               </button>
             </div>
           </Form>

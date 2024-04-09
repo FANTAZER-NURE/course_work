@@ -10,7 +10,7 @@ import styles from './Register.module.scss'
 
 function validateEmail(value: string) {
   if (!value) {
-    return 'Email is required'
+    return 'Заповніть email'
   }
 
   const emailPattern = /^[\w.+-]+@([\w-]+\.){1,3}[\w-]{2,}$/
@@ -24,11 +24,11 @@ function validateEmail(value: string) {
 
 const validatePassword = (value: string) => {
   if (!value) {
-    return 'Password is required'
+    return 'Заповніть пароль'
   }
 
   if (value.length < 6) {
-    return 'At least 6 characters'
+    return 'Пароль має бути не менше 6 символів'
   }
 
   return null
@@ -36,7 +36,7 @@ const validatePassword = (value: string) => {
 
 const validateName = (value: string) => {
   if (!value) {
-    return "Name can't be empty"
+    return "Імʼя не може бути пустим"
   }
 
   return null
@@ -44,7 +44,7 @@ const validateName = (value: string) => {
 
 const validateRole = (value: string) => {
   if (value === 'Select role') {
-    return 'You must select a role'
+    return 'Виберіть роль користувача'
   }
 
   return null
@@ -57,8 +57,8 @@ export const Register = () => {
   if (registered) {
     return (
       <FlexContainer centered style={{ height: '100vh' }} column>
-        <h1 className="title">Check your email</h1>
-        <p>We have sent you an email with the activation link</p>
+        <h1 className="title">Первірте вашу пошту</h1>
+        <p>Ми відправили вам лист з посиланням для активації</p>
       </FlexContainer>
     )
   }
@@ -70,14 +70,14 @@ export const Register = () => {
           email: '',
           password: '',
           name: '',
-          role: '', // New field for role
+          role: '',
         }}
         validateOnMount={true}
         onSubmit={({ email, password, name, role }, formikHelpers) => {
           formikHelpers.setSubmitting(true)
 
           authService
-            .register({ email, password, name, role }) // Pass name and role to your register function
+            .register({ email, password, name, role })
             .then(() => {
               setRegistered(true)
             })
@@ -108,7 +108,7 @@ export const Register = () => {
       >
         {({ touched, errors, isSubmitting }) => (
           <Form className={cn('box', styles.form)}>
-            <h1 className="title">Sign up</h1>
+            <h1 className="title">Реєстрація</h1>
             <div className="field">
               <label htmlFor="email" className="label">
                 Email
@@ -119,7 +119,7 @@ export const Register = () => {
                   name="email"
                   type="email"
                   id="email"
-                  placeholder="e.g. bobsmith@gmail.com"
+                  placeholder="bobsmith@gmail.com"
                   className={cn('input', {
                     'is-danger': touched.email && errors.email,
                   })}
@@ -137,7 +137,7 @@ export const Register = () => {
             </div>
             <div className="field">
               <label htmlFor="password" className="label">
-                Password
+                Пароль
               </label>
               <div className="control has-icons-left has-icons-right">
                 <Field
@@ -165,10 +165,9 @@ export const Register = () => {
                 <p className="help">At least 6 characters</p>
               )}
             </div>
-            {/* New field for name */}
             <div className="field">
               <label htmlFor="name" className="label">
-                Name
+                Імʼя
               </label>
               <div className="control has-icons-left has-icons-right">
                 <Field
@@ -176,7 +175,7 @@ export const Register = () => {
                   name="name"
                   type="text"
                   id="name"
-                  placeholder="Your name"
+                  placeholder="Іван Іванов"
                   className={cn('input', {
                     'is-danger': touched.name && errors.name,
                   })}
@@ -187,10 +186,9 @@ export const Register = () => {
               </div>
               {touched.name && errors.name && <p className="help is-danger">{errors.name}</p>}
             </div>
-            {/* New select box for role */}
             <div className="field">
               <label htmlFor="role" className="label">
-                Role
+                Роль
               </label>
               <div className="control has-icons-left has-icons-right">
                 <Field
@@ -202,7 +200,7 @@ export const Register = () => {
                     'is-danger': touched.role && errors.role,
                   })}
                 >
-                  <option value="">Select role</option>
+                  <option value="">Виберіть Роль</option>
                   <option value="director">Director</option>
                   <option value="manager">Manager</option>
                 </Field>
@@ -222,7 +220,7 @@ export const Register = () => {
                   isSubmitting || errors.email || errors.password || errors.name || errors.role
                 )}
               >
-                Sign up
+                Зареєструватися
               </button>
             </div>
           </Form>

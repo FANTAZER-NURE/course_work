@@ -32,6 +32,7 @@ import { TCustomer } from '../../../../backend/src/types/customer'
 import { OrderItemRenderer } from 'pages/orders/Orders'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import isEqual from 'lodash/isEqual'
+import { numberWithSpaces } from 'utils/numberWithSpaces'
 
 interface OrderPageProps {}
 
@@ -397,16 +398,21 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
               <tr key={productDetail.product.id}>
                 <td>{productDetail.product.id}</td>
                 <td>{productDetail.product.name}</td>
-                <td>{`${productDetail.quantity} T`}</td>
-                <td>{parseInt(productDetail.pricePerUnit.toString()).toFixed(2)}</td>
-                <td>{(+productDetail.quantity * +productDetail.pricePerUnit).toFixed(2)} UAH</td>
+                <td>{`${productDetail.quantity} т`}</td>
+                <td>{numberWithSpaces(parseInt(productDetail.pricePerUnit.toFixed(2)))}</td>
+                <td>
+                  {numberWithSpaces(
+                    parseInt((+productDetail.quantity * +productDetail.pricePerUnit).toFixed(2))
+                  )}{' '}
+                  грн
+                </td>
               </tr>
             ))}
         </tbody>
       </table>
       <VerticalSpacing />
       <H3>
-        <b>Вартість всього замовлення:</b> {fullPrice} грн
+        <b>Вартість всього замовлення:</b> {numberWithSpaces(fullPrice)} грн
       </H3>
 
       <Dialog

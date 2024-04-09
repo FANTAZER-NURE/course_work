@@ -18,4 +18,8 @@
   :global(.bp5-tab-list) {
     justify-content: center;
   }
+
+  :global(.bp5-tab-indicator-wrapper) {
+    outline: none;
+  }
 }

@@ -5,6 +5,7 @@ import { TUser } from '../../../../backend/src/types/user'
 import React from 'react'
 import { TCustomer } from '../../../../backend/src/types/customer'
 import { Link } from 'react-router-dom'
+import { numberWithSpaces } from 'utils/numberWithSpaces'
 
 export type OrderRowType = TOrder & {
   orderPrice: number
@@ -78,14 +79,33 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
               {items.map((item) => {
                 return (
                   <div key={item.id}>
-                    {item.product.name}: {item.pricePerUnit * item.quantity}UAH ({item.quantity}
-                    T)
+                    {item.product.name}: {item.quantity}т (
+                    {numberWithSpaces(item.pricePerUnit * item.quantity)} грн)
                   </div>
                 )
               })}
             </div>
           )
         },
+      },
+      {
+        header: 'Ціна',
+        accessorKey: 'pricePerUnit',
+        cell: ({ row, getValue }) => {
+          const items = row.original.productDetails
+          return (
+            <div style={{ height: 'fit-content' }}>
+              {items.map((item) => {
+                return (
+                  <div key={item.id}>
+                    {item.product.name}: {numberWithSpaces(item.pricePerUnit)} грн/т
+                  </div>
+                )
+              })}
+            </div>
+          )
+        },
+        enableSorting: false,
       },
 
       {
@@ -100,7 +120,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
             price += item.quantity * item.pricePerUnit
           })
 
-          return price.toLocaleString('en-US')
+          return numberWithSpaces(price)
         },
         sortingFn: (rowA: Row<OrderRowType>, rowB: Row<OrderRowType>) => {
           const itemsA = rowA.original.productDetails

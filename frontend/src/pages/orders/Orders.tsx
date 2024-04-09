@@ -580,7 +580,7 @@ export const OrderItemRenderer = ({
             <H5 style={{ color: Colors.GRAY3, marginBottom: 0, width: '200px' }}>
               {item.quantity && item.pricePerUnit
                 ? `${(+item.quantity * +item.pricePerUnit).toFixed(3)} грн`
-                : '0 UAH'}
+                : '0 грн'}
             </H5>
             <Button
               minimal

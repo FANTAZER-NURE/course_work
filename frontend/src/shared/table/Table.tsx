@@ -18,6 +18,7 @@ import { Tooltip } from '@blueprintjs/core'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { Loader } from '../../app/App'
 import { TOrder } from '../../../../backend/src/types/order'
+import { numberWithSpaces } from 'utils/numberWithSpaces'
 
 export interface BaseTableRow {
   _id: string
@@ -227,19 +228,21 @@ export function Table<T extends { id: string }>({
                   <td className={styles.tableCell}>
                     <Tooltip content="Загальний обʼєм">
                       <b>
-                        A95: {total95}T
+                        A95: {total95}т
                         <br />
-                        A92: {total92}T
+                        A92: {total92}т
                         <br />
-                        Дизель: {totalDiesel}T
+                        Дизель: {totalDiesel}т
                       </b>
                     </Tooltip>
                   </td>
+                  <td className={styles.tableCell}></td>
                   <td className={styles.tableCell}>
                     <Tooltip content="Загальна сума">
-                      <b>{totalPrice.toLocaleString('en-US')}</b>
+                      <b>{numberWithSpaces(totalPrice)}</b>
                     </Tooltip>
                   </td>
+
                   <td className={styles.tableCell}></td>
                 </tr>
               ) : null}
