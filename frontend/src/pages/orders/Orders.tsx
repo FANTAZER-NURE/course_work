@@ -125,23 +125,23 @@ export const Orders: React.FC<Props> = () => {
           selectedManagers.some((manager) => manager.id === row.managerId)
       )
       .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
-      // .filter((row) => {
-      //   console.log('here')
+      .filter((row) => {
+        console.log('here')
 
-      //   if (!selectedFuel.length) {
-      //     return true
-      //   }
+        if (!selectedFuel.length) {
+          return true
+        }
 
-      //   console.log('here')
+        console.log('here')
 
-      //   const productIds = row.productDetails.map((iter) => iter.id)
+        const productIds = row.productDetails.map((iter) => iter.id)
 
-      //   return selectedFuel.some((fuel) => productIds.includes(fuel.id.toString()))
-      // })
+        return selectedFuel.some((fuel) => productIds.includes(fuel.id.toString()))
+      })
       .filter((row) => isOrderInDateRange(row, dateRange))
 
     return filteredRows
-  }, [dateRange, orders, selectedManagers, selectedStatuses])
+  }, [dateRange, orders, selectedFuel, selectedManagers, selectedStatuses])
 
   const isCreateOrderDisabled = useMemo(() => {
     if (!orderItems.length) {
