@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { TUser } from '../../../../../backend/src/types/user'
 import {
   Bar,
@@ -23,6 +23,7 @@ import { getColorForManager } from './SalesRevenueChart'
 import { StatusFilter } from 'shared/ui/StatusFilter'
 import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 import { TOrder } from '../../../../../backend/src/types/order'
+import { AuthContext } from 'shared/components/auth/AuthContext'
 
 interface OrdersChartProps {
   managers: TUser[]
@@ -33,6 +34,7 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({ managers, orders }) =>
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
   const [selectedManagers, setSelectedManagers] = useState<TUser[]>([])
   const [selectedStatuses, setSelectedStatuses] = useState<TOrder['status'][]>([])
+  const { user } = useContext(AuthContext)
 
   const filteredOrders = useMemo(() => {
     return orders
@@ -61,6 +63,12 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({ managers, orders }) =>
       fill: getColorForManager(i),
     }))
   }, [filteredOrders, managers, selectedManagers])
+
+  useEffect(() => {
+    if (user && user.role === 'manager') {
+      setSelectedManagers([user])
+    }
+  }, [user])
 
   return (
     <div>
@@ -93,12 +101,14 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({ managers, orders }) =>
           />
           <i style={{ fontSize: 12 }}>*Якщо не задана дата - відображені дані за всю історію</i>
         </div>
-        <ManagerFilter
-          managers={managers}
-          selectedManagers={selectedManagers}
-          setSelectedManagers={setSelectedManagers}
-          className={styles.multiSelect}
-        />
+        {user?.role !== 'manager' ? (
+          <ManagerFilter
+            managers={managers}
+            selectedManagers={selectedManagers}
+            setSelectedManagers={setSelectedManagers}
+            className={styles.multiSelect}
+          />
+        ) : null}
 
         <StatusFilter
           selectedStatuses={selectedStatuses}

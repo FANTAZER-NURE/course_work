@@ -1,4 +1,4 @@
-import { PureComponent, useCallback, useMemo, useState } from 'react'
+import { PureComponent, useCallback, useContext, useMemo, useState } from 'react'
 import {
   Area,
   AreaChart,
@@ -22,6 +22,7 @@ import styles from './TrendsChart.module.scss'
 import { formatTick } from 'utils/formatTick'
 import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 import { TOrder } from '../../../../../backend/src/types/order'
+import { AuthContext } from 'shared/components/auth/AuthContext'
 
 interface TrendsChartProps {
   orders: TOrder[]

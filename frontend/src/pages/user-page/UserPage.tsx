@@ -292,7 +292,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
       <H3>Роль: {ROLES_MAP[user.role]}</H3>
       <H3>Пошта: {user.email}</H3>
 
-      {user.role === 'manager' ? (
+      {loggedUser?.role !== 'manager' && user.role === 'manager' ? (
         <FlexContainer centered column>
           <FlexContainer gap={10} wrap>
             <MultiSelect<TOrder['status']>
@@ -364,6 +364,7 @@ export const UserPage: React.FC<UserPageProps> = () => {
               />
             </FlexContainer>
           </FlexContainer>
+
           <FlexContainer centeredX className={styles.tableWrapper}>
             <Tabs
               animate

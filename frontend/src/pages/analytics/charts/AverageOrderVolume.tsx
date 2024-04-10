@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { TOrder } from '../../../../../backend/src/types/order'
 import {
   CartesianGrid,
@@ -23,6 +23,7 @@ import { TUser } from '../../../../../backend/src/types/user'
 import { getColorForManager } from './SalesRevenueChart'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
 import { formatTick } from 'utils/formatTick'
+import { AuthContext } from 'shared/components/auth/AuthContext'
 
 interface AverageOrderVolumeChartProps {
   orders: TOrder[]
@@ -40,6 +41,8 @@ export const AverageOrderVolumeChart: React.FC<AverageOrderVolumeChartProps> = (
 }) => {
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
   const [selectedManagers, setSelectedManagers] = useState<TUser[]>([])
+
+  const { user } = useContext(AuthContext)
 
   const filteredOrders = useMemo(() => {
     return orders.filter((row) => isOrderInDateRange(row, dateRange))
@@ -95,6 +98,12 @@ export const AverageOrderVolumeChart: React.FC<AverageOrderVolumeChartProps> = (
     }) as MonthlyData[]
   }, [filteredOrders])
 
+  useEffect(() => {
+    if (user && user.role === 'manager') {
+      setSelectedManagers([user])
+    }
+  }, [user])
+
   return (
     <div>
       <FlexContainer style={{ width: '100%' }} centered>
@@ -126,12 +135,14 @@ export const AverageOrderVolumeChart: React.FC<AverageOrderVolumeChartProps> = (
           />
           <i style={{ fontSize: 12 }}>*Якщо не задана дата - відображені дані за всю історію</i>
         </div>
-        <ManagerFilter
-          managers={managers}
-          selectedManagers={selectedManagers}
-          setSelectedManagers={setSelectedManagers}
-          className={styles.multiSelect}
-        />
+        {user?.role !== 'manager' ? (
+          <ManagerFilter
+            managers={managers}
+            selectedManagers={selectedManagers}
+            setSelectedManagers={setSelectedManagers}
+            className={styles.multiSelect}
+          />
+        ) : null}
       </FlexContainer>
       <VerticalSpacing />
 

@@ -59,12 +59,6 @@ export const Orders: React.FC<Props> = () => {
 
   const [error, setError] = usePageError('')
 
-  useEffect(() => {
-    if (selectedCustomer && selectedCustomer.shippindAdress) {
-      setShippingAddress(selectedCustomer.shippindAdress)
-    }
-  }, [selectedCustomer])
-
   const { users, user } = useContext(AuthContext)
 
   const { data: orders, isFetching: isFetchingOrders } = useQuery(
@@ -232,6 +226,18 @@ export const Orders: React.FC<Props> = () => {
     []
   )
 
+  useEffect(() => {
+    if (user && user.role === 'manager') {
+      setSelectedManagers([user])
+    }
+  }, [user])
+
+  useEffect(() => {
+    if (selectedCustomer && selectedCustomer.shippindAdress) {
+      setShippingAddress(selectedCustomer.shippindAdress)
+    }
+  }, [selectedCustomer])
+
   if (isFetchingCustomers || isFetchingOrders || isFetchingProducts) {
     return <Spinner />
   }
@@ -248,11 +254,13 @@ export const Orders: React.FC<Props> = () => {
       )}
       <VerticalSpacing />
       <FlexContainer gap={10} wrap>
-        <ManagerFilter
-          managers={managers}
-          selectedManagers={selectedManagers}
-          setSelectedManagers={setSelectedManagers}
-        />
+        {user?.role !== 'manager' ? (
+          <ManagerFilter
+            managers={managers}
+            selectedManagers={selectedManagers}
+            setSelectedManagers={setSelectedManagers}
+          />
+        ) : null}
 
         <StatusFilter
           selectedStatuses={selectedStatuses}

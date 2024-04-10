@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -22,6 +22,7 @@ import { formatTick } from 'utils/formatTick'
 import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 import { TUser } from '../../../../../backend/src/types/user'
 import { TOrder } from '../../../../../backend/src/types/order'
+import { AuthContext } from 'shared/components/auth/AuthContext'
 
 interface SalesRevenueChartProps {
   managers: TUser[]
@@ -32,6 +33,7 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
   const [chartMode, setChartMode] = useState<'sales' | 'revenue'>('sales')
   const [selectedManagers, setSelectedManagers] = useState<TUser[]>([])
+  const { user } = useContext(AuthContext)
 
   const filteredOrders = useMemo(() => {
     return orders.filter((row) => isOrderInDateRange(row, dateRange))
@@ -93,6 +95,12 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
     setChartMode((prev) => (prev === 'sales' ? 'revenue' : 'sales'))
   }, [])
 
+  useEffect(() => {
+    if (user && user.role === 'manager') {
+      setSelectedManagers([user])
+    }
+  }, [user])
+
   return (
     <div>
       <FlexContainer style={{ width: '100%' }} centered>
@@ -124,14 +132,16 @@ export const SalesRevenueChart: React.FC<SalesRevenueChartProps> = ({ managers, 
           />
           <i style={{ fontSize: 12 }}>*Якщо не задана дата - відображені дані за всю історію</i>
         </div>
-        <ManagerFilter
-          managers={managers}
-          selectedManagers={selectedManagers}
-          setSelectedManagers={setSelectedManagers}
-          className={styles.multiSelect}
-        />
+
+        {user?.role !== 'manager' ? (
+          <ManagerFilter
+            managers={managers}
+            selectedManagers={selectedManagers}
+            setSelectedManagers={setSelectedManagers}
+            className={styles.multiSelect}
+          />
+        ) : null}
       </FlexContainer>
-      {/* <VerticalSpacing /> */}
 
       <FlexContainer style={{ width: '100%' }} centered>
         <div style={{ width: 'fit-content' }}>

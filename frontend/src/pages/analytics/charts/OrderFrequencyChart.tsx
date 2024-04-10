@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { TOrder } from '../../../../../backend/src/types/order'
 import {
   CartesianGrid,
@@ -22,6 +22,7 @@ import { isOrderInDateRange } from 'utils/isOrderInDateRange'
 import { TUser } from '../../../../../backend/src/types/user'
 import { getColorForManager } from './SalesRevenueChart'
 import { ManagerFilter } from 'shared/ui/ManagerFilter'
+import { AuthContext } from 'shared/components/auth/AuthContext'
 
 interface OrderFrequencyChartProps {
   orders: TOrder[]
@@ -33,6 +34,8 @@ type MonthlyData = { date: Date } & { name: string; [managerId: string]: number 
 export const OrderFrequencyChart: React.FC<OrderFrequencyChartProps> = ({ orders, managers }) => {
   const [dateRange, setDateRange] = useState<DateRange>([null, null])
   const [selectedManagers, setSelectedManagers] = useState<TUser[]>([])
+
+  const { user } = useContext(AuthContext)
 
   const filteredOrders = useMemo(() => {
     return orders.filter((row) => isOrderInDateRange(row, dateRange))
@@ -66,6 +69,12 @@ export const OrderFrequencyChart: React.FC<OrderFrequencyChartProps> = ({ orders
     return sortedData.map(({ date, ...rest }) => rest) as MonthlyData[]
   }, [filteredOrders])
 
+  useEffect(() => {
+    if (user && user.role === 'manager') {
+      setSelectedManagers([user])
+    }
+  }, [user])
+
   return (
     <div>
       <FlexContainer style={{ width: '100%' }} centered>
@@ -97,12 +106,14 @@ export const OrderFrequencyChart: React.FC<OrderFrequencyChartProps> = ({ orders
           />
           <i style={{ fontSize: 12 }}>*Якщо не задана дата - відображені дані за всю історію</i>
         </div>
-        <ManagerFilter
-          managers={managers}
-          selectedManagers={selectedManagers}
-          setSelectedManagers={setSelectedManagers}
-          className={styles.multiSelect}
-        />
+        {user?.role !== 'manager' ? (
+          <ManagerFilter
+            managers={managers}
+            selectedManagers={selectedManagers}
+            setSelectedManagers={setSelectedManagers}
+            className={styles.multiSelect}
+          />
+        ) : null}
       </FlexContainer>
       <VerticalSpacing />
 
