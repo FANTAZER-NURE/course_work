@@ -5,7 +5,7 @@ export type TOrder = {
   id: string
   customerId: number
   managerId: number
-  status: 'created' | 'loading' | 'shipping' | 'shipped' | 'done'
+  status: 'created' | 'loading' | 'shipping' | 'shipped' | 'done' | 'canceled'
   createdAt: Date
   updatedAt: Date
   shippingAddress: string

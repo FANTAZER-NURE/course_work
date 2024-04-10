@@ -6,6 +6,7 @@ import React from 'react'
 import { TCustomer } from '../../../../backend/src/types/customer'
 import { Link } from 'react-router-dom'
 import { numberWithSpaces } from 'utils/numberWithSpaces'
+import { STATUS_MAP } from 'constants/status-map'
 
 export type OrderRowType = TOrder & {
   orderPrice: number
@@ -37,7 +38,7 @@ export function useOrdersColumnDefs(managers: TUser[], customers: TCustomer[]) {
       {
         header: 'Статус',
         accessorKey: 'status',
-        cell: (info) => info.getValue(),
+        cell: (info) => STATUS_MAP[info.getValue() as TOrder['status']],
       },
       {
         header: 'Менеджер',

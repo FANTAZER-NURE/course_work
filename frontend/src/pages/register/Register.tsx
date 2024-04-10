@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Formik, Form, Field } from 'formik'
 import cn from 'classnames'
 import { usePageError } from 'hooks/use-page-error'
 import { authService } from 'services/authService'
 import { FlexContainer } from 'shared/ui/FlexContainer'
-import Select from 'react-select/dist/declarations/src/Select'
 import styles from './Register.module.scss'
 
 function validateEmail(value: string) {

@@ -33,6 +33,7 @@ import { OrderItemRenderer } from 'pages/orders/Orders'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import isEqual from 'lodash/isEqual'
 import { numberWithSpaces } from 'utils/numberWithSpaces'
+import { STATUS_MAP } from 'constants/status-map'
 
 interface OrderPageProps {}
 
@@ -350,7 +351,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
         <FlexContainer centeredY gap={10}>
           <b>Статус:</b>{' '}
           <Tag intent={order.status === 'done' ? Intent.SUCCESS : Intent.WARNING} minimal>
-            {order.status}
+            {STATUS_MAP[order.status]}
           </Tag>
         </FlexContainer>
       </H3>
@@ -486,7 +487,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                       onClick={handleClick}
                       onFocus={handleFocus}
                       roleStructure="listoption"
-                      text={status}
+                      text={STATUS_MAP[status as TOrder['status']]}
                     />
                   )
                 }}
@@ -502,7 +503,7 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
                   rightIcon="caret-down"
                   intent={selectedStatus !== order.status ? Intent.WARNING : Intent.NONE}
                 >
-                  {selectedStatus}
+                  {STATUS_MAP[selectedStatus as TOrder['status']]}
                 </Button>
               </Select>
             </Label>
@@ -615,7 +616,3 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
 function maybeRenderSelectedCustomer(selectedCustomer: TCustomer | null) {
   return selectedCustomer ? `${selectedCustomer.name}` : undefined
 }
-
-// function maybeRenderSelectedProduct(selectedProduct: TProduct | null) {
-//   return selectedProduct ? `${selectedProduct.name}` : undefined
-// }
