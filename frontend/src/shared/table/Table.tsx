@@ -116,6 +116,24 @@ export function Table<T extends { id: string }>({
     return 0
   }, [data, totalRow])
 
+  const total95Price = useMemo(() => {
+    if (totalRow) {
+      return data.reduce((total, order) => {
+        const matchingProduct = (order as any as TOrder).productDetails.find(
+          (product) => product.product.id === 1
+        )
+
+        if (matchingProduct) {
+          return total + matchingProduct.quantity * matchingProduct.pricePerUnit
+        }
+
+        return total
+      }, 0)
+    }
+
+    return 0
+  }, [data, totalRow])
+
   const total92 = useMemo(() => {
     if (totalRow) {
       return data.reduce((total, order) => {
@@ -133,6 +151,25 @@ export function Table<T extends { id: string }>({
 
     return 0
   }, [data, totalRow])
+
+  const total92Price = useMemo(() => {
+    if (totalRow) {
+      return data.reduce((total, order) => {
+        const matchingProduct = (order as any as TOrder).productDetails.find(
+          (product) => product.product.id === 2
+        )
+
+        if (matchingProduct) {
+          return total + matchingProduct.quantity * matchingProduct.pricePerUnit
+        }
+
+        return total
+      }, 0)
+    }
+
+    return 0
+  }, [data, totalRow])
+
   const totalDiesel = useMemo(() => {
     if (totalRow) {
       return data.reduce((total, order) => {
@@ -142,6 +179,24 @@ export function Table<T extends { id: string }>({
 
         if (matchingProduct) {
           return total + matchingProduct.quantity
+        }
+
+        return total
+      }, 0)
+    }
+
+    return 0
+  }, [data, totalRow])
+
+  const totalDieselPrice = useMemo(() => {
+    if (totalRow) {
+      return data.reduce((total, order) => {
+        const matchingProduct = (order as any as TOrder).productDetails.find(
+          (product) => product.product.id === 3
+        )
+
+        if (matchingProduct) {
+          return total + matchingProduct.quantity * matchingProduct.pricePerUnit
         }
 
         return total
@@ -228,11 +283,11 @@ export function Table<T extends { id: string }>({
                   <td className={styles.tableCell}>
                     <Tooltip content="Загальний обʼєм">
                       <b>
-                        A95: {total95}т
+                        A95: {total95}т ({numberWithSpaces(total95Price)} грн)
                         <br />
-                        A92: {total92}т
+                        A92: {total92}т ({numberWithSpaces(total92Price)} грн)
                         <br />
-                        Дизель: {totalDiesel}т
+                        Дизель: {totalDiesel}т ({numberWithSpaces(totalDieselPrice)} грн)
                       </b>
                     </Tooltip>
                   </td>

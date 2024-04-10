@@ -126,13 +126,9 @@ export const Orders: React.FC<Props> = () => {
       )
       .filter((row) => !selectedStatuses.length || selectedStatuses.includes(row.status))
       .filter((row) => {
-        console.log('here')
-
         if (!selectedFuel.length) {
           return true
         }
-
-        console.log('here')
 
         const productIds = row.productDetails.map((iter) => iter.id)
 
@@ -310,7 +306,7 @@ export const Orders: React.FC<Props> = () => {
           placeholder="Паливо..."
           className={styles.multiSelect}
         />
-        <FlexContainer gap={5}>
+        <FlexContainer column gap={5}>
           <DateRangeInput3
             className={classNames(Classes.POPOVER_DISMISS_OVERRIDE, styles.dateInput)}
             onChange={(pickerValue: DateRange) => {
@@ -332,6 +328,7 @@ export const Orders: React.FC<Props> = () => {
               leftIcon: IconNames.CALENDAR,
             }}
           />
+          <i style={{ fontSize: 12 }}>*Якщо не задана дата - відображені дані за всю історію</i>
         </FlexContainer>
       </FlexContainer>
       <VerticalSpacing />
