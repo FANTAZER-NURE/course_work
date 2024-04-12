@@ -323,17 +323,39 @@ export const OrderPage: React.FC<OrderPageProps> = () => {
       <VerticalSpacing />
       {user?.role !== 'director' ? (
         <FlexContainer gap={5}>
-          <Button intent={Intent.WARNING} icon="edit" onClick={() => setIsDialogOpened(true)}>
-            Редагувати
-          </Button>
-          <Button
-            loading={isOrderDeleting}
-            intent={Intent.DANGER}
-            icon="cross"
-            onClick={() => setIsDeleteDialogOpened(true)}
+          <Tooltip
+            content={
+              order.status === 'done'
+                ? 'Ви не можете редагувати замовлення післ того як відмитили його виконаним'
+                : undefined
+            }
           >
-            Видалити
-          </Button>
+            <Button
+              intent={Intent.WARNING}
+              icon="edit"
+              onClick={() => setIsDialogOpened(true)}
+              disabled={order.status === 'done'}
+            >
+              Редагувати
+            </Button>
+          </Tooltip>
+          <Tooltip
+            content={
+              order.status === 'done'
+                ? 'Ви не можете редагувати замовлення післ того як відмитили його виконаним'
+                : undefined
+            }
+          >
+            <Button
+              loading={isOrderDeleting}
+              intent={Intent.DANGER}
+              icon="cross"
+              onClick={() => setIsDeleteDialogOpened(true)}
+              disabled={order.status === 'done'}
+            >
+              Видалити
+            </Button>
+          </Tooltip>
         </FlexContainer>
       ) : null}
       <VerticalSpacing />
