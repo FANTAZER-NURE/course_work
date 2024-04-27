@@ -6,7 +6,7 @@ import { Avatar } from './Avatar'
 import { FlexContainer } from './FlexContainer'
 import classNames from 'classnames'
 import styles from './Header.module.scss'
-import { ROLE_INTENTS_MAP } from 'constants/role-intent'
+import { ROLE_INTENTS_MAP } from 'utils/constants/role-intent'
 
 export const Header = () => {
   const { user, logout } = useContext(AuthContext)

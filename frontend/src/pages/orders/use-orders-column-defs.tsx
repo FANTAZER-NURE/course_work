@@ -6,7 +6,7 @@ import React from 'react'
 import { TCustomer } from '../../../../backend/src/types/customer'
 import { Link } from 'react-router-dom'
 import { numberWithSpaces } from 'utils/numberWithSpaces'
-import { STATUS_MAP } from 'constants/status-map'
+import { STATUS_MAP } from 'utils/constants/status-map'
 
 export type OrderRowType = TOrder & {
   orderPrice: number

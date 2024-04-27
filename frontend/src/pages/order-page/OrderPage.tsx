@@ -33,7 +33,7 @@ import { OrderItemRenderer } from 'pages/orders/Orders'
 import { ProductDetails, TOrder } from '../../../../backend/src/types/order'
 import isEqual from 'lodash/isEqual'
 import { numberWithSpaces } from 'utils/numberWithSpaces'
-import { STATUS_MAP } from 'constants/status-map'
+import { STATUS_MAP } from 'utils/constants/status-map'
 
 interface OrderPageProps {}
 
