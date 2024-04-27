@@ -19,7 +19,7 @@ import {
 } from '@blueprintjs/core'
 import { Table, isAccessorColumn } from 'shared/ui/table/Table'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useOrdersColumnDefs } from './use-orders-column-defs'
+import { useOrdersColumnDefs } from '../../hooks/use-orders-column-defs'
 import { FlexContainer } from 'shared/ui/FlexContainer'
 import { useNavigate } from 'react-router'
 import { getApi, postApi } from 'api/httpClient'

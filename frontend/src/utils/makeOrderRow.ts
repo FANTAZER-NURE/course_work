@@ -1,4 +1,4 @@
-import { OrderRowType } from 'pages/orders/use-orders-column-defs'
+import { OrderRowType } from 'hooks/use-orders-column-defs'
 import { TOrder } from '../../../backend/src/types/order'
 
 export function makeOrderRow(order: TOrder): OrderRowType {
